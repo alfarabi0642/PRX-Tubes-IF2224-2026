@@ -5,8 +5,8 @@ CXXFLAGS = -Wall -Wextra -std=c++17
 TARGET = lexer_test.exe
 
 # Source files
-SRCS = src/main.cpp src/lexer/lexer.cpp src/common/utils.cpp
-OBJS = main.o lexer.o utils.o
+SRCS = src/main.cpp src/lexer/lexer.cpp src/common/utils.cpp src/common/token.cpp
+OBJS = main.o lexer.o utils.o token.o
 
 # Default target
 all: $(TARGET)
@@ -26,6 +26,10 @@ lexer.o: src/lexer/lexer.cpp src/lexer/lexer.hpp
 # Compile utils
 utils.o: src/common/utils.cpp src/common/utils.hpp
 	$(CXX) $(CXXFLAGS) -c src/common/utils.cpp
+
+# Compile token
+token.o: src/common/token.cpp src/common/token.hpp
+	$(CXX) $(CXXFLAGS) -c src/common/token.cpp
 
 # Clean objects and executable
 # Note: uses CMD 'del' syntax or fallback to 'rm' if using unix-like terminal on Windows
