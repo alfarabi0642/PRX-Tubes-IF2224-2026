@@ -1,0 +1,22 @@
+comment ( This is a single-line comment )
+comment (( This is also a comment )
+comment (
+Multiline
+comment here
+)
+
+comment ((
+Another
+multiline
+comment
+)
+
+lparent
+period
+period
+period
+period
+period
+rparent
+unknown (( Atau {gini )
+{ Atau gini )})

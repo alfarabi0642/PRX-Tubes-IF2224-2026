@@ -1,9 +1,9 @@
 program AllTokens;
 const PI := 3.14;
-type MyChar = 'k';
+type MyChar := 'k';
 var
   x, y: Integer;
-  arr: array [1..10] of Integer;
+  arr: array;
   rec: record
 begin
   x := 5;

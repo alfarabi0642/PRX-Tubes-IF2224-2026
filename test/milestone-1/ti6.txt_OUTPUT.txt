@@ -1,0 +1,20 @@
+eql
+becomes
+unknown (=)
+neq
+lss
+leq
+gtr
+geq
+plus
+minus
+times
+rdiv
+colon
+semicolon
+comma
+period
+lbrack
+rbrack
+lparent
+rparent
