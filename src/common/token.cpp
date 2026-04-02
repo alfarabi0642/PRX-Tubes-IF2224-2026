@@ -56,6 +56,6 @@ std::string Token::get_type_name(TokenType type) {
         case TokenType::TOKEN_COMMENT: return "comment";
         case TokenType::TOKEN_NEWLINE: return "newline";
         case TokenType::TOKEN_EOF: return "eof";
-        default: return "error";
+        default: return "unknown";
     }
 }

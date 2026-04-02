@@ -131,13 +131,17 @@ Token Lexer::get_next_token() {
                 break;
 
             case State::S3:
+            case State::S5:
                 if (c == EOF) {
                     currentState = State::S1; // EOF (Unclosed) - reaches error
-                } else if (c != '}') {
-                    currentState = State::S3;
+                } else if (c == '}') {
+                    currentState = State::S7;
+                    currentLexeme += (char)c;
+                } else if (c == '*') {
+                    currentState = State::S6;
                     currentLexeme += (char)c;
                 } else {
-                    currentState = State::S7;
+                    currentState = State::S5;
                     currentLexeme += (char)c;
                 }
                 break;
@@ -152,22 +156,13 @@ Token Lexer::get_next_token() {
                 }
                 break;
 
-            case State::S5:
-                if (c == EOF) {
-                    currentState = State::S1;
-                } else if (c == '*') {
-                    currentState = State::S6;
-                    currentLexeme += (char)c;
-                } else {
-                    currentState = State::S5;
-                    currentLexeme += (char)c;
-                }
-                break;
-
             case State::S6:
                 if (c == EOF) {
                     currentState = State::S1;
                 } else if (c == ')') {
+                    currentState = State::S7;
+                    currentLexeme += (char)c;
+                } else if (c == '}') {
                     currentState = State::S7;
                     currentLexeme += (char)c;
                 } else if (c == '*') {

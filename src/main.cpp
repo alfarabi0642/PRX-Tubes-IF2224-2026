@@ -18,7 +18,6 @@ void print_tokens_to_file(const vector<Token>& tokens, const string& output_file
     bool first_real_token = true;
 
     for (const auto& token : tokens) {
-        if (token.get_type() == TokenType::TOKEN_COMMENT) continue;
         if (token.get_type() == TokenType::TOKEN_EOF) continue;
 
         int current_line = token.get_line();
@@ -33,16 +32,25 @@ void print_tokens_to_file(const vector<Token>& tokens, const string& output_file
         first_real_token = false;
 
         string name = Token::get_type_name(token.get_type());
+        if (token.get_type() == TokenType::TOKEN_ERROR) {
+            name = "unknown";
+        }
         out << name;
 
         TokenType t = token.get_type();
         if (t == TokenType::TOKEN_INTCON || t == TokenType::TOKEN_REALCON || 
             t == TokenType::TOKEN_CHARCON || t == TokenType::TOKEN_STRING || 
-            t == TokenType::TOKEN_IDENT) {
+            t == TokenType::TOKEN_IDENT || t == TokenType::TOKEN_ERROR || 
+            t == TokenType::TOKEN_COMMENT) {
             
             string val = token.get_value();
             if (t == TokenType::TOKEN_STRING && val == "'Result = '") {
                 val = "‘Result =’";
+            }
+            if (t == TokenType::TOKEN_COMMENT) {
+                // Strip ONLY opening delimiters to match exact QNA text
+                if (val.length() >= 2 && val.substr(0, 2) == "(*") val = val.substr(2);
+                else if (val.length() >= 1 && val[0] == '{') val = val.substr(1);
             }
             out << " (" << val << ")";
         }
