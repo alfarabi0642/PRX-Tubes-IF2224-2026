@@ -6,6 +6,6 @@ var
 begin
   a := 5;
   b := a + 10;
-  writeln('Re'sult = ', b);
+  writeln('Result = ', b);
 end.
 

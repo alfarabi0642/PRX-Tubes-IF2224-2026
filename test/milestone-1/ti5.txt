@@ -1,0 +1,14 @@
+{ This is a single-line comment }
+(* This is also a comment *)
+{
+Multiline
+comment here
+}
+(*
+Another
+multiline
+comment
+*)
+(.....)
+(* Atau {gini )
+{ Atau gini )}

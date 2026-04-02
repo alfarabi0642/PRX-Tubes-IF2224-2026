@@ -1,0 +1,7 @@
+x := 5;
+@ invalid symbol here
+y := x + 10;
+baca_buku
+nama+
+=
+x := y;

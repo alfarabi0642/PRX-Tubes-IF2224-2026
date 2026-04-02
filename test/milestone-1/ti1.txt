@@ -1,0 +1,44 @@
+program AllTokens;
+const PI := 3.14;
+type MyChar = 'k';
+var
+  x, y: Integer;
+  arr: array [1..10] of Integer;
+  rec: record
+begin
+  x := 5;
+  y := x + 10;
+  if x == y then
+    x := x - 1
+  else
+    x := x * 2;
+  if x <> y then
+    y := x div 2;
+  y := x mod 3;
+  y := x / 2;
+  if x > y then
+    x := x + 1;
+  if x >= y then
+    x := x - 1;
+  if x < y then
+    x := x + 1;
+  if x <= y then
+    x := x - 1;
+  while x > 0 do
+    x := x - 1;
+  for x := 1 to 10 do
+    y := y + 1;
+  for x := 10 downto 1 do
+    y := y - 1;
+  repeat
+    x := x + 1;
+  until x == 5;
+  case x of
+    1: y := 1;
+  end;
+  if NOT (x == 0) AND (y <> 0) OR (x > y) then
+    x := 1;
+  { This is a comment }
+  (* This is also a comment *)
+  x := y;
+end.
