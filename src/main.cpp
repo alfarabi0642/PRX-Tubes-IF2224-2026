@@ -48,7 +48,6 @@ void print_tokens_to_file(const vector<Token>& tokens, const string& output_file
                 val = "‘Result =’";
             }
             if (t == TokenType::TOKEN_COMMENT) {
-                // Strip ONLY opening delimiters to match exact QNA text
                 if (val.length() >= 2 && val.substr(0, 2) == "(*") val = val.substr(2);
                 else if (val.length() >= 1 && val[0] == '{') val = val.substr(1);
             }
@@ -75,9 +74,14 @@ int main(int argc, char* argv[]) {
 
     Lexer lexer(input_file);
     vector<Token> tokens = lexer.tokenize();
-
-    string output_file = input_file + ".out";
-    print_tokens_to_file(tokens, output_file);
+    // strip out ext
+    string filename = input_file;
+    size_t last_slash = filename.find_last_of("\\/");
+    if (last_slash != string::npos) {
+        filename = filename.substr(last_slash + 1);
+    }
+    string output_path = "test/milestone-1/"  + filename + "_OUTPUT.txt";
+    print_tokens_to_file(tokens, output_path);
 
     return 0;
 }

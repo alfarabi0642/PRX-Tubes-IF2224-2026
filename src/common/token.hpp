@@ -1,73 +1,71 @@
-#ifndef TOKEN_HPP
-#define TOKEN_HPP
-
+#pragma once
 #include <string>
 
 /**
  * @enum TokenType
- * @brief Represents all valid tokens within the Arion language specification.
+ * @brief enum semua token valid
  */
 enum class TokenType {
-    TOKEN_INTCON,       ///< 1. Konstanta integer
-    TOKEN_REALCON,      ///< 2. Konstanta bilangan riil
-    TOKEN_CHARCON,      ///< 3. Konstanta karakter singular
-    TOKEN_STRING,       ///< 4. Sekuens karakter
-    TOKEN_NOTSY,        ///< 5. Operator logika NOT
-    TOKEN_PLUS,         ///< 6. Operator aritmatika pertambahan
-    TOKEN_MINUS,        ///< 7. Operator aritmatika pengurangan
-    TOKEN_TIMES,        ///< 8. Operator aritmatika perkalian
-    TOKEN_IDIV,         ///< 9. Operator pembagian Integer (div)
-    TOKEN_RDIV,         ///< 10. Operator pembagian Riil (/)
-    TOKEN_IMOD,         ///< 11. Operator modulo (MOD)
-    TOKEN_ANDSY,        ///< 12. Operator logika AND
-    TOKEN_ORSY,         ///< 13. Operator logika OR
-    TOKEN_EQL,          ///< 14. equal (==)
-    TOKEN_NEQ,          ///< 15. Not equal (<>)
-    TOKEN_GTR,          ///< 16. Greater than (>)
-    TOKEN_GEQ,          ///< 17. Greater than or equal (>=)
-    TOKEN_LSS,          ///< 18. Less than (<)
-    TOKEN_LEQ,          ///< 19. Less than or equal (<=)
-    TOKEN_LPARENT,      ///< 20. Left parentheses (()
-    TOKEN_RPARENT,      ///< 21. Right parantheses ())
-    TOKEN_LBRACK,       ///< 22. Kurung siku kiri ([)
-    TOKEN_RBRACK,       ///< 23. Kurung siku kanan (])
-    TOKEN_COMMA,        ///< 24. Comma (,)
-    TOKEN_SEMICOLON,    ///< 25. Semicolon (;)
-    TOKEN_PERIOD,       ///< 26. Period (.)
-    TOKEN_COLON,        ///< 27. Colon (:)
-    TOKEN_BECOMES,      ///< 28. Assignment operator (:=)
-    TOKEN_CONSTSY,      ///< 29. Deklarasi konstanta (const)
-    TOKEN_TYPESY,       ///< 30. Deklarasi tipe data (type)
-    TOKEN_VARSY,        ///< 31. Deklarasi variabel (var)
-    TOKEN_FUNCTIONSY,   ///< 32. Deklarasi fungsi (function)
-    TOKEN_PROCEDURESY,  ///< 33. Deklarasi prosedur (procedure)
-    TOKEN_ARRAYSY,      ///< 34. Deklarasi array (array)
-    TOKEN_RECORDSY,     ///< 35. Deklarasi record (record)
-    TOKEN_PROGRAMSY,    ///< 36. Deklarasi program (program)
-    TOKEN_IDENT,        ///< 37. Identifier
-    TOKEN_BEGINSY,      ///< 38. begin
-    TOKEN_IFSY,         ///< 39. if
-    TOKEN_CASESY,       ///< 40. case
-    TOKEN_REPEATSY,     ///< 41. repeat
-    TOKEN_WHILESY,      ///< 42. while
-    TOKEN_FORSY,        ///< 43. for
-    TOKEN_ENDSY,        ///< 44. end
-    TOKEN_ELSESY,       ///< 45. else
-    TOKEN_UNTILSY,      ///< 46. until
-    TOKEN_OFSY,         ///< 47. of
-    TOKEN_DOSY,         ///< 48. do
-    TOKEN_TOSY,         ///< 49. to
-    TOKEN_DOWNTOSY,     ///< 50. downto
-    TOKEN_THENSY,       ///< 51. then
-    TOKEN_COMMENT,      ///< 52. Komentar
-    TOKEN_NEWLINE,      ///< Newline separator
-    TOKEN_EOF,          ///< End of File
-    TOKEN_ERROR         ///< Unrecognized token
+    TOKEN_INTCON,       // 1.Integer
+    TOKEN_REALCON,      // 2.Real
+    TOKEN_CHARCON,      // 3. karakter 
+    TOKEN_STRING,       // 4.String 
+    TOKEN_NOTSY,        // 5. NOT
+    TOKEN_PLUS,         // 6. + 
+    TOKEN_MINUS,        // 7. - 
+    TOKEN_TIMES,        // 8. * 
+    TOKEN_IDIV,         // 9. div
+    TOKEN_RDIV,         // 10. /
+    TOKEN_IMOD,         // 11. MOD
+    TOKEN_ANDSY,        // 12. AND
+    TOKEN_ORSY,         // 13. OR
+    TOKEN_EQL,          // 14. ==
+    TOKEN_NEQ,          // 15. <>
+    TOKEN_GTR,          // 16. >
+    TOKEN_GEQ,          // 17. >=
+    TOKEN_LSS,          // 18. <
+    TOKEN_LEQ,          // 19. <=
+    TOKEN_LPARENT,      // 20. (
+    TOKEN_RPARENT,      // 21. )
+    TOKEN_LBRACK,       // 22. [
+    TOKEN_RBRACK,       // 23. ]
+    TOKEN_COMMA,        // 24. ,
+    TOKEN_SEMICOLON,    // 25. ;
+    TOKEN_PERIOD,       // 26. .
+    TOKEN_COLON,        // 27. :
+    TOKEN_BECOMES,      // 28. :=
+    TOKEN_CONSTSY,      // 29. const
+    TOKEN_TYPESY,       // 30. type
+    TOKEN_VARSY,        // 31. var
+    TOKEN_FUNCTIONSY,   // 32. function
+    TOKEN_PROCEDURESY,  // 33. procedure
+    TOKEN_ARRAYSY,      // 34. array
+    TOKEN_RECORDSY,     // 35. record
+    TOKEN_PROGRAMSY,    // 36. program
+    TOKEN_IDENT,        // 37. Identifier
+    TOKEN_BEGINSY,      // 38 begin
+    TOKEN_IFSY,         // 39 if
+    TOKEN_CASESY,       // 40 case
+    TOKEN_REPEATSY,     // 41 repeat
+    TOKEN_WHILESY,      // 42 while
+    TOKEN_FORSY,        // 43 for
+    TOKEN_ENDSY,        // 44 end
+    TOKEN_ELSESY,       // 45 else
+    TOKEN_UNTILSY,      // 46 until
+    TOKEN_OFSY,         // 47 of
+    TOKEN_DOSY,         // 48 do
+    TOKEN_TOSY,         // 49 to
+    TOKEN_DOWNTOSY,     // 50 downto
+    TOKEN_THENSY,       // 51 then
+    TOKEN_COMMENT,      // 52 Komentar
+    TOKEN_NEWLINE,      // Newline separator
+    TOKEN_EOF,          // EOF
+    TOKEN_ERROR         // UNKNOWN
 };
 
 /**
  * @class Token
- * @brief Stores parsed lexical tokens encapsulating type, string values, and positional data.
+ * @brief  nyimpen token yang sudah dipecah
  */
 class Token {
 private:
@@ -78,11 +76,7 @@ private:
 
 public:
     /**
-     * @brief Constructs a new Token object.
-     * @param type The enumerated token classification.
-     * @param value The raw string literal matched in source.
-     * @param line Line number where the token starts.
-     * @param column Column number where the token starts.
+     * @brief konstruktor token
      */
     Token(TokenType type, std::string value, int line, int column) 
         : type(type), value(value), line(line), column(column) {}
@@ -93,11 +87,7 @@ public:
     int get_column() const { return column; }
 
     /**
-     * @brief Resolves a token classification enum into its string representation required by spec.
-     * @param type The Token Type Enum.
-     * @return std::string Spec corresponding string (e.g. "intcon", "ident").
+     * @brief ngubah token ke string output
      */
     static std::string get_type_name(TokenType type);
 };
-
-#endif // TOKEN_HPP

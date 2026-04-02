@@ -1,6 +1,4 @@
-#ifndef LEXER_HPP
-#define LEXER_HPP
-
+#pragma once
 #include <string>
 #include <vector>
 #include <cstdio>
@@ -19,41 +17,36 @@ enum class State {
 
 /**
  * @class Lexer
- * @brief Parses source code applying a Deterministic Finite Automaton (DFA) string matching scheme 
- *        to produce language-specification tokens.
+ * @brief nge parse input pake DFA jadi language
  */
 class Lexer {
 private:
-    FILE* source_file;       ///< Source code file pointer
-    int line;                ///< Current line number (1-indexed)
-    int column;              ///< Current column number (1-indexed)
-    std::stack<int> unget_buffer; ///< Buffer for safe multiple unread_char pushbacks
-    bool next_number_negative;    ///< Flag for Q42 negative integer edge case tracking
+    FILE* source_file;       // file pointer ke input (source code)
+    int line;                // curr line
+    int column;              // curr column
+    std::stack<int> unget_buffer; // buffer buat unread char
+    bool next_number_negative;    // flag buat edge case integer negatif
     
     /**
-     * @brief Processes the current sequence to build the next valid token using 
-     *        a strict finite automata logic, reading precisely char by char.
-     * @return Token Data Token object generated.
+     * @brief nge parse sequence jadi token pake DFA
      */
     Token get_next_token();
 
 public:
     /**
-     * @brief Starts the lexical analyzer mapping engine.
-     * @param filename The path to the source file.
+     * @brief constructor lexer
      */
     Lexer(const std::string& filename);
 
     /**
-     * @brief Destructor to close the file pointer.
+     * @brief Destructor lexer
      */
     ~Lexer();
 
     /**
-     * @brief Exhaustively evaluates all tokens linearly until EOF.
-     * @return vector<Token> list of sequentially ordered evaluation Tokens.
+     * @brief main funk
      */
     std::vector<Token> tokenize();
 };
 
-#endif // LEXER_HPP
+

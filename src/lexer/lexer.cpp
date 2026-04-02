@@ -88,8 +88,7 @@ Token Lexer::get_next_token() {
                     currentState = State::S20;
                     currentLexeme += (char)c;
                 } else if (LexerUtils::is_alpha(c)) {
-                    // QNA 30: '_' is invalid as the FIRST character of identifier.
-                    // The DFA says S0 -> S30 [a-zA-Z]
+                    // '_'  invalid buat character input pertama
                     currentState = State::S30;
                     currentLexeme += (char)c;
                 } else if (c == '+') { currentState = State::S40; currentLexeme += (char)c; }
@@ -101,7 +100,7 @@ Token Lexer::get_next_token() {
                   else if (c == ']') { currentState = State::S47; currentLexeme += (char)c; }
                   else if (c == ',') { currentState = State::S48; currentLexeme += (char)c; }
                   else if (c == ';') { currentState = State::S49; currentLexeme += (char)c; }
-                  else if (c == '.') { currentState = State::S50; currentLexeme += (char)c; }
+                  else if (c == '.') { currentState = State::S50; }
                   else if (c == ':') { currentState = State::S60; currentLexeme += (char)c; }
                   else if (c == '=') { currentState = State::S63; currentLexeme += (char)c; }
                   else if (c == '<') { currentState = State::S65; currentLexeme += (char)c; }
@@ -116,63 +115,83 @@ Token Lexer::get_next_token() {
                 std::cerr << "Lexical Error: Unrecognized or invalid sequence '" << currentLexeme 
                           << "' at line " << start_line << ", col " << start_col << std::endl;
                 
-                // Consumes offending character but returns as ERROR token.
-                // Resetting to S0 will naturally happen on the next get_next_token call.
+                // char yang salah -> error token
                 unread_char(c, prev_line, prev_col);
                 return Token(TokenType::TOKEN_ERROR, currentLexeme, start_line, start_col);
 
-            case State::S2:
+            case State::S2: // State whitespace
                 if (c == ' ' || c == '\t' || c == '\n' || c == '\r') {
                     currentState = State::S2;
                 } else {
                     unread_char(c, prev_line, prev_col);
-                    currentState = State::S0; // Loop back without emitting
+                    currentState = State::S0; 
+                }
+                break;
+            case State::S3: // State isi  komentar  {}
+                if (c == EOF) {
+                    currentState = State::S1; // EOF yang unclosed ke error
+                } else if (c == '}') {
+                    currentState = State::S7; // Selesai
+                } else {
+                    currentState = State::S3;
+                    currentLexeme += (char)c; // Masukkan teks isi komentar
                 }
                 break;
 
-            case State::S3:
-            case State::S5:
+            case State::S5: // State isi komentar (* 
                 if (c == EOF) {
-                    currentState = State::S1; // EOF (Unclosed) - reaches error
-                } else if (c == '}') {
-                    currentState = State::S7;
-                    currentLexeme += (char)c;
+                    currentState = State::S1;
                 } else if (c == '*') {
                     currentState = State::S6;
-                    currentLexeme += (char)c;
                 } else {
                     currentState = State::S5;
-                    currentLexeme += (char)c;
+                    currentLexeme += (char)c; 
+                }
+                break;
+
+            case State::S6: // State saat ketemu '*' di dalam (* ...
+                if (c == EOF) {
+                    currentState = State::S1;
+                } else if (c == ')') {
+                    currentState = State::S7; // Selesai jadi '*)'
+                } else if (c == '*') {
+                    currentState = State::S6;
+                    currentLexeme += '*'; 
+                } else {
+                    currentState = State::S5;
+                    currentLexeme += '*'; 
+                    currentLexeme += (char)c; 
                 }
                 break;
 
             case State::S4:
                 if (c == '*') {
                     currentState = State::S5;
-                    currentLexeme += (char)c;
+                    // currentLexeme += (char)c;
                 } else {
                     unread_char(c, prev_line, prev_col);
                     currentState = State::S44; // LPARENT_ACCEPT
+                    currentLexeme = "(";
                 }
                 break;
 
-            case State::S6:
-                if (c == EOF) {
-                    currentState = State::S1;
-                } else if (c == ')') {
-                    currentState = State::S7;
-                    currentLexeme += (char)c;
-                } else if (c == '}') {
-                    currentState = State::S7;
-                    currentLexeme += (char)c;
-                } else if (c == '*') {
-                    currentState = State::S6;
-                    currentLexeme += (char)c;
-                } else {
-                    currentState = State::S5;
-                    currentLexeme += (char)c;
-                }
-                break;
+            // case State::S6:
+            //     if (c == EOF) {
+            //         currentState = State::S1;
+            //     } else if (c == ')') {
+            //         currentState = State::S7;
+            //         currentLexeme += (char)c;
+            //     } else if (c == '}') {
+            //         currentState = State::S7;
+            //         currentLexeme += (char)c;
+            //     } else if (c == '*') {
+            //         currentState = State::S6;
+            //         currentLexeme += (char)c;
+            //     } else {
+            //         currentState = State::S5;
+            //         currentLexeme += (char)c;
+            //     }
+            //     break;
 
             case State::S7:
                 unread_char(c, prev_line, prev_col);
@@ -200,10 +219,9 @@ Token Lexer::get_next_token() {
                     currentState = State::S13;
                     currentLexeme += (char)c;
                 } else {
-                    // bukan [0-9] (unget '.', emit intcon)
                     unread_char(c, prev_line, prev_col);
                     unread_char('.', start_line, start_col + currentLexeme.length() - 1);
-                    currentLexeme.pop_back(); // Remove '.' from lexeme string
+                    currentLexeme.pop_back(); 
                     currentState = State::S11;
                 }
                 break;
@@ -212,7 +230,7 @@ Token Lexer::get_next_token() {
                 if (LexerUtils::is_digit(c)) {
                     currentState = State::S13;
                     currentLexeme += (char)c;
-                } else if (c == 'e') { // 'e' -> S1 (QNA 18)
+                } else if (c == 'e') {
                     currentState = State::S1;
                     currentLexeme += (char)c;
                 } else { // bukan [0-9]
@@ -226,11 +244,10 @@ Token Lexer::get_next_token() {
                 return Token(TokenType::TOKEN_REALCON, currentLexeme, start_line, start_col);
 
             case State::S20:
-                // Note: EOF check is done implicitly if c == EOF, S21 will eventually handle it for unclosed string.
                 if (c == '\'') {
                     currentState = State::S22;
                     currentLexeme += (char)c;
-                } else if (c == '\n' || c == EOF) { // Error or EOF
+                } else if (c == '\n' || c == EOF) { // Error EOF
                     currentState = State::S1;
                     if (c != EOF) currentLexeme += (char)c;
                 } else {
@@ -240,7 +257,7 @@ Token Lexer::get_next_token() {
                 break;
 
             case State::S21:
-                if (c == '\n' || c == EOF) { // \n or EOF (QNA 14 & 22)
+                if (c == '\n' || c == EOF) { // \n or EOF
                     currentState = State::S1;
                     if (c != EOF) currentLexeme += (char)c;
                 } else if (c == '\'') {
@@ -253,7 +270,7 @@ Token Lexer::get_next_token() {
                 break;
 
             case State::S22:
-                if (c == '\'') { // Escaped single quote
+                if (c == '\'') { // ' escape string
                     currentState = State::S21;
                     currentLexeme += (char)c;
                 } else {
@@ -263,7 +280,7 @@ Token Lexer::get_next_token() {
                     for (size_t i = 1; i < currentLexeme.length() - 1; i++) {
                         if (currentLexeme[i] == '\'') {
                             if (i + 1 < currentLexeme.length() - 1 && currentLexeme[i+1] == '\'') {
-                                i++; // skip escaped quote part
+                                i++; // skip escaped ' string
                             }
                         }
                         actual_len++;
@@ -286,7 +303,7 @@ Token Lexer::get_next_token() {
                 return Token(TokenType::TOKEN_STRING, currentLexeme, start_line, start_col);
 
             case State::S30:
-                if (LexerUtils::is_alphanumeric(c)) { // [a-z,A-Z0-9] (QNA 30: '_' is invalid)
+                if (LexerUtils::is_alphanumeric(c)) {
                     currentState = State::S31;
                     currentLexeme += (char)c;
                 } else {
@@ -341,7 +358,7 @@ Token Lexer::get_next_token() {
             case State::S40: unread_char(c, prev_line, prev_col); return Token(TokenType::TOKEN_PLUS, currentLexeme, start_line, start_col);
             case State::S41: 
                 unread_char(c, prev_line, prev_col); 
-                // QNA 42: Record negative sign into next integer payload if next character is digit
+                // save negative sign 
                 if (LexerUtils::is_digit(c)) {
                     this->next_number_negative = true;
                 }
@@ -373,7 +390,7 @@ Token Lexer::get_next_token() {
                 if (c == '=') {
                     currentState = State::S64;
                     currentLexeme += (char)c;
-                } else { // bukan '=' -> S1 (ERROR)
+                } else { // bukan '=' -> S1 
                     unread_char(c, prev_line, prev_col);
                     currentState = State::S1;
                 }
@@ -400,7 +417,7 @@ Token Lexer::get_next_token() {
             case State::S71: unread_char(c, prev_line, prev_col); return Token(TokenType::TOKEN_GEQ, currentLexeme, start_line, start_col);
 
             case State::S99:
-                unread_char(c, prev_line, prev_col); // put EOF back or drop doesn't matter much natively
+                unread_char(c, prev_line, prev_col); 
                 return Token(TokenType::TOKEN_EOF, "", start_line, start_col);
         }
     }
