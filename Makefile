@@ -1,18 +1,19 @@
 CXX = g++
 CXXFLAGS = -Wall -Wextra -std=c++17
 
-# Name of the executable
-TARGET = lexer_test.exe
+# Nama executable dan foldernya
+BIN_DIR = bin
+TARGET = $(BIN_DIR)/lexer_test.exe
 
-# Source files
-SRCS = src/main.cpp src/lexer/lexer.cpp src/common/utils.cpp src/common/token.cpp
+# File objek
 OBJS = main.o lexer.o utils.o token.o
 
 # Default target
 all: $(TARGET)
 
-# Link the executable
+# Membuat folder bin dan Link executable
 $(TARGET): $(OBJS)
+	mkdir -p $(BIN_DIR)
 	$(CXX) $(CXXFLAGS) -o $(TARGET) $(OBJS)
 
 # Compile main
@@ -31,11 +32,11 @@ utils.o: src/common/utils.cpp src/common/utils.hpp
 token.o: src/common/token.cpp src/common/token.hpp
 	$(CXX) $(CXXFLAGS) -c src/common/token.cpp
 
-# Clean objects and executable
-# Note: uses CMD 'del' syntax or fallback to 'rm' if using unix-like terminal on Windows
+# Clean (Menggunakan perintah Linux standar)
 clean:
-	del /Q /F $(OBJS) $(TARGET) 2>nul || rm -f $(OBJS) $(TARGET)
+	rm -f $(OBJS)
+	rm -rf $(BIN_DIR)
 
-# Run the program
+# Run
 run: $(TARGET)
 	./$(TARGET)
