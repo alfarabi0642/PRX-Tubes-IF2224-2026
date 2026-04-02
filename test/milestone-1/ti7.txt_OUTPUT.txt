@@ -1,0 +1,24 @@
+ident (x)
+becomes
+intcon (5)
+semicolon
+unknown (@)
+ident (invalid)
+ident (symbol)
+ident (here)
+ident (y)
+becomes
+ident (x)
+plus
+intcon (10)
+semicolon
+ident (baca)
+unknown (_)
+ident (buku)
+ident (nama)
+plus
+unknown (=)
+ident (x)
+becomes
+ident (y)
+semicolon

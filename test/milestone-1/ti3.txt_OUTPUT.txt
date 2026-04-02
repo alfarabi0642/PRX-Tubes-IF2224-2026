@@ -1,0 +1,26 @@
+intcon (0123)
+realcon (3.14)
+realcon (26.7)
+plus
+intcon (67)
+intcon (1)
+plus
+intcon (67)
+minus
+intcon (-67)
+intcon (6)
+minus
+intcon (-7)
+realcon (0.18)
+intcon (5)
+period
+period
+intcon (18)
+realcon (192.168)
+period
+realcon (10.1)
+unknown (1.2e)
+minus
+intcon (-10)
+intcon (123)
+ident (N)

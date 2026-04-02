@@ -1,0 +1,216 @@
+programsy
+ident (AllTokens)
+semicolon
+constsy
+ident (PI)
+becomes
+realcon (3.14)
+semicolon
+typesy
+ident (MyChar)
+becomes
+charcon ('k')
+semicolon
+varsy
+ident (x)
+comma
+ident (y)
+colon
+ident (Integer)
+semicolon
+ident (arr)
+colon
+arraysy
+semicolon
+ident (rec)
+colon
+recordsy
+beginsy
+ident (x)
+becomes
+intcon (5)
+semicolon
+ident (y)
+becomes
+ident (x)
+plus
+intcon (10)
+semicolon
+ifsy
+ident (x)
+eql
+ident (y)
+thensy
+ident (x)
+becomes
+ident (x)
+minus
+intcon (1)
+elsesy
+ident (x)
+becomes
+ident (x)
+times
+intcon (2)
+semicolon
+ifsy
+ident (x)
+neq
+ident (y)
+thensy
+ident (y)
+becomes
+ident (x)
+idiv
+intcon (2)
+semicolon
+ident (y)
+becomes
+ident (x)
+imod
+intcon (3)
+semicolon
+ident (y)
+becomes
+ident (x)
+rdiv
+intcon (2)
+semicolon
+ifsy
+ident (x)
+gtr
+ident (y)
+thensy
+ident (x)
+becomes
+ident (x)
+plus
+intcon (1)
+semicolon
+ifsy
+ident (x)
+geq
+ident (y)
+thensy
+ident (x)
+becomes
+ident (x)
+minus
+intcon (1)
+semicolon
+ifsy
+ident (x)
+lss
+ident (y)
+thensy
+ident (x)
+becomes
+ident (x)
+plus
+intcon (1)
+semicolon
+ifsy
+ident (x)
+leq
+ident (y)
+thensy
+ident (x)
+becomes
+ident (x)
+minus
+intcon (1)
+semicolon
+whilesy
+ident (x)
+gtr
+intcon (0)
+dosy
+ident (x)
+becomes
+ident (x)
+minus
+intcon (1)
+semicolon
+forsy
+ident (x)
+becomes
+intcon (1)
+tosy
+intcon (10)
+dosy
+ident (y)
+becomes
+ident (y)
+plus
+intcon (1)
+semicolon
+forsy
+ident (x)
+becomes
+intcon (10)
+downtosy
+intcon (1)
+dosy
+ident (y)
+becomes
+ident (y)
+minus
+intcon (1)
+semicolon
+repeatsy
+ident (x)
+becomes
+ident (x)
+plus
+intcon (1)
+semicolon
+untilsy
+ident (x)
+eql
+intcon (5)
+semicolon
+casesy
+ident (x)
+ofsy
+intcon (1)
+colon
+ident (y)
+becomes
+intcon (1)
+semicolon
+
+endsy
+semicolon
+ifsy
+notsy
+lparent
+ident (x)
+eql
+intcon (0)
+rparent
+andsy
+lparent
+ident (y)
+neq
+intcon (0)
+rparent
+orsy
+lparent
+ident (x)
+gtr
+ident (y)
+rparent
+thensy
+ident (x)
+becomes
+intcon (1)
+semicolon
+comment ( This is a comment )
+comment (( This is also a comment )
+ident (x)
+becomes
+ident (y)
+semicolon
+
+endsy
+period

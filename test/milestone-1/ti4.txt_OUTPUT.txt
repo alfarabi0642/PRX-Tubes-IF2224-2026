@@ -1,0 +1,11 @@
+charcon ('j')
+charcon ('k')
+string ('IRK')
+string ('TBFO')
+string ('')
+charcon ('''')
+unknown ('''
+)
+string ('baca_buku')
+string (‘Result =’)
+string ('string\n''')

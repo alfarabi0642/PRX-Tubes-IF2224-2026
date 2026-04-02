@@ -1,0 +1,21 @@
+ifsy
+notsy
+imod
+andsy
+orsy
+ifsy
+notsy
+imod
+andsy
+orsy
+ifsy
+notsy
+imod
+andsy
+orsy
+ident (arrayzz)
+arraysy
+ident (zz)
+ident (forsy2)
+ident (ident123)
+programsy
