@@ -1,4 +1,3 @@
-lexer_test.exe
 lexer.o
 main.o
 token.o
