@@ -1,29 +1,30 @@
-# 🚀 Arion Compiler - Milestone 1: Lexical Analyzer
+# 🚀 Arion Lexer - Milestone 1
 **Tugas Besar IF2224 Teori Bahasa Formal dan Otomata 2026**
 
-A robust, object-oriented Lexical Analyzer (Scanner) built in C++ to process the Arion programming language. This tokenizer implements a complete Deterministic Finite Automaton (DFA) string matching scheme mapped directly to an explicit architectural transition state machine—guaranteeing compliance, absolute coverage, and unyielding error recovery.
+## 📝 Deskripsi Program
+Program ini adalah *Lexical Analyzer* untuk bahasa pemrograman Arion yang dibangun menggunakan C++. Menggunakan pendekatan *Deterministic Finite Automata* (DFA), program ini mengubah *source code* menjadi rangkaian *tokens* dan mampu menangani *edge cases* seperti angka negatif, komentar *multi-line*, serta *error recovery* pada karakter ilegal.
 
-## 🌟 Capabilities & Edge Handling
-The lexer explicitly resolves all advanced structural language constraints and Q&A edge cases natively in the core DFA loops:
+## 👥 Identitas Kelompok
+**Kode Kelompok:** khusus 1352___
+**Nama Kelompok:** PRX
 
-- **Strict State Constraints:** Features an explicitly delineated DFA transitioning standard (`S0` to `S99`) entirely mapping custom symbols, reserved keywords, alphanumerics, and syntax structures.
-- **Dynamic Unget Buffer:** Manages safe multiple rollback pushbacks for integers trailing period validations (e.g., `5.` safely mapped independently from `.18`).
-- **Resilient Error Recovery (S1):** Non-fatal error traps! Identifiers failing syntax schemas skip bad characters securely back onto the sequence trace log and seamlessly reboot mapping checks towards `S0` without infinite loop locking or application crashes.
-- **Negative Integer Edge Casts (Q42):** Robust negative integer sign validations pushing standard minus boundaries logically towards adjoining integer constructs exactly as guided by specification.
-- **Strict String Mapping:** Gracefully supports string validations natively blocking single-line crossbounds (`\n`), accepting exact escape character nesting (`''''`), and accurately managing empty strings (`''`).
-- **Comprehensive Match Resolution:** Implements the *Longest Match* rule for identifying variable lengths consistently avoiding overlap.
+| Nama | NIM |
+| :--- | :--- |
+| Al Farabi | 13524086 |
+| Ishaq Irfan Farizal | 13524094 |
+| Daniel Anindito Nugroho | 13524002 |
+| Ishak Palentino | 13524022 |
 
-## 🛠 Tech Stack
-- **Language:** C++ (Standard ISO)
-- **Architecture:** Object-Oriented DFA State Machine
-- **Dependencies:** Standard Template Library (`std::string`, `std::vector`, `std::stack`, `std::ctype`)
-- **Build System:** `make` / GCC
+## 🛠 Requirements
+- **GCC/G++ Compiler** (Standar C++17).
+- **GNU Make**.
+- Lingkungan **Linux/WSL** atau **MinGW/Git Bash**.
 
 ## 📂 Project Structure
 ```text
 PRX-Tubes-IF2224-2026/
 ├── src/
-│   ├── main.cpp         # System orchestrator
+│   ├── main.cpp         
 │   ├── lexer/           # Lexical parsing architecture and DFA models
 │   │   ├── lexer.hpp
 │   │   └── lexer.cpp
@@ -34,7 +35,7 @@ PRX-Tubes-IF2224-2026/
 └── Makefile             # Automatic build configurations
 ```
 
-## 🚀 Setup & Compilation 
+## Setup & Compilation 
 
 To run this application, leverage the standard GNU Make sequence inside the project root:
 
@@ -47,20 +48,15 @@ To run this application, leverage the standard GNU Make sequence inside the proj
    ```bash
    make
    ```
-   *This links and compiles the executable map natively into standard outputs like `lexer_test.exe`.*
 
 3. **Execution**
    ```bash
-   ./lexer_test.exe
+   ./lexer_test.exe path/to/input/file.txt
    ```
-   *Alternatively, you can just execute:*
-   ```bash
-   make run
-   ```
-   *By default, the executor routes tests loaded from the targeted Arion source test configurations.*
 
-## 👥 Authors
-Designed & Developed by team **PRX-Tubes-IF2224-2026** for Milestone 1 compilation targets. 
-
----
-*TBFO 2026 // Institut Teknologi Bandung*
+| Nama | Pembagian Tugas |
+| :--- | :--- |
+| Al Farabi | Pembuatan laporan, perancangan DFA, penggambaran DFA, implementasi lexer.cpp dan lexer.hpp |
+| Ishaq Irfan Farizal | Pembuatan laporan, perancangan DFA, penggambaran DFA, pengetesan program, implementasi token.cpp dan token.hpp |
+| Daniel Anindito Nugroho | Pembuatan laporan, perancangan DFA, penggambaran DFA,  implementasi utils.cpp dan utils.hpp |
+| Ishak Palentino | Pembuatan laporan, perancangan DFA, penggambaran DFA, implementasi main.cpp, MakeFile, dan readme  |
