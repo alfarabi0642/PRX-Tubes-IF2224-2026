@@ -1,10 +1,10 @@
-# 🚀 Arion Lexer - Milestone 1
+# Arion Lexer - Milestone 1
 **Tugas Besar IF2224 Teori Bahasa Formal dan Otomata 2026**
 
-## 📝 Deskripsi Program
+##  Deskripsi Program
 Program ini adalah *Lexical Analyzer* untuk bahasa pemrograman Arion yang dibangun menggunakan C++. Menggunakan pendekatan *Deterministic Finite Automata* (DFA), program ini mengubah *source code* menjadi rangkaian *tokens* dan mampu menangani *edge cases* seperti angka negatif, komentar *multi-line*, serta *error recovery* pada karakter ilegal.
 
-## 👥 Identitas Kelompok
+##  Identitas Kelompok
 **Kode Kelompok:** khusus 1352___
 **Nama Kelompok:** PRX
 
@@ -15,12 +15,12 @@ Program ini adalah *Lexical Analyzer* untuk bahasa pemrograman Arion yang dibang
 | Daniel Anindito Nugroho | 13524002 |
 | Ishak Palentino | 13524022 |
 
-## 🛠 Requirements
+##  Requirements
 - **GCC/G++ Compiler** (Standar C++17).
 - **GNU Make**.
 - Lingkungan **Linux/WSL** atau **MinGW/Git Bash**.
 
-## 📂 Project Structure
+##  Project Structure
 ```text
 PRX-Tubes-IF2224-2026/
 ├── src/
