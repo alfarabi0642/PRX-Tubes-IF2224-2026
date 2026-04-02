@@ -28,6 +28,7 @@ private:
     int line;                ///< Current line number (1-indexed)
     int column;              ///< Current column number (1-indexed)
     std::stack<int> unget_buffer; ///< Buffer for safe multiple unread_char pushbacks
+    bool next_number_negative;    ///< Flag for Q42 negative integer edge case tracking
     
     /**
      * @brief Processes the current sequence to build the next valid token using 

@@ -2,7 +2,7 @@
 #include "../common/utils.hpp"
 #include <iostream>
 
-Lexer::Lexer(const std::string& filename) : line(1), column(1) {
+Lexer::Lexer(const std::string& filename) : line(1), column(1), next_number_negative(false) {
     source_file = fopen(filename.c_str(), "r");
     if (!source_file) {
         std::cerr << "Lexical Error: Cannot open source file " << filename << std::endl;
@@ -79,6 +79,10 @@ Token Lexer::get_next_token() {
                     currentLexeme += (char)c;
                 } else if (LexerUtils::is_digit(c)) {
                     currentState = State::S10;
+                    if (this->next_number_negative) {
+                        currentLexeme += '-';
+                        this->next_number_negative = false;
+                    }
                     currentLexeme += (char)c;
                 } else if (c == '\'') {
                     currentState = State::S20;
@@ -340,7 +344,13 @@ Token Lexer::get_next_token() {
             }
 
             case State::S40: unread_char(c, prev_line, prev_col); return Token(TokenType::TOKEN_PLUS, currentLexeme, start_line, start_col);
-            case State::S41: unread_char(c, prev_line, prev_col); return Token(TokenType::TOKEN_MINUS, currentLexeme, start_line, start_col);
+            case State::S41: 
+                unread_char(c, prev_line, prev_col); 
+                // QNA 42: Record negative sign into next integer payload if next character is digit
+                if (LexerUtils::is_digit(c)) {
+                    this->next_number_negative = true;
+                }
+                return Token(TokenType::TOKEN_MINUS, currentLexeme, start_line, start_col);
             case State::S42: unread_char(c, prev_line, prev_col); return Token(TokenType::TOKEN_TIMES, currentLexeme, start_line, start_col);
             case State::S43: unread_char(c, prev_line, prev_col); return Token(TokenType::TOKEN_RDIV, currentLexeme, start_line, start_col);
             case State::S44: unread_char(c, prev_line, prev_col); return Token(TokenType::TOKEN_LPARENT, currentLexeme, start_line, start_col);
