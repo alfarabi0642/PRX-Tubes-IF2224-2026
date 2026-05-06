@@ -13,8 +13,7 @@ plus
 intcon (10)
 semicolon
 ident (baca)
-unknown (_)
-ident (buku)
+unknown (_buku)
 ident (nama)
 plus
 unknown (=)

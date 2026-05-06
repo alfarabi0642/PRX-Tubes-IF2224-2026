@@ -1,0 +1,47 @@
+<program>
+├── <program-header>
+│   ├── programsy
+│   ├── ident(Hello)
+│   └── semicolon
+├── <declaration-part>
+│   └── <var-declaration>
+│       └── varsy
+├── <compound-statement>
+│   ├── semicolon
+│   ├── <statement-list>
+│   │   ├── <statement>
+│   │   ├── semicolon
+│   │   └── <statement>
+│   │       └── <compound-statement>
+│   │           ├── beginsy
+│   │           ├── <statement-list>
+│   │           │   ├── <statement>
+│   │           │   │   └── <assignment-statement>
+│   │           │   │       ├── <variable>
+│   │           │   │       │   └── ident(a)
+│   │           │   │       ├── becomes
+│   │           │   │       └── <expression>
+│   │           │   │           └── <simple-expression>
+│   │           │   │               └── <term>
+│   │           │   │                   └── <factor>
+│   │           │   │                       └── intcon(5)
+│   │           │   ├── semicolon
+│   │           │   └── <statement>
+│   │           │       └── <assignment-statement>
+│   │           │           ├── <variable>
+│   │           │           │   └── ident(b)
+│   │           │           ├── becomes
+│   │           │           └── <expression>
+│   │           │               └── <simple-expression>
+│   │           │                   ├── <term>
+│   │           │                   │   └── <factor>
+│   │           │                   │       └── <variable>
+│   │           │                   │           └── ident(a)
+│   │           │                   ├── <additive-operator>
+│   │           │                   │   └── plus
+│   │           │                   └── <term>
+│   │           │                       └── <factor>
+│   │           │                           └── intcon(10)
+│   │           └── endsy
+│   └── period
+└── period

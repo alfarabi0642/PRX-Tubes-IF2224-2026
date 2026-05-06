@@ -14,12 +14,11 @@ intcon (-7)
 realcon (0.18)
 intcon (5)
 period
-period
-intcon (18)
+unknown (.18)
 realcon (192.168)
-period
-realcon (10.1)
-unknown (1.2e)
+unknown (.10.1)
+realcon (1.2)
+ident (e)
 minus
 intcon (-10)
 intcon (123)
