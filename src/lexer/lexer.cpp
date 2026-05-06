@@ -53,6 +53,11 @@ Token Lexer::get_next_token() {
         }
     };
 
+    // Helper: cek apakah karakter adalah separator
+    auto is_separator = [](int c) -> bool {
+        return c == ' ' || c == '\t' || c == '\n' || c == '\r' || c == EOF;
+    };
+
     while (true) {
         int prev_line = line;
         int prev_col = column;
@@ -100,24 +105,39 @@ Token Lexer::get_next_token() {
                   else if (c == ']') { currentState = State::S47; currentLexeme += (char)c; }
                   else if (c == ',') { currentState = State::S48; currentLexeme += (char)c; }
                   else if (c == ';') { currentState = State::S49; currentLexeme += (char)c; }
-                  else if (c == '.') { currentState = State::S50; }
+                  else if (c == '.') { currentState = State::S50; currentLexeme += (char)c; }
                   else if (c == ':') { currentState = State::S60; currentLexeme += (char)c; }
                   else if (c == '=') { currentState = State::S63; currentLexeme += (char)c; }
                   else if (c == '<') { currentState = State::S65; currentLexeme += (char)c; }
                   else if (c == '>') { currentState = State::S69; currentLexeme += (char)c; }
                   else {
-                      currentState = State::S1;
+                      // Karakter tidak dikenal -> masuk unknown accumulation
+                      currentState = State::S_UNKNOWN;
                       currentLexeme += (char)c;
                   }
                 break;
 
+            // S_UNKNOWN: akumulasi semua karakter sampai separator
+            // Implementasi longest-match: jika tidak ada token valid, kumpulkan sampai separator
+            case State::S_UNKNOWN:
+                if (is_separator(c)) {
+                    // Separator ditemukan, kembalikan unknown token
+                    unread_char(c, prev_line, prev_col);
+                    std::cerr << "Lexical Error: Unrecognized or invalid sequence '" << currentLexeme 
+                              << "' at line " << start_line << ", col " << start_col << std::endl;
+                    return Token(TokenType::TOKEN_ERROR, currentLexeme, start_line, start_col);
+                } else {
+                    // Belum separator, terus akumulasi
+                    currentLexeme += (char)c;
+                }
+                break;
+
             case State::S1:
-                std::cerr << "Lexical Error: Unrecognized or invalid sequence '" << currentLexeme 
-                          << "' at line " << start_line << ", col " << start_col << std::endl;
-                
-                // char yang salah -> error token
+                // Transisi ke S_UNKNOWN untuk akumulasi sampai separator
+                // Unread karakter saat ini dulu, lalu masuk S_UNKNOWN
                 unread_char(c, prev_line, prev_col);
-                return Token(TokenType::TOKEN_ERROR, currentLexeme, start_line, start_col);
+                currentState = State::S_UNKNOWN;
+                break;
 
             case State::S2: // State whitespace
                 if (c == ' ' || c == '\t' || c == '\n' || c == '\r') {
@@ -175,24 +195,6 @@ Token Lexer::get_next_token() {
                 }
                 break;
 
-            // case State::S6:
-            //     if (c == EOF) {
-            //         currentState = State::S1;
-            //     } else if (c == ')') {
-            //         currentState = State::S7;
-            //         currentLexeme += (char)c;
-            //     } else if (c == '}') {
-            //         currentState = State::S7;
-            //         currentLexeme += (char)c;
-            //     } else if (c == '*') {
-            //         currentState = State::S6;
-            //         currentLexeme += (char)c;
-            //     } else {
-            //         currentState = State::S5;
-            //         currentLexeme += (char)c;
-            //     }
-            //     break;
-
             case State::S7:
                 unread_char(c, prev_line, prev_col);
                 return Token(TokenType::TOKEN_COMMENT, currentLexeme, start_line, start_col);
@@ -230,10 +232,8 @@ Token Lexer::get_next_token() {
                 if (LexerUtils::is_digit(c)) {
                     currentState = State::S13;
                     currentLexeme += (char)c;
-                } else if (c == 'e') {
-                    currentState = State::S1;
-                    currentLexeme += (char)c;
-                } else { // bukan [0-9]
+                } else { // bukan [0-9] (termasuk 'e' — bahasa ini tidak support notasi scientific)
+                    // Accept realcon dan unread karakter saat ini
                     unread_char(c, prev_line, prev_col);
                     currentState = State::S14;
                 }
@@ -371,7 +371,19 @@ Token Lexer::get_next_token() {
             case State::S47: unread_char(c, prev_line, prev_col); return Token(TokenType::TOKEN_RBRACK, currentLexeme, start_line, start_col);
             case State::S48: unread_char(c, prev_line, prev_col); return Token(TokenType::TOKEN_COMMA, currentLexeme, start_line, start_col);
             case State::S49: unread_char(c, prev_line, prev_col); return Token(TokenType::TOKEN_SEMICOLON, currentLexeme, start_line, start_col);
-            case State::S50: unread_char(c, prev_line, prev_col); return Token(TokenType::TOKEN_PERIOD, currentLexeme, start_line, start_col);
+
+            case State::S50: // State setelah baca '.' dari S0
+                if (LexerUtils::is_digit(c)) {
+                    // '.' diikuti digit -> bukan token valid (bukan real number tanpa integer part)
+                    // Masuk unknown accumulation
+                    currentLexeme += (char)c;
+                    currentState = State::S_UNKNOWN;
+                } else {
+                    // '.' diikuti non-digit -> period token
+                    unread_char(c, prev_line, prev_col);
+                    return Token(TokenType::TOKEN_PERIOD, currentLexeme, start_line, start_col);
+                }
+                break;
 
             case State::S60:
                 if (c == '=') {
@@ -390,9 +402,9 @@ Token Lexer::get_next_token() {
                 if (c == '=') {
                     currentState = State::S64;
                     currentLexeme += (char)c;
-                } else { // bukan '=' -> S1 
+                } else { // bukan '=' -> unknown accumulation
                     unread_char(c, prev_line, prev_col);
-                    currentState = State::S1;
+                    currentState = State::S_UNKNOWN;
                 }
                 break;
 

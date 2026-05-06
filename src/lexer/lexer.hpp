@@ -12,6 +12,7 @@ enum class State {
     S30, S31, S32,
     S40, S41, S42, S43, S44, S45, S46, S47, S48, S49, S50,
     S60, S61, S62, S63, S64, S65, S66, S67, S68, S69, S70, S71,
+    S_UNKNOWN, // State untuk akumulasi unknown token sampai separator
     S99
 };
 
