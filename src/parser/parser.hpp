@@ -13,7 +13,7 @@ private:
     size_t pos;
     std::vector<std::string> errors;
 
-    // === Core helpers (parser_core.cpp) ===
+    // parser_core.cpp
     Token current_token() const;
     Token peek(int offset = 0) const;
     bool is_at_end() const;
@@ -27,7 +27,7 @@ private:
     void error(const std::string& msg);
     void synchronize();
 
-    // === Member A: top-level (parser_toplevel.cpp) ===
+    // parser_toplevel.cpp
     std::shared_ptr<ParseTreeNode> parse_program();
     std::shared_ptr<ParseTreeNode> parse_program_header();
     std::shared_ptr<ParseTreeNode> parse_declaration_part();
@@ -35,7 +35,7 @@ private:
     std::shared_ptr<ParseTreeNode> parse_compound_statement();
     std::shared_ptr<ParseTreeNode> parse_statement_list();
 
-    // === Member B: declarations (parser_declarations.cpp) ===
+    // parser_declarations.cpp
     std::shared_ptr<ParseTreeNode> parse_const_declaration();
     std::shared_ptr<ParseTreeNode> parse_constant();
     std::shared_ptr<ParseTreeNode> parse_type_declaration();
@@ -49,7 +49,7 @@ private:
     std::shared_ptr<ParseTreeNode> parse_field_list();
     std::shared_ptr<ParseTreeNode> parse_field_part();
 
-    // === Member C: subprograms + statements (parser_statements.cpp) ===
+    // parser_statements.cpp
     std::shared_ptr<ParseTreeNode> parse_subprogram_declaration();
     std::shared_ptr<ParseTreeNode> parse_procedure_declaration();
     std::shared_ptr<ParseTreeNode> parse_function_declaration();
@@ -62,7 +62,7 @@ private:
     std::shared_ptr<ParseTreeNode> parse_assignment_statement();
     std::shared_ptr<ParseTreeNode> parse_if_statement();
 
-    // === Member D: control-flow + expressions (parser_expressions.cpp) ===
+    // parser_expressions.cpp
     std::shared_ptr<ParseTreeNode> parse_case_statement();
     std::shared_ptr<ParseTreeNode> parse_case_block();
     std::shared_ptr<ParseTreeNode> parse_while_statement();

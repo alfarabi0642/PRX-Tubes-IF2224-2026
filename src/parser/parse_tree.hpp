@@ -38,3 +38,4 @@ public:
 inline std::shared_ptr<ParseTreeNode> make_node(const std::string& name) {
     return std::make_shared<ParseTreeNode>(name);
 }
+

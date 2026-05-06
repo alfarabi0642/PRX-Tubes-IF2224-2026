@@ -23,7 +23,7 @@ public:
     static bool is_alphanumeric(char c);
 
     /**
-     * @brief mengubah string jadi huruf kecil
+     * @brief ubah string jadi huruf kecil
      */
     static std::string to_lowercase(const std::string& str);
 };

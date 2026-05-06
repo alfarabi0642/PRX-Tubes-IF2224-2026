@@ -21,3 +21,4 @@ std::string LexerUtils::to_lowercase(const std::string& str) {
     });
     return lower_str;
 }
+

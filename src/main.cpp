@@ -22,11 +22,9 @@ int main(int argc, char* argv[]) {
     }
     in.close();
 
-    // Step 1: Run lexer
     Lexer lexer(input_file);
     vector<Token> tokens = lexer.tokenize();
 
-    // Step 2: Check for lexer errors — report and stop
     bool has_lexer_error = false;
     for (const auto& token : tokens) {
         if (token.get_type() == TokenType::TOKEN_ERROR) {
@@ -42,7 +40,6 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    // Step 3: Filter TOKEN_COMMENT and TOKEN_NEWLINE
     vector<Token> filtered;
     for (const auto& token : tokens) {
         if (token.get_type() != TokenType::TOKEN_COMMENT &&
@@ -51,14 +48,12 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    // Step 4: Parse
+    
     Parser parser(filtered);
     auto tree = parser.parse();
 
-    // Step 5: Print parse tree to stdout
     tree->print(cout);
 
-    // Step 6: Save parse tree to output file
     string filename = input_file;
     size_t last_slash = filename.find_last_of("\\/");
     if (last_slash != string::npos) {
@@ -74,7 +69,6 @@ int main(int argc, char* argv[]) {
         cerr << "Warning: Could not open output file: " << output_path << endl;
     }
 
-    // Step 7: Print parser errors
     const auto& errors = parser.get_errors();
     if (!errors.empty()) {
         cerr << endl << "Parser errors (" << errors.size() << "):" << endl;

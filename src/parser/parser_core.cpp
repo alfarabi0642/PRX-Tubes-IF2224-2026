@@ -1,17 +1,12 @@
 #include "parser.hpp"
 #include <string>
 
-// === Constructor ===
 
 Parser::Parser(const std::vector<Token>& tokens) : tokens(tokens), pos(0) {}
-
-// === Public entry point ===
 
 std::shared_ptr<ParseTreeNode> Parser::parse() {
     return parse_program();
 }
-
-// === Core helpers ===
 
 Token Parser::current_token() const {
     if (!tokens.empty() && pos < tokens.size()) return tokens[pos];
@@ -60,7 +55,7 @@ Token Parser::expect(TokenType type) {
     return token;
 }
 
-// === Terminal node creation ===
+
 
 std::string Parser::terminal_name(const Token& token) const {
     std::string name = Token::get_type_name(token.get_type());
@@ -82,7 +77,7 @@ std::shared_ptr<ParseTreeNode> Parser::terminal(Token token) {
     return make_node(terminal_name(token));
 }
 
-// === Error handling (collect mode) ===
+// error handling
 
 void Parser::error(const std::string& msg) {
     errors.push_back(msg);
@@ -91,8 +86,6 @@ void Parser::error(const std::string& msg) {
 const std::vector<std::string>& Parser::get_errors() const {
     return errors;
 }
-
-// === Synchronization for error recovery ===
 
 void Parser::synchronize() {
     while (!is_at_end()) {
