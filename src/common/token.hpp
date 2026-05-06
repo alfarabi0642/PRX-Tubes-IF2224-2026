@@ -91,3 +91,4 @@ public:
      */
     static std::string get_type_name(TokenType type);
 };
+
