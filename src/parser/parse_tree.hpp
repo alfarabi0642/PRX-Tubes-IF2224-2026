@@ -14,7 +14,11 @@ public:
     explicit ParseTreeNode(const std::string& name) : name(name) {}
 
     void add_child(const std::shared_ptr<ParseTreeNode>& child) {
-        children.push_back(child);
+        if (child) {
+            children.push_back(child);
+        } else {
+            children.push_back(std::make_shared<ParseTreeNode>("<empty>"));
+        }
     }
 
     bool is_terminal() const {

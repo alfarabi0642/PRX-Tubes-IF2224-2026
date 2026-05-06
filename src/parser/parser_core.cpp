@@ -15,6 +15,14 @@ Token Parser::current_token() const {
 }
 
 Token Parser::peek(int offset) const {
+    if (offset < 0) {
+        const size_t distance = static_cast<size_t>(-offset);
+        if (distance > pos || tokens.empty()) {
+            return Token(TokenType::TOKEN_EOF, "", 0, 0);
+        }
+        return tokens[pos - distance];
+    }
+
     size_t idx = pos + static_cast<size_t>(offset);
     if (!tokens.empty() && idx < tokens.size()) return tokens[idx];
     if (!tokens.empty()) return tokens.back();
@@ -52,7 +60,7 @@ Token Parser::expect(TokenType type) {
           ": unexpected token " + Token::get_type_name(token.get_type()) +
           ", expected " + Token::get_type_name(type));
 
-    return token;
+    return Token(type, "<missing>", token.get_line(), token.get_column());
 }
 
 
@@ -60,6 +68,10 @@ Token Parser::expect(TokenType type) {
 std::string Parser::terminal_name(const Token& token) const {
     std::string name = Token::get_type_name(token.get_type());
     TokenType type = token.get_type();
+
+    if (token.get_value() == "<missing>") {
+        return name + "(<missing>)";
+    }
 
     if (type == TokenType::TOKEN_IDENT ||
         type == TokenType::TOKEN_INTCON ||
@@ -91,6 +103,9 @@ void Parser::synchronize() {
     while (!is_at_end()) {
         if (check(TokenType::TOKEN_SEMICOLON) ||
             check(TokenType::TOKEN_ENDSY) ||
+            check(TokenType::TOKEN_ELSESY) ||
+            check(TokenType::TOKEN_UNTILSY) ||
+            check(TokenType::TOKEN_OFSY) ||
             check(TokenType::TOKEN_PERIOD)) {
             return;
         }
