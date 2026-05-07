@@ -1,0 +1,22 @@
+program Complex;
+type
+  Student == record
+    id: integer;
+    grades: array[1..5] of integer;
+  end;
+var
+  s: Student;
+  i, total: integer;
+begin
+  s.id := 12345;
+  total := 0;
+  for i := 1 to 5 do
+  begin
+    if s.grades[i] > 60 then
+      total := total + s.grades[i]
+    else
+      total := total + 0;
+  end;
+  while total > 100 do
+    total := total div 2;
+end.

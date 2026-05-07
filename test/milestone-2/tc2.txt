@@ -1,0 +1,13 @@
+program Declarations;
+const
+  PI == 3.14;
+  LIMIT == 100;
+type
+  TIndex == 1..10;
+  TColor == (Red, Green, Blue);
+var
+  i, j: integer;
+  flag: boolean;
+begin
+  i := 1;
+end.

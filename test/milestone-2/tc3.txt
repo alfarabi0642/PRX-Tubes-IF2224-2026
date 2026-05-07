@@ -1,0 +1,12 @@
+program Subprograms;
+procedure PrintVal(x: integer);
+begin
+  writeln(x);
+end;
+function Add(a, b: integer): integer;
+begin
+  Add := a + b;
+end;
+begin
+  PrintVal(Add(5, 10));
+end.

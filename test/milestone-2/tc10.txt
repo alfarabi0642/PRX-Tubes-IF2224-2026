@@ -1,0 +1,13 @@
+program Records;
+type
+  Point == record
+    x, y: integer;
+  end;
+var
+  p: Point;
+  points: array[1..10] of Point;
+begin
+  p.x := 10;
+  p.y := 20;
+  points[1].x := p.x;
+end.
