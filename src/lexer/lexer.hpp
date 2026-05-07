@@ -27,6 +27,7 @@ private:
     int column;              // curr column
     std::stack<int> unget_buffer; // buffer buat unread char
     bool next_number_negative;    // flag buat edge case integer negatif
+    bool second_range_period_pending; // allow the second dot in ranges like 1..10
     
     /**
      * @brief nge parse sequence jadi token pake DFA
@@ -49,5 +50,4 @@ public:
      */
     std::vector<Token> tokenize();
 };
-
 

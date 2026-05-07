@@ -1,5 +1,16 @@
 #include "parser.hpp"
 
+namespace {
+bool is_statement_list_boundary(TokenType type) {
+    return type == TokenType::TOKEN_SEMICOLON ||
+           type == TokenType::TOKEN_ENDSY ||
+           type == TokenType::TOKEN_ELSESY ||
+           type == TokenType::TOKEN_UNTILSY ||
+           type == TokenType::TOKEN_PERIOD ||
+           type == TokenType::TOKEN_EOF;
+}
+}
+
 std::shared_ptr<ParseTreeNode> Parser::parse_program() {
     auto node = make_node("<program>");
 
@@ -33,28 +44,55 @@ std::shared_ptr<ParseTreeNode> Parser::parse_program_header() {
 std::shared_ptr<ParseTreeNode> Parser::parse_declaration_part() {
     auto node = make_node("<declaration-part>");
 
-    while (check(TokenType::TOKEN_CONSTSY)) {
-        node->add_child(parse_const_declaration());
-    }
+    auto declaration_rank = [](TokenType type) -> int {
+        if (type == TokenType::TOKEN_CONSTSY) return 0;
+        if (type == TokenType::TOKEN_TYPESY) return 1;
+        if (type == TokenType::TOKEN_VARSY) return 2;
+        if (type == TokenType::TOKEN_PROCEDURESY || type == TokenType::TOKEN_FUNCTIONSY) return 3;
+        return -1;
+    };
 
-    while (check(TokenType::TOKEN_TYPESY)) {
-        node->add_child(parse_type_declaration());
-    }
+    auto append_declaration = [&](const std::shared_ptr<ParseTreeNode>& child,
+                                  const std::string& rule,
+                                  size_t before) {
+        node->add_child(child);
+        if (pos == before && !is_at_end()) {
+            Token token = current_token();
+            error("Syntax error at line " + std::to_string(token.get_line()) +
+                  ", col " + std::to_string(token.get_column()) +
+                  ": " + rule + " did not consume token " +
+                  Token::get_type_name(token.get_type()) +
+                  "; advancing to continue parsing");
+            advance();
+        }
+    };
 
-    while (check(TokenType::TOKEN_VARSY)) {
-        node->add_child(parse_var_declaration());
-    }
+    int current_rank = 0;
+    while (!is_at_end()) {
+        TokenType type = current_token().get_type();
+        const int rank = declaration_rank(type);
+        if (rank == -1) break;
 
-    while (check(TokenType::TOKEN_PROCEDURESY) || check(TokenType::TOKEN_FUNCTIONSY)) {
-        node->add_child(parse_subprogram_declaration());
-    }
+        if (rank < current_rank) {
+            Token token = current_token();
+            error("Syntax error at line " + std::to_string(token.get_line()) +
+                  ", col " + std::to_string(token.get_column()) +
+                  ": declaration '" + Token::get_type_name(token.get_type()) +
+                  "' appears out of order (expected order: const, type, var, subprogram)");
+        } else {
+            current_rank = rank;
+        }
 
-    if (check(TokenType::TOKEN_CONSTSY) || check(TokenType::TOKEN_TYPESY) || check(TokenType::TOKEN_VARSY)) {
-        Token token = current_token();
-        error("Syntax error at line " + std::to_string(token.get_line()) +
-              ", col " + std::to_string(token.get_column()) +
-              ": declaration '" + Token::get_type_name(token.get_type()) +
-              "' appears out of order (expected order: const, type, var, subprogram)");
+        const size_t before = pos;
+        if (type == TokenType::TOKEN_CONSTSY) {
+            append_declaration(parse_const_declaration(), "<const-declaration>", before);
+        } else if (type == TokenType::TOKEN_TYPESY) {
+            append_declaration(parse_type_declaration(), "<type-declaration>", before);
+        } else if (type == TokenType::TOKEN_VARSY) {
+            append_declaration(parse_var_declaration(), "<var-declaration>", before);
+        } else {
+            append_declaration(parse_subprogram_declaration(), "<subprogram-declaration>", before);
+        }
     }
 
     return node;
@@ -82,11 +120,33 @@ std::shared_ptr<ParseTreeNode> Parser::parse_compound_statement() {
 std::shared_ptr<ParseTreeNode> Parser::parse_statement_list() {
     auto node = make_node("<statement-list>");
 
+    const size_t first_before = pos;
     node->add_child(parse_statement());
+    if (pos == first_before &&
+        !is_statement_list_boundary(current_token().get_type())) {
+        Token token = current_token();
+        error("Syntax error at line " + std::to_string(token.get_line()) +
+              ", col " + std::to_string(token.get_column()) +
+              ": <statement> did not consume token " +
+              Token::get_type_name(token.get_type()) +
+              "; advancing to continue parsing");
+        advance();
+    }
 
     while (check(TokenType::TOKEN_SEMICOLON)) {
         node->add_child(terminal(advance()));
+        const size_t before = pos;
         node->add_child(parse_statement());
+        if (pos == before &&
+            !is_statement_list_boundary(current_token().get_type())) {
+            Token token = current_token();
+            error("Syntax error at line " + std::to_string(token.get_line()) +
+                  ", col " + std::to_string(token.get_column()) +
+                  ": <statement> did not consume token " +
+                  Token::get_type_name(token.get_type()) +
+                  "; advancing to continue parsing");
+            advance();
+        }
     }
 
     return node;

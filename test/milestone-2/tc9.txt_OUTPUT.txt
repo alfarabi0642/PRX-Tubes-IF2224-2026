@@ -1,0 +1,107 @@
+<program>
+├── <program-header>
+│   ├── programsy
+│   ├── ident(Arrays)
+│   └── semicolon
+├── <declaration-part>
+│   ├── <type-declaration>
+│   │   ├── typesy
+│   │   ├── ident(Vec)
+│   │   ├── eql
+│   │   ├── <type>
+│   │   │   └── <array-type>
+│   │   │       ├── arraysy
+│   │   │       ├── lbrack
+│   │   │       ├── <range>
+│   │   │       │   ├── <constant>
+│   │   │       │   │   └── intcon(1)
+│   │   │       │   ├── period
+│   │   │       │   ├── period
+│   │   │       │   └── <constant>
+│   │   │       │       └── intcon(5)
+│   │   │       ├── rbrack
+│   │   │       ├── ofsy
+│   │   │       └── <type>
+│   │   │           └── ident(integer)
+│   │   └── semicolon
+│   └── <var-declaration>
+│       ├── varsy
+│       ├── <identifier-list>
+│       │   └── ident(v)
+│       ├── colon
+│       ├── <type>
+│       │   └── ident(Vec)
+│       ├── semicolon
+│       ├── <identifier-list>
+│       │   └── ident(m)
+│       ├── colon
+│       ├── <type>
+│       │   └── <array-type>
+│       │       ├── arraysy
+│       │       ├── lbrack
+│       │       ├── <range>
+│       │       │   ├── <constant>
+│       │       │   │   └── intcon(1)
+│       │       │   ├── period
+│       │       │   ├── period
+│       │       │   └── <constant>
+│       │       │       └── intcon(3)
+│       │       ├── rbrack
+│       │       ├── ofsy
+│       │       └── <type>
+│       │           └── <array-type>
+│       │               ├── arraysy
+│       │               ├── lbrack
+│       │               ├── <range>
+│       │               │   ├── <constant>
+│       │               │   │   └── intcon(1)
+│       │               │   ├── period
+│       │               │   ├── period
+│       │               │   └── <constant>
+│       │               │       └── intcon(3)
+│       │               ├── rbrack
+│       │               ├── ofsy
+│       │               └── <type>
+│       │                   └── ident(real)
+│       └── semicolon
+├── <compound-statement>
+│   ├── beginsy
+│   ├── <statement-list>
+│   │   ├── <statement>
+│   │   │   └── <assignment-statement>
+│   │   │       ├── <variable>
+│   │   │       │   ├── ident(v)
+│   │   │       │   └── <component-variable>
+│   │   │       │       ├── lbrack
+│   │   │       │       ├── <index-list>
+│   │   │       │       │   └── intcon(1)
+│   │   │       │       └── rbrack
+│   │   │       ├── becomes
+│   │   │       └── <expression>
+│   │   │           └── <simple-expression>
+│   │   │               └── <term>
+│   │   │                   └── <factor>
+│   │   │                       └── intcon(10)
+│   │   ├── semicolon
+│   │   ├── <statement>
+│   │   │   └── <assignment-statement>
+│   │   │       ├── <variable>
+│   │   │       │   ├── ident(m)
+│   │   │       │   └── <component-variable>
+│   │   │       │       ├── lbrack
+│   │   │       │       ├── <index-list>
+│   │   │       │       │   ├── intcon(1)
+│   │   │       │       │   ├── comma
+│   │   │       │       │   └── <index-list>
+│   │   │       │       │       └── intcon(2)
+│   │   │       │       └── rbrack
+│   │   │       ├── becomes
+│   │   │       └── <expression>
+│   │   │           └── <simple-expression>
+│   │   │               └── <term>
+│   │   │                   └── <factor>
+│   │   │                       └── realcon(3.14)
+│   │   ├── semicolon
+│   │   └── <statement>
+│   └── endsy
+└── period

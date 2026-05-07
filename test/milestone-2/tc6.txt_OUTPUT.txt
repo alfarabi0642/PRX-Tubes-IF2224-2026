@@ -1,0 +1,99 @@
+<program>
+├── <program-header>
+│   ├── programsy
+│   ├── ident(CaseStatement)
+│   └── semicolon
+├── <declaration-part>
+│   └── <var-declaration>
+│       ├── varsy
+│       ├── <identifier-list>
+│       │   └── ident(grade)
+│       ├── colon
+│       ├── <type>
+│       │   └── ident(char)
+│       └── semicolon
+├── <compound-statement>
+│   ├── beginsy
+│   ├── <statement-list>
+│   │   ├── <statement>
+│   │   │   └── <case-statement>
+│   │   │       ├── casesy
+│   │   │       ├── <expression>
+│   │   │       │   └── <simple-expression>
+│   │   │       │       └── <term>
+│   │   │       │           └── <factor>
+│   │   │       │               └── <variable>
+│   │   │       │                   └── ident(grade)
+│   │   │       ├── ofsy
+│   │   │       ├── <case-block>
+│   │   │       │   ├── <constant>
+│   │   │       │   │   └── charcon('A')
+│   │   │       │   ├── colon
+│   │   │       │   ├── <statement>
+│   │   │       │   │   └── <procedure/function-call>
+│   │   │       │   │       ├── ident(writeln)
+│   │   │       │   │       ├── lparent
+│   │   │       │   │       ├── <parameter-list>
+│   │   │       │   │       │   └── <expression>
+│   │   │       │   │       │       └── <simple-expression>
+│   │   │       │   │       │           └── <term>
+│   │   │       │   │       │               └── <factor>
+│   │   │       │   │       │                   └── string('Excellent')
+│   │   │       │   │       └── rparent
+│   │   │       │   ├── semicolon
+│   │   │       │   └── <case-block>
+│   │   │       │       ├── <constant>
+│   │   │       │       │   └── charcon('B')
+│   │   │       │       ├── comma
+│   │   │       │       ├── <constant>
+│   │   │       │       │   └── charcon('C')
+│   │   │       │       ├── colon
+│   │   │       │       ├── <statement>
+│   │   │       │       │   └── <procedure/function-call>
+│   │   │       │       │       ├── ident(writeln)
+│   │   │       │       │       ├── lparent
+│   │   │       │       │       ├── <parameter-list>
+│   │   │       │       │       │   └── <expression>
+│   │   │       │       │       │       └── <simple-expression>
+│   │   │       │       │       │           └── <term>
+│   │   │       │       │       │               └── <factor>
+│   │   │       │       │       │                   └── string('Well done')
+│   │   │       │       │       └── rparent
+│   │   │       │       ├── semicolon
+│   │   │       │       └── <case-block>
+│   │   │       │           ├── <constant>
+│   │   │       │           │   └── charcon('D')
+│   │   │       │           ├── colon
+│   │   │       │           ├── <statement>
+│   │   │       │           │   └── <procedure/function-call>
+│   │   │       │           │       ├── ident(writeln)
+│   │   │       │           │       ├── lparent
+│   │   │       │           │       ├── <parameter-list>
+│   │   │       │           │       │   └── <expression>
+│   │   │       │           │       │       └── <simple-expression>
+│   │   │       │           │       │           └── <term>
+│   │   │       │           │       │               └── <factor>
+│   │   │       │           │       │                   └── string('Passed')
+│   │   │       │           │       └── rparent
+│   │   │       │           ├── semicolon
+│   │   │       │           └── <case-block>
+│   │   │       │               ├── <constant>
+│   │   │       │               │   └── charcon('F')
+│   │   │       │               ├── colon
+│   │   │       │               ├── <statement>
+│   │   │       │               │   └── <procedure/function-call>
+│   │   │       │               │       ├── ident(writeln)
+│   │   │       │               │       ├── lparent
+│   │   │       │               │       ├── <parameter-list>
+│   │   │       │               │       │   └── <expression>
+│   │   │       │               │       │       └── <simple-expression>
+│   │   │       │               │       │           └── <term>
+│   │   │       │               │       │               └── <factor>
+│   │   │       │               │       │                   └── string('Fail')
+│   │   │       │               │       └── rparent
+│   │   │       │               └── semicolon
+│   │   │       └── endsy
+│   │   ├── semicolon
+│   │   └── <statement>
+│   └── endsy
+└── period

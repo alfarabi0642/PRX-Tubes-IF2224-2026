@@ -1,0 +1,76 @@
+<program>
+├── <program-header>
+│   ├── programsy
+│   ├── ident(Declarations)
+│   └── semicolon
+├── <declaration-part>
+│   ├── <const-declaration>
+│   │   ├── constsy
+│   │   ├── ident(PI)
+│   │   ├── eql
+│   │   ├── <constant>
+│   │   │   └── realcon(3.14)
+│   │   ├── semicolon
+│   │   ├── ident(LIMIT)
+│   │   ├── eql
+│   │   ├── <constant>
+│   │   │   └── intcon(100)
+│   │   └── semicolon
+│   ├── <type-declaration>
+│   │   ├── typesy
+│   │   ├── ident(TIndex)
+│   │   ├── eql
+│   │   ├── <type>
+│   │   │   └── <range>
+│   │   │       ├── <constant>
+│   │   │       │   └── intcon(1)
+│   │   │       ├── period
+│   │   │       ├── period
+│   │   │       └── <constant>
+│   │   │           └── intcon(10)
+│   │   ├── semicolon
+│   │   ├── ident(TColor)
+│   │   ├── eql
+│   │   ├── <type>
+│   │   │   └── <enumerated>
+│   │   │       ├── lparent
+│   │   │       ├── ident(Red)
+│   │   │       ├── comma
+│   │   │       ├── ident(Green)
+│   │   │       ├── comma
+│   │   │       ├── ident(Blue)
+│   │   │       └── rparent
+│   │   └── semicolon
+│   └── <var-declaration>
+│       ├── varsy
+│       ├── <identifier-list>
+│       │   ├── ident(i)
+│       │   ├── comma
+│       │   └── ident(j)
+│       ├── colon
+│       ├── <type>
+│       │   └── ident(integer)
+│       ├── semicolon
+│       ├── <identifier-list>
+│       │   └── ident(flag)
+│       ├── colon
+│       ├── <type>
+│       │   └── ident(boolean)
+│       └── semicolon
+├── <compound-statement>
+│   ├── beginsy
+│   ├── <statement-list>
+│   │   ├── <statement>
+│   │   │   └── <assignment-statement>
+│   │   │       ├── <variable>
+│   │   │       │   └── ident(i)
+│   │   │       ├── becomes
+│   │   │       └── <expression>
+│   │   │           └── <simple-expression>
+│   │   │               └── <term>
+│   │   │                   └── <factor>
+│   │   │                       └── intcon(1)
+│   │   ├── semicolon
+│   │   └── <statement>
+│   └── endsy
+└── period

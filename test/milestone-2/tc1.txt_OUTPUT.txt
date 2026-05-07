@@ -1,0 +1,12 @@
+<program>
+├── <program-header>
+│   ├── programsy
+│   ├── ident(Minimal)
+│   └── semicolon
+├── <declaration-part>
+├── <compound-statement>
+│   ├── beginsy
+│   ├── <statement-list>
+│   │   └── <statement>
+│   └── endsy
+└── period
