@@ -1,0 +1,99 @@
+<program>
+├── <program-header>
+│   ├── programsy
+│   ├── ident(IfStatement)
+│   └── semicolon
+├── <declaration-part>
+│   └── <var-declaration>
+│       ├── varsy
+│       ├── <identifier-list>
+│       │   ├── ident(x)
+│       │   ├── comma
+│       │   └── ident(y)
+│       ├── colon
+│       ├── <type>
+│       │   └── ident(integer)
+│       └── semicolon
+├── <compound-statement>
+│   ├── beginsy
+│   ├── <statement-list>
+│   │   ├── <statement>
+│   │   │   └── <if-statement>
+│   │   │       ├── ifsy
+│   │   │       ├── <expression>
+│   │   │       │   ├── <simple-expression>
+│   │   │       │   │   └── <term>
+│   │   │       │   │       └── <factor>
+│   │   │       │   │           └── <variable>
+│   │   │       │   │               └── ident(x)
+│   │   │       │   ├── <relational-operator>
+│   │   │       │   │   └── gtr
+│   │   │       │   └── <simple-expression>
+│   │   │       │       └── <term>
+│   │   │       │           └── <factor>
+│   │   │       │               └── intcon(0)
+│   │   │       ├── thensy
+│   │   │       ├── <statement>
+│   │   │       │   └── <if-statement>
+│   │   │       │       ├── ifsy
+│   │   │       │       ├── <expression>
+│   │   │       │       │   ├── <simple-expression>
+│   │   │       │       │   │   └── <term>
+│   │   │       │       │   │       └── <factor>
+│   │   │       │       │   │           └── <variable>
+│   │   │       │       │   │               └── ident(y)
+│   │   │       │       │   ├── <relational-operator>
+│   │   │       │       │   │   └── gtr
+│   │   │       │       │   └── <simple-expression>
+│   │   │       │       │       └── <term>
+│   │   │       │       │           └── <factor>
+│   │   │       │       │               └── intcon(0)
+│   │   │       │       ├── thensy
+│   │   │       │       ├── <statement>
+│   │   │       │       │   └── <assignment-statement>
+│   │   │       │       │       ├── <variable>
+│   │   │       │       │       │   └── ident(x)
+│   │   │       │       │       ├── becomes
+│   │   │       │       │       └── <expression>
+│   │   │       │       │           └── <simple-expression>
+│   │   │       │       │               ├── <term>
+│   │   │       │       │               │   └── <factor>
+│   │   │       │       │               │       └── <variable>
+│   │   │       │       │               │           └── ident(x)
+│   │   │       │       │               ├── <additive-operator>
+│   │   │       │       │               │   └── plus
+│   │   │       │       │               └── <term>
+│   │   │       │       │                   └── <factor>
+│   │   │       │       │                       └── intcon(1)
+│   │   │       │       ├── elsesy
+│   │   │       │       └── <statement>
+│   │   │       │           └── <assignment-statement>
+│   │   │       │               ├── <variable>
+│   │   │       │               │   └── ident(x)
+│   │   │       │               ├── becomes
+│   │   │       │               └── <expression>
+│   │   │       │                   └── <simple-expression>
+│   │   │       │                       ├── <term>
+│   │   │       │                       │   └── <factor>
+│   │   │       │                       │       └── <variable>
+│   │   │       │                       │           └── ident(x)
+│   │   │       │                       ├── <additive-operator>
+│   │   │       │                       │   └── minus
+│   │   │       │                       └── <term>
+│   │   │       │                           └── <factor>
+│   │   │       │                               └── intcon(1)
+│   │   │       ├── elsesy
+│   │   │       └── <statement>
+│   │   │           └── <assignment-statement>
+│   │   │               ├── <variable>
+│   │   │               │   └── ident(x)
+│   │   │               ├── becomes
+│   │   │               └── <expression>
+│   │   │                   └── <simple-expression>
+│   │   │                       └── <term>
+│   │   │                           └── <factor>
+│   │   │                               └── intcon(0)
+│   │   ├── semicolon
+│   │   └── <statement>
+│   └── endsy
+└── period
