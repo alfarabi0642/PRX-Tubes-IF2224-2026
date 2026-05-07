@@ -2,7 +2,8 @@
 #include "../common/utils.hpp"
 #include <iostream>
 
-Lexer::Lexer(const std::string& filename) : line(1), column(1), next_number_negative(false) {
+Lexer::Lexer(const std::string& filename)
+    : line(1), column(1), next_number_negative(false), second_range_period_pending(false) {
     source_file = fopen(filename.c_str(), "r");
     if (!source_file) {
         std::cerr << "Lexical Error: Cannot open source file " << filename << std::endl;
@@ -374,12 +375,19 @@ Token Lexer::get_next_token() {
 
             case State::S50: // State setelah baca '.' dari S0
                 if (LexerUtils::is_digit(c)) {
+                    if (second_range_period_pending) {
+                        unread_char(c, prev_line, prev_col);
+                        second_range_period_pending = false;
+                        return Token(TokenType::TOKEN_PERIOD, currentLexeme, start_line, start_col);
+                    }
+
                     // '.' diikuti digit -> bukan token valid (bukan real number tanpa integer part)
                     // Masuk unknown accumulation
                     currentLexeme += (char)c;
                     currentState = State::S_UNKNOWN;
                 } else {
                     // '.' diikuti non-digit -> period token
+                    second_range_period_pending = (c == '.');
                     unread_char(c, prev_line, prev_col);
                     return Token(TokenType::TOKEN_PERIOD, currentLexeme, start_line, start_col);
                 }
