@@ -1,11 +1,28 @@
-# Arion Lexer - Milestone 1
+# Arion Compiler - Milestone 1 & 2
+
 **Tugas Besar IF2224 Teori Bahasa Formal dan Otomata 2026**
 
-##  Deskripsi Program
-Program ini adalah *Lexical Analyzer* untuk bahasa pemrograman Arion yang dibangun menggunakan C++. Menggunakan pendekatan *Deterministic Finite Automata* (DFA), program ini mengubah *source code* menjadi rangkaian *tokens* dan mampu menangani *edge cases* seperti angka negatif, komentar *multi-line*, serta *error recovery* pada karakter ilegal.
+## Deskripsi Program
 
-##  Identitas Kelompok
-**Kode Kelompok:** khusus 1352___
+Program ini adalah compiler sederhana untuk bahasa Arion.
+
+- **Milestone 1:** lexical analyzer berbasis DFA.
+- **Milestone 2:** syntax analyzer berbasis recursive descent parser.
+
+Alur program saat ini:
+
+```text
+Source File -> Lexer -> Filter komentar/newline -> Parser -> Parse Tree
+```
+
+Parse tree akan ditampilkan di terminal dan disimpan ke:
+
+```text
+test/milestone-2/<nama_file>_OUTPUT.txt
+```
+
+## Identitas Kelompok
+
 **Nama Kelompok:** PRX
 
 | Nama | NIM |
@@ -15,48 +32,79 @@ Program ini adalah *Lexical Analyzer* untuk bahasa pemrograman Arion yang dibang
 | Daniel Anindito Nugroho | 13524002 |
 | Ishak Palentino | 13524022 |
 
-##  Requirements
-- **GCC/G++ Compiler** (Standar C++17).
-- **GNU Make**.
-- Lingkungan **Linux/WSL** atau **MinGW/Git Bash**.
+## Requirements
 
-##  Project Structure
+- `g++` dengan standar C++17.
+- `make` atau `mingw32-make`.
+
+## Project Structure
+
 ```text
 PRX-Tubes-IF2224-2026/
-├── src/
-│   ├── main.cpp         
-│   ├── lexer/           # Lexical parsing architecture and DFA models
-│   │   ├── lexer.hpp
-│   │   └── lexer.cpp
-│   ├── common/          # Universal token objects and mapping helper utilities
-│   │   ├── token.hpp
-│   │   └── utils.cpp
-├── doc/                 # Compilation models and formal project references
-└── Makefile             # Automatic build configurations
+|-- src/
+|   |-- main.cpp
+|   |-- common/
+|   |-- lexer/
+|   `-- parser/
+|-- test/
+|   |-- milestone-1/
+|   `-- milestone-2/
+|-- doc/
+|-- bin/
+|-- build/
+|-- Makefile
+`-- README.md
 ```
 
-## Setup & Compilation 
+## Setup & Compilation
 
-To run this application, leverage the standard GNU Make sequence inside the project root:
+1. Clean build lama:
 
-1. **Clean Object Caches** (Optional, for fresh builds)
    ```bash
    make clean
    ```
 
-2. **Build Sequence**
+2. Build program:
+
    ```bash
    make
    ```
 
-3. **Execution**
+   Jika menggunakan MinGW di Windows:
+
    ```bash
-   ./lexer_test.exe path/to/input/file.txt
+   mingw32-make
    ```
 
-| Nama | Pembagian Tugas |
+3. Jalankan program:
+
+   ```bash
+   ./bin/arion.exe test/milestone-2/phase3_spec_example.txt
+   ```
+
+   PowerShell:
+
+   ```powershell
+   .\bin\arion.exe test\milestone-2\phase3_spec_example.txt
+   ```
+
+## Output Build
+
+- Executable: `bin/arion.exe`
+- Object file: `build/obj/...`
+
+File `.o` dan executable hasil build tidak dibuat di root directory.
+
+## Pembagian Tugas Milestone 2
+
+| NIM | Tugas |
 | :--- | :--- |
-| Al Farabi | Pembuatan laporan, perancangan DFA, penggambaran DFA, implementasi lexer.cpp dan lexer.hpp |
-| Ishaq Irfan Farizal | Pembuatan laporan, perancangan DFA, penggambaran DFA, pengetesan program, implementasi token.cpp dan token.hpp |
-| Daniel Anindito Nugroho | Pembuatan laporan, perancangan DFA, penggambaran DFA,  implementasi utils.cpp dan utils.hpp |
-| Ishak Palentino | Pembuatan laporan, perancangan DFA, penggambaran DFA, implementasi main.cpp, MakeFile, dan readme  |
+| 13524002 | Subprogram declaration, formal parameter, statement, variable chain, assignment, if |
+| 13524022 | Case, while, repeat, for, procedure/function call, expression, operator precedence |
+| 13524086 | Parser infrastructure, top-level grammar, parse tree, main.cpp, Makefile |
+| 13524094 | Constant, type, var, array, range, enumerated, record |
+
+## Testing
+
+- Test Milestone 1 ada di `test/milestone-1`.
+- Test Milestone 2 ada di `test/milestone-2`.
