@@ -1,0 +1,161 @@
+<program>
+├── <program-header>
+│   ├── programsy
+│   ├── ident(Expressions)
+│   └── semicolon
+├── <declaration-part>
+│   └── <var-declaration>
+│       ├── varsy
+│       ├── <identifier-list>
+│       │   ├── ident(a)
+│       │   ├── comma
+│       │   ├── ident(b)
+│       │   ├── comma
+│       │   └── ident(c)
+│       ├── colon
+│       ├── <type>
+│       │   └── ident(integer)
+│       ├── semicolon
+│       ├── <identifier-list>
+│       │   └── ident(res)
+│       ├── colon
+│       ├── <type>
+│       │   └── ident(boolean)
+│       └── semicolon
+├── <compound-statement>
+│   ├── beginsy
+│   ├── <statement-list>
+│   │   ├── <statement>
+│   │   │   └── <assignment-statement>
+│   │   │       ├── <variable>
+│   │   │       │   └── ident(a)
+│   │   │       ├── becomes
+│   │   │       └── <expression>
+│   │   │           └── <simple-expression>
+│   │   │               ├── <term>
+│   │   │               │   └── <factor>
+│   │   │               │       └── intcon(5)
+│   │   │               ├── <additive-operator>
+│   │   │               │   └── plus
+│   │   │               └── <term>
+│   │   │                   ├── <factor>
+│   │   │                   │   └── intcon(10)
+│   │   │                   ├── <multiplicative-operator>
+│   │   │                   │   └── times
+│   │   │                   └── <factor>
+│   │   │                       └── intcon(2)
+│   │   ├── semicolon
+│   │   ├── <statement>
+│   │   │   └── <assignment-statement>
+│   │   │       ├── <variable>
+│   │   │       │   └── ident(b)
+│   │   │       ├── becomes
+│   │   │       └── <expression>
+│   │   │           └── <simple-expression>
+│   │   │               └── <term>
+│   │   │                   ├── <factor>
+│   │   │                   │   ├── lparent
+│   │   │                   │   ├── <expression>
+│   │   │                   │   │   └── <simple-expression>
+│   │   │                   │   │       ├── <term>
+│   │   │                   │   │       │   └── <factor>
+│   │   │                   │   │       │       └── intcon(5)
+│   │   │                   │   │       ├── <additive-operator>
+│   │   │                   │   │       │   └── plus
+│   │   │                   │   │       └── <term>
+│   │   │                   │   │           └── <factor>
+│   │   │                   │   │               └── intcon(10)
+│   │   │                   │   └── rparent
+│   │   │                   ├── <multiplicative-operator>
+│   │   │                   │   └── times
+│   │   │                   └── <factor>
+│   │   │                       └── intcon(2)
+│   │   ├── semicolon
+│   │   ├── <statement>
+│   │   │   └── <assignment-statement>
+│   │   │       ├── <variable>
+│   │   │       │   └── ident(c)
+│   │   │       ├── becomes
+│   │   │       └── <expression>
+│   │   │           └── <simple-expression>
+│   │   │               ├── minus
+│   │   │               ├── <term>
+│   │   │               │   └── <factor>
+│   │   │               │       └── <variable>
+│   │   │               │           └── ident(a)
+│   │   │               ├── <additive-operator>
+│   │   │               │   └── plus
+│   │   │               └── <term>
+│   │   │                   ├── <factor>
+│   │   │                   │   └── <variable>
+│   │   │                   │       └── ident(b)
+│   │   │                   ├── <multiplicative-operator>
+│   │   │                   │   └── idiv
+│   │   │                   └── <factor>
+│   │   │                       └── intcon(2)
+│   │   ├── semicolon
+│   │   ├── <statement>
+│   │   │   └── <assignment-statement>
+│   │   │       ├── <variable>
+│   │   │       │   └── ident(res)
+│   │   │       ├── becomes
+│   │   │       └── <expression>
+│   │   │           └── <simple-expression>
+│   │   │               ├── <term>
+│   │   │               │   ├── <factor>
+│   │   │               │   │   ├── lparent
+│   │   │               │   │   ├── <expression>
+│   │   │               │   │   │   ├── <simple-expression>
+│   │   │               │   │   │   │   └── <term>
+│   │   │               │   │   │   │       └── <factor>
+│   │   │               │   │   │   │           └── <variable>
+│   │   │               │   │   │   │               └── ident(a)
+│   │   │               │   │   │   ├── <relational-operator>
+│   │   │               │   │   │   │   └── gtr
+│   │   │               │   │   │   └── <simple-expression>
+│   │   │               │   │   │       └── <term>
+│   │   │               │   │   │           └── <factor>
+│   │   │               │   │   │               └── <variable>
+│   │   │               │   │   │                   └── ident(b)
+│   │   │               │   │   └── rparent
+│   │   │               │   ├── <multiplicative-operator>
+│   │   │               │   │   └── andsy
+│   │   │               │   └── <factor>
+│   │   │               │       ├── notsy
+│   │   │               │       └── <factor>
+│   │   │               │           ├── lparent
+│   │   │               │           ├── <expression>
+│   │   │               │           │   ├── <simple-expression>
+│   │   │               │           │   │   └── <term>
+│   │   │               │           │   │       └── <factor>
+│   │   │               │           │   │           └── <variable>
+│   │   │               │           │   │               └── ident(c)
+│   │   │               │           │   ├── <relational-operator>
+│   │   │               │           │   │   └── eql
+│   │   │               │           │   └── <simple-expression>
+│   │   │               │           │       └── <term>
+│   │   │               │           │           └── <factor>
+│   │   │               │           │               └── intcon(0)
+│   │   │               │           └── rparent
+│   │   │               ├── <additive-operator>
+│   │   │               │   └── orsy
+│   │   │               └── <term>
+│   │   │                   └── <factor>
+│   │   │                       ├── lparent
+│   │   │                       ├── <expression>
+│   │   │                       │   ├── <simple-expression>
+│   │   │                       │   │   └── <term>
+│   │   │                       │   │       └── <factor>
+│   │   │                       │   │           └── <variable>
+│   │   │                       │   │               └── ident(a)
+│   │   │                       │   ├── <relational-operator>
+│   │   │                       │   │   └── lss
+│   │   │                       │   └── <simple-expression>
+│   │   │                       │       └── <term>
+│   │   │                       │           └── <factor>
+│   │   │                       │               └── intcon(100)
+│   │   │                       └── rparent
+│   │   ├── semicolon
+│   │   └── <statement>
+│   └── endsy
+└── period

@@ -1,0 +1,11 @@
+program CaseStatement;
+var
+  grade: char;
+begin
+  case grade of
+    'A': writeln('Excellent');
+    'B', 'C': writeln('Well done');
+    'D': writeln('Passed');
+    'F': writeln('Fail');
+  end;
+end.

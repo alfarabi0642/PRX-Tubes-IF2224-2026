@@ -1,0 +1,31 @@
+program Subprograms;
+procedure PrintVal(x: integer);
+var
+  localCount: integer;
+begin
+  localCount := x;
+  writeln(localCount);
+end;
+procedure SwapLike(a, b: integer);
+var
+  temp: integer;
+begin
+  temp := a;
+  a := b;
+  b := temp;
+end;
+function Add(a, b: integer): integer;
+var
+  total: integer;
+begin
+  total := a + b;
+  Add := total;
+end;
+function Twice(n: integer): integer;
+begin
+  Twice := Add(n, n);
+end;
+begin
+  PrintVal(Twice(5));
+  SwapLike(1, 2);
+end.

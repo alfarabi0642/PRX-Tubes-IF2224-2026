@@ -1,0 +1,10 @@
+program Expressions;
+var
+  a, b, c: integer;
+  res: boolean;
+begin
+  a := 5 + 10 * 2;
+  b := (5 + 10) * 2;
+  c := -a + b div 2;
+  res := (a > b) and not (c == 0) or (a < 100);
+end.

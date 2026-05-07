@@ -1,0 +1,102 @@
+<program>
+├── <program-header>
+│   ├── programsy
+│   ├── ident(ForLoops)
+│   └── semicolon
+├── <declaration-part>
+│   └── <var-declaration>
+│       ├── varsy
+│       ├── <identifier-list>
+│       │   ├── ident(i)
+│       │   ├── comma
+│       │   └── ident(sum)
+│       ├── colon
+│       ├── <type>
+│       │   └── ident(integer)
+│       └── semicolon
+├── <compound-statement>
+│   ├── beginsy
+│   ├── <statement-list>
+│   │   ├── <statement>
+│   │   │   └── <assignment-statement>
+│   │   │       ├── <variable>
+│   │   │       │   └── ident(sum)
+│   │   │       ├── becomes
+│   │   │       └── <expression>
+│   │   │           └── <simple-expression>
+│   │   │               └── <term>
+│   │   │                   └── <factor>
+│   │   │                       └── intcon(0)
+│   │   ├── semicolon
+│   │   ├── <statement>
+│   │   │   └── <for-statement>
+│   │   │       ├── forsy
+│   │   │       ├── ident(i)
+│   │   │       ├── becomes
+│   │   │       ├── <expression>
+│   │   │       │   └── <simple-expression>
+│   │   │       │       └── <term>
+│   │   │       │           └── <factor>
+│   │   │       │               └── intcon(1)
+│   │   │       ├── tosy
+│   │   │       ├── <expression>
+│   │   │       │   └── <simple-expression>
+│   │   │       │       └── <term>
+│   │   │       │           └── <factor>
+│   │   │       │               └── intcon(10)
+│   │   │       ├── dosy
+│   │   │       └── <statement>
+│   │   │           └── <assignment-statement>
+│   │   │               ├── <variable>
+│   │   │               │   └── ident(sum)
+│   │   │               ├── becomes
+│   │   │               └── <expression>
+│   │   │                   └── <simple-expression>
+│   │   │                       ├── <term>
+│   │   │                       │   └── <factor>
+│   │   │                       │       └── <variable>
+│   │   │                       │           └── ident(sum)
+│   │   │                       ├── <additive-operator>
+│   │   │                       │   └── plus
+│   │   │                       └── <term>
+│   │   │                           └── <factor>
+│   │   │                               └── <variable>
+│   │   │                                   └── ident(i)
+│   │   ├── semicolon
+│   │   ├── <statement>
+│   │   │   └── <for-statement>
+│   │   │       ├── forsy
+│   │   │       ├── ident(i)
+│   │   │       ├── becomes
+│   │   │       ├── <expression>
+│   │   │       │   └── <simple-expression>
+│   │   │       │       └── <term>
+│   │   │       │           └── <factor>
+│   │   │       │               └── intcon(10)
+│   │   │       ├── downtosy
+│   │   │       ├── <expression>
+│   │   │       │   └── <simple-expression>
+│   │   │       │       └── <term>
+│   │   │       │           └── <factor>
+│   │   │       │               └── intcon(1)
+│   │   │       ├── dosy
+│   │   │       └── <statement>
+│   │   │           └── <assignment-statement>
+│   │   │               ├── <variable>
+│   │   │               │   └── ident(sum)
+│   │   │               ├── becomes
+│   │   │               └── <expression>
+│   │   │                   └── <simple-expression>
+│   │   │                       ├── <term>
+│   │   │                       │   └── <factor>
+│   │   │                       │       └── <variable>
+│   │   │                       │           └── ident(sum)
+│   │   │                       ├── <additive-operator>
+│   │   │                       │   └── minus
+│   │   │                       └── <term>
+│   │   │                           └── <factor>
+│   │   │                               └── intcon(1)
+│   │   ├── semicolon
+│   │   └── <statement>
+│   └── endsy
+└── period

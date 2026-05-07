@@ -1,0 +1,10 @@
+program Arrays;
+type
+  Vec == array[1..5] of integer;
+var
+  v: Vec;
+  m: array[1..3] of array[1..3] of real;
+begin
+  v[1] := 10;
+  m[1, 2] := 3.14;
+end.
