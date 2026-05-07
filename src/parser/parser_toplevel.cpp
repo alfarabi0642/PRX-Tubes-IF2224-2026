@@ -1,5 +1,16 @@
 #include "parser.hpp"
 
+namespace {
+bool is_statement_list_boundary(TokenType type) {
+    return type == TokenType::TOKEN_SEMICOLON ||
+           type == TokenType::TOKEN_ENDSY ||
+           type == TokenType::TOKEN_ELSESY ||
+           type == TokenType::TOKEN_UNTILSY ||
+           type == TokenType::TOKEN_PERIOD ||
+           type == TokenType::TOKEN_EOF;
+}
+}
+
 std::shared_ptr<ParseTreeNode> Parser::parse_program() {
     auto node = make_node("<program>");
 
@@ -111,8 +122,8 @@ std::shared_ptr<ParseTreeNode> Parser::parse_statement_list() {
 
     const size_t first_before = pos;
     node->add_child(parse_statement());
-    if (pos == first_before && !is_at_end() && !check(TokenType::TOKEN_ENDSY) &&
-        !check(TokenType::TOKEN_ELSESY) && !check(TokenType::TOKEN_UNTILSY)) {
+    if (pos == first_before &&
+        !is_statement_list_boundary(current_token().get_type())) {
         Token token = current_token();
         error("Syntax error at line " + std::to_string(token.get_line()) +
               ", col " + std::to_string(token.get_column()) +
@@ -126,8 +137,8 @@ std::shared_ptr<ParseTreeNode> Parser::parse_statement_list() {
         node->add_child(terminal(advance()));
         const size_t before = pos;
         node->add_child(parse_statement());
-        if (pos == before && !is_at_end() && !check(TokenType::TOKEN_ENDSY) &&
-            !check(TokenType::TOKEN_ELSESY) && !check(TokenType::TOKEN_UNTILSY)) {
+        if (pos == before &&
+            !is_statement_list_boundary(current_token().get_type())) {
             Token token = current_token();
             error("Syntax error at line " + std::to_string(token.get_line()) +
                   ", col " + std::to_string(token.get_column()) +
