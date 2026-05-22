@@ -1,0 +1,9 @@
+PROGRAM ParserValidEmptyStatement;
+
+VAR
+  x: integer;
+
+BEGIN
+  ;
+  x := 1;
+END.

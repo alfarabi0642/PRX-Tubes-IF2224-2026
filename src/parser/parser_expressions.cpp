@@ -136,7 +136,7 @@ std::shared_ptr<ParseTreeNode> Parser::parse_while_statement() {
     node->add_child(terminal(expect(TokenType::TOKEN_WHILESY)));
     node->add_child(parse_expression());
     node->add_child(terminal(expect(TokenType::TOKEN_DOSY)));
-    node->add_child(parse_statement());
+    node->add_child(parse_compound_statement());
 
     return node;
 }
@@ -169,7 +169,7 @@ std::shared_ptr<ParseTreeNode> Parser::parse_for_statement() {
 
     node->add_child(parse_expression());
     node->add_child(terminal(expect(TokenType::TOKEN_DOSY)));
-    node->add_child(parse_statement());
+    node->add_child(parse_compound_statement());
 
     return node;
 }

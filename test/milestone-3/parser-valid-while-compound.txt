@@ -1,0 +1,16 @@
+program ParserValidWhileCompound;
+
+var
+  i: integer;
+  keepGoing: boolean;
+
+begin
+  i := 0;
+  keepGoing := true;
+  WHILE keepGoing DO
+  BEGIN
+    i := i + 1;
+    keepGoing := false;
+  END;
+  i := i + 1;
+end.
