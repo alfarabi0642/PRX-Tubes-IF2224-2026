@@ -5,6 +5,7 @@
 #include "common/token.hpp"
 #include "lexer/lexer.hpp"
 #include "parser/parser.hpp"
+#include "semantic/semantic.hpp"
 
 using namespace std;
 
@@ -48,9 +49,10 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    
     Parser parser(filtered);
     auto tree = parser.parse();
+
+    const auto& errors = parser.get_errors();
 
     tree->print(cout);
 
@@ -59,20 +61,43 @@ int main(int argc, char* argv[]) {
     if (last_slash != string::npos) {
         filename = filename.substr(last_slash + 1);
     }
-    string output_path = "test/milestone-2/" + filename + "_OUTPUT.txt";
+    string parse_output_path = "test/milestone-2/" + filename + "_OUTPUT.txt";
 
-    ofstream out(output_path);
-    if (out.is_open()) {
-        tree->print(out);
-        out.close();
+    ofstream parse_out(parse_output_path);
+    if (parse_out.is_open()) {
+        tree->print(parse_out);
+        parse_out.close();
     } else {
-        cerr << "Warning: Could not open output file: " << output_path << endl;
+        cerr << "Warning: Could not open output file: " << parse_output_path << endl;
     }
 
-    const auto& errors = parser.get_errors();
     if (!errors.empty()) {
         cerr << endl << "Parser errors (" << errors.size() << "):" << endl;
         for (const auto& err : errors) {
+            cerr << "  " << err << endl;
+        }
+        return 1;
+    }
+
+    SemanticAnalyzer semantic;
+    semantic.analyze(tree);
+    semantic.print_report(cout);
+
+    string semantic_output_path = "test/milestone-3/" + filename + "_SEMANTIC.txt";
+    ofstream semantic_out(semantic_output_path);
+    if (semantic_out.is_open()) {
+        semantic_out << "=== Parse Tree ===" << endl;
+        tree->print(semantic_out);
+        semantic.print_report(semantic_out);
+        semantic_out.close();
+    } else {
+        cerr << "Warning: Could not open output file: " << semantic_output_path << endl;
+    }
+
+    const auto& semantic_errors = semantic.get_errors();
+    if (!semantic_errors.empty()) {
+        cerr << endl << "Semantic errors (" << semantic_errors.size() << "):" << endl;
+        for (const auto& err : semantic_errors) {
             cerr << "  " << err << endl;
         }
         return 1;
