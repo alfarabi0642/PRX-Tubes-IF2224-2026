@@ -1,0 +1,9 @@
+program RedeclarationError;
+var
+  x: integer;
+  x: real;
+  Integer: integer;
+  true: boolean;
+begin
+  x := 1;
+end.

@@ -1,0 +1,35 @@
+program ControlFlowValid;
+var
+  i, total: integer;
+  done: boolean;
+  grade: char;
+begin
+  total := 0;
+  done := false;
+  grade := 'B';
+
+  for i := 1 to 3 do
+  begin
+    total := total + i;
+  end;
+
+  while total < 10 do
+  begin
+    total := total + 1;
+  end;
+
+  repeat
+    total := total - 1;
+  until total == 6;
+
+  case grade of
+    'A': begin total := total + 4; end;
+    'B', 'C': begin total := total + 2; end;
+    'D': begin total := total + 1; end;
+  end;
+
+  if total >= 0 then
+  begin
+    done := true;
+  end;
+end.

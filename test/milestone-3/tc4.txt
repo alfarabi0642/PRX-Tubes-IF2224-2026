@@ -1,0 +1,12 @@
+program ExpressionValid;
+var
+  i, j, k: integer;
+  r: real;
+  b: boolean;
+begin
+  i := 2;
+  j := 3;
+  k := i + j * 4 - (i div 2) + (j mod 2);
+  r := i / j + 3.5;
+  b := (k >= 10) and (r > 0.0) or not false;
+end.

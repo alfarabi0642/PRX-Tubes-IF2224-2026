@@ -1,0 +1,7 @@
+program UndeclaredAndUninitializedError;
+var
+  x, y: integer;
+begin
+  x := missingValue + 1;
+  y := x + notDeclared;
+end.

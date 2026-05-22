@@ -1,0 +1,13 @@
+program TypeDeclarationAndEnumError;
+type
+  Color == (Red, Green, Blue);
+  BadRangeOrder == 10..1;
+  BadRealRange == 1.5..3.5;
+  BadArray == array[BadRealRange] of integer;
+var
+  x: BadRangeOrder;
+  color: Color;
+begin
+  x := 5;
+  color := Red;
+end.
