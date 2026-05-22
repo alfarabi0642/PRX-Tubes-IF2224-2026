@@ -1,0 +1,16 @@
+program RedeclareErrors;
+
+type
+  BadRecord == record
+    value: integer;
+    value: char
+  end;
+
+var
+  count: integer;
+  count: integer;
+  True: boolean;
+
+begin
+  count := 1;
+end.

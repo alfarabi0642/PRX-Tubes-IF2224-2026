@@ -1,0 +1,11 @@
+program EnumUndeclared;
+
+type
+  BadEnum == (Red, Blue);
+
+var
+  value: BadEnum;
+
+begin
+  ;
+end.
