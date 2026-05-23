@@ -4,6 +4,7 @@
 
 namespace semantic {
 
+// Visit constant declaration
 AstNodePtr SemanticAnalyzer::visit_const_decl(const AstNodePtr& node) {
     ValueInfo value = node && !node->children.empty() ? eval_constant(node->children.front()) : ValueInfo{};
     const int idx = add_symbol_checked(node, node->name, SymbolObject::Constant,
@@ -14,6 +15,7 @@ AstNodePtr SemanticAnalyzer::visit_const_decl(const AstNodePtr& node) {
     return node;
 }
 
+// Visit type declaration
 AstNodePtr SemanticAnalyzer::visit_type_decl(const AstNodePtr& node) {
     int resolved = node && !node->children.empty() ? resolve_type_node(node->children.front()) : 0;
     if (resolved > 0 && static_cast<size_t>(resolved) < result->types.entries().size()) {
@@ -31,6 +33,7 @@ AstNodePtr SemanticAnalyzer::visit_type_decl(const AstNodePtr& node) {
     return node;
 }
 
+// Visit variable declaration
 AstNodePtr SemanticAnalyzer::visit_var_decl(const AstNodePtr& node) {
     int resolved = node && !node->children.empty() ? resolve_type_node(node->children.front()) : 0;
     const int idx = add_symbol_checked(node, node->name, SymbolObject::Variable,
@@ -41,6 +44,7 @@ AstNodePtr SemanticAnalyzer::visit_var_decl(const AstNodePtr& node) {
     return node;
 }
 
+// Visit subprogram declaration
 AstNodePtr SemanticAnalyzer::visit_subprogram_decl(const AstNodePtr& node) {
     if (!node) return nullptr;
     const bool is_function = node->kind == AstKind::FunctionDecl;
@@ -93,6 +97,7 @@ AstNodePtr SemanticAnalyzer::visit_subprogram_decl(const AstNodePtr& node) {
     return node;
 }
 
+// Resolve type node
 int SemanticAnalyzer::resolve_type_node(const AstNodePtr& node) {
     if (!node) return 0;
     switch (node->kind) {
@@ -119,6 +124,7 @@ int SemanticAnalyzer::resolve_type_node(const AstNodePtr& node) {
     }
 }
 
+// Resolve array type
 int SemanticAnalyzer::resolve_array_type(const AstNodePtr& node) {
     int index_type = 0;
     int low = 0;
@@ -159,6 +165,7 @@ int SemanticAnalyzer::resolve_array_type(const AstNodePtr& node) {
     return type_id;
 }
 
+// Resolve range type
 int SemanticAnalyzer::resolve_range_type(const AstNodePtr& node) {
     std::vector<ValueInfo> constants;
     if (node) {
@@ -198,6 +205,7 @@ int SemanticAnalyzer::resolve_range_type(const AstNodePtr& node) {
     return type_id;
 }
 
+// Resolve enum type
 int SemanticAnalyzer::resolve_enum_type(const AstNodePtr& node) {
     int common_type = 0;
     if (node) {
@@ -233,6 +241,7 @@ int SemanticAnalyzer::resolve_enum_type(const AstNodePtr& node) {
     return type_id;
 }
 
+// Resolve record type
 int SemanticAnalyzer::resolve_record_type(const AstNodePtr& node) {
     const int block_index = result->symbols.add_block();
     result->symbols.push_scope(block_index);
@@ -268,4 +277,4 @@ int SemanticAnalyzer::resolve_record_type(const AstNodePtr& node) {
     return type_id;
 }
 
-} // namespace semantic
+} 

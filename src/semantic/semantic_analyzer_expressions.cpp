@@ -5,6 +5,7 @@
 
 namespace semantic {
 
+// Evaluate constant node
 ValueInfo SemanticAnalyzer::eval_constant(const AstNodePtr& node) {
     if (!node) return {};
     if (node->kind == AstKind::UnaryOp && !node->children.empty()) {
@@ -23,6 +24,7 @@ ValueInfo SemanticAnalyzer::eval_constant(const AstNodePtr& node) {
     return eval_expression(node);
 }
 
+// Evaluate expression node
 ValueInfo SemanticAnalyzer::eval_expression(const AstNodePtr& node) {
     if (!node) return {};
 
@@ -124,6 +126,7 @@ ValueInfo SemanticAnalyzer::eval_expression(const AstNodePtr& node) {
     return result_value;
 }
 
+// Evaluate variable access
 ValueInfo SemanticAnalyzer::eval_variable(const AstNodePtr& node, bool as_assignment_target) {
     ValueInfo value;
     if (!node) return value;
@@ -256,6 +259,7 @@ ValueInfo SemanticAnalyzer::eval_variable(const AstNodePtr& node, bool as_assign
     return value;
 }
 
+// Convert literal value
 ValueInfo SemanticAnalyzer::value_from_literal(const AstNodePtr& node) {
     ValueInfo value;
     if (!node) return value;
@@ -323,4 +327,4 @@ ValueInfo SemanticAnalyzer::value_from_literal(const AstNodePtr& node) {
     return value;
 }
 
-} // namespace semantic
+} 

@@ -133,6 +133,7 @@ std::shared_ptr<ParseTreeNode> Parser::parse_case_block() {
 std::shared_ptr<ParseTreeNode> Parser::parse_while_statement() {
     auto node = make_node("<while-statement>");
 
+    // Require compound body
     node->add_child(terminal(expect(TokenType::TOKEN_WHILESY)));
     node->add_child(parse_expression());
     node->add_child(terminal(expect(TokenType::TOKEN_DOSY)));
@@ -155,6 +156,7 @@ std::shared_ptr<ParseTreeNode> Parser::parse_repeat_statement() {
 std::shared_ptr<ParseTreeNode> Parser::parse_for_statement() {
     auto node = make_node("<for-statement>");
 
+    // Require compound body
     node->add_child(terminal(expect(TokenType::TOKEN_FORSY)));
     node->add_child(terminal(expect(TokenType::TOKEN_IDENT)));
     node->add_child(terminal(expect(TokenType::TOKEN_BECOMES)));

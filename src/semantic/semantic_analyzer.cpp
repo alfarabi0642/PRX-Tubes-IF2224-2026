@@ -4,14 +4,17 @@
 
 namespace semantic {
 
+// Initialize semantic result
 SemanticResult::SemanticResult() {
     symbols.initialize_predefined(types);
 }
 
+// Check semantic success
 bool SemanticResult::ok() const {
     return !has_errors(diagnostics);
 }
 
+// Run semantic pass
 SemanticResult SemanticAnalyzer::analyze(const AstNodePtr& ast_root) {
     SemanticResult semantic_result;
     result = &semantic_result;
@@ -20,6 +23,7 @@ SemanticResult SemanticAnalyzer::analyze(const AstNodePtr& ast_root) {
     return semantic_result;
 }
 
+// Record semantic error
 void SemanticAnalyzer::semantic_error(const AstNodePtr& node, const std::string& message) {
     result->diagnostics.push_back({
         DiagnosticSeverity::Error,
@@ -28,6 +32,7 @@ void SemanticAnalyzer::semantic_error(const AstNodePtr& node, const std::string&
     });
 }
 
+// Compute storage size
 int SemanticAnalyzer::type_size(int type_id) const {
     if (!result) return 1;
     const auto& types = result->types.entries();
@@ -45,6 +50,7 @@ int SemanticAnalyzer::type_size(int type_id) const {
     return 1;
 }
 
+// Resolve composite ref
 int SemanticAnalyzer::type_ref(int type_id) const {
     if (!result) return 0;
     const auto& types = result->types.entries();
@@ -54,6 +60,7 @@ int SemanticAnalyzer::type_ref(int type_id) const {
     return 0;
 }
 
+// Add checked symbol
 int SemanticAnalyzer::add_symbol_checked(const AstNodePtr& node,
                                          const std::string& id,
                                          SymbolObject obj,
@@ -70,6 +77,7 @@ int SemanticAnalyzer::add_symbol_checked(const AstNodePtr& node,
     return result->symbols.add_symbol(id, obj, type, ref, nrm, initialized, value, type_size(type));
 }
 
+// Visit program root
 AstNodePtr SemanticAnalyzer::visit_program(const AstNodePtr& node) {
     if (!node) {
         semantic_error(nullptr, "AST root is empty");
@@ -88,6 +96,7 @@ AstNodePtr SemanticAnalyzer::visit_program(const AstNodePtr& node) {
     return node;
 }
 
+// Visit declaration list
 AstNodePtr SemanticAnalyzer::visit_declaration_part(const AstNodePtr& node) {
     if (!node) return nullptr;
     for (const auto& child : node->children) {
@@ -107,6 +116,7 @@ AstNodePtr SemanticAnalyzer::visit_declaration_part(const AstNodePtr& node) {
     return node;
 }
 
+// Visit statement block
 AstNodePtr SemanticAnalyzer::visit_compound_statement(const AstNodePtr& node) {
     if (!node) return nullptr;
     node->annotation.block_index = result->symbols.current_block_index();
@@ -117,6 +127,7 @@ AstNodePtr SemanticAnalyzer::visit_compound_statement(const AstNodePtr& node) {
     return node;
 }
 
+// Dispatch statement node
 AstNodePtr SemanticAnalyzer::visit_statement(const AstNodePtr& node) {
     if (!node) return nullptr;
     switch (node->kind) {
@@ -152,4 +163,4 @@ AstNodePtr SemanticAnalyzer::visit_statement(const AstNodePtr& node) {
     }
 }
 
-} // namespace semantic
+} 

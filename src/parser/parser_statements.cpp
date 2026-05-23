@@ -24,6 +24,7 @@ bool is_statement_boundary(TokenType type) {
            type == TokenType::TOKEN_EOF;
 }
 
+// Add fallback child
 void add_child_or_placeholder(const std::shared_ptr<ParseTreeNode>& parent,
                               const std::shared_ptr<ParseTreeNode>& child,
                               const std::string& placeholder) {
@@ -148,6 +149,7 @@ std::shared_ptr<ParseTreeNode> Parser::parse_parameter_group() {
 std::shared_ptr<ParseTreeNode> Parser::parse_statement() {
     auto node = make_node("<statement>");
 
+    // Dispatch statement form
     if (check(TokenType::TOKEN_IFSY)) {
         node->add_child(parse_if_statement());
     } else if (check(TokenType::TOKEN_CASESY)) {

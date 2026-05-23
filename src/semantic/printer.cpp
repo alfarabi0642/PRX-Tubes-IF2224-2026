@@ -6,6 +6,7 @@ namespace semantic {
 
 namespace {
 
+// Format literal kind
 std::string literal_kind_name(LiteralKind kind) {
     switch (kind) {
         case LiteralKind::None: return "None";
@@ -19,6 +20,7 @@ std::string literal_kind_name(LiteralKind kind) {
     return "Unknown";
 }
 
+// Print node label
 void print_node_label(std::ostream& os, const AstNode& node, const TypeRegistry& types) {
     os << ast_kind_name(node.kind);
     if (!node.name.empty()) os << "(" << node.name << ")";
@@ -41,12 +43,14 @@ void print_node_label(std::ostream& os, const AstNode& node, const TypeRegistry&
     }
 }
 
+// Format severity
 const char* severity_name(DiagnosticSeverity severity) {
     return severity == DiagnosticSeverity::Warning ? "Warning" : "Error";
 }
 
-} // namespace
+} 
 
+// Print decorated AST
 void print_decorated_ast(std::ostream& os, const AstNodePtr& root, const TypeRegistry& types) {
     if (!root) {
         os << "<empty>\n";
@@ -74,6 +78,7 @@ void print_decorated_ast(std::ostream& os, const AstNodePtr& root, const TypeReg
     }
 }
 
+// Print symbol tables
 void print_symbol_tables(std::ostream& os, const SymbolTable& symbols, const TypeRegistry& types) {
     os << "\n=== Symbol Table: tab ===\n";
     os << "idx\tidentifier\tobj\ttype\tref\tnrm\tlev\tadr\tlink\tinit\tvalue\n";
@@ -105,6 +110,7 @@ void print_symbol_tables(std::ostream& os, const SymbolTable& symbols, const Typ
     }
 }
 
+// Print diagnostics
 void print_diagnostics(std::ostream& os, const std::vector<Diagnostic>& diagnostics) {
     os << "\n=== Semantic Errors ===\n";
     if (diagnostics.empty()) {
@@ -120,6 +126,7 @@ void print_diagnostics(std::ostream& os, const std::vector<Diagnostic>& diagnost
     }
 }
 
+// Print full report
 void print_semantic_report(std::ostream& os, const AstNodePtr& root,
                            const SymbolTable& symbols,
                            const TypeRegistry& types,
@@ -130,4 +137,4 @@ void print_semantic_report(std::ostream& os, const AstNodePtr& root,
     print_diagnostics(os, diagnostics);
 }
 
-} // namespace semantic
+} 

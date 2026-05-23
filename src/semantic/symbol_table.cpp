@@ -6,6 +6,7 @@
 
 namespace semantic {
 
+// Normalize identifier key
 std::string SymbolTable::normalize(std::string identifier) {
     std::transform(identifier.begin(), identifier.end(), identifier.begin(), [](unsigned char c) {
         return static_cast<char>(std::tolower(c));
@@ -13,6 +14,7 @@ std::string SymbolTable::normalize(std::string identifier) {
     return identifier;
 }
 
+// Seed predefined symbols
 void SymbolTable::initialize_predefined(const TypeRegistry& types) {
     tab.clear();
     btab.clear();
@@ -60,6 +62,7 @@ void SymbolTable::initialize_predefined(const TypeRegistry& types) {
     predefined_symbols[normalize("writeln")] = writeln_idx;
 }
 
+// Enter lexical scope
 void SymbolTable::push_scope(int block_index) {
     scopes.push_back({});
     scope_last.push_back(0);
@@ -67,6 +70,7 @@ void SymbolTable::push_scope(int block_index) {
     next_address.push_back(0);
 }
 
+// Leave lexical scope
 void SymbolTable::pop_scope() {
     if (!scopes.empty()) scopes.pop_back();
     if (!scope_last.empty()) scope_last.pop_back();
@@ -74,6 +78,7 @@ void SymbolTable::pop_scope() {
     if (!next_address.empty()) next_address.pop_back();
 }
 
+// Allocate block entry
 int SymbolTable::add_block() {
     btab.push_back({});
     return static_cast<int>(btab.size()) - 1;
@@ -87,6 +92,7 @@ int SymbolTable::current_block_index() const {
     return display.empty() ? 0 : display.back();
 }
 
+// Add raw tab entry
 int SymbolTable::raw_add_symbol(const std::string& id, SymbolObject obj, int type,
                                 int ref, int nrm, int lev, int adr,
                                 bool initialized, const std::string& value) {
@@ -106,6 +112,7 @@ int SymbolTable::raw_add_symbol(const std::string& id, SymbolObject obj, int typ
     return index;
 }
 
+// Add scoped symbol
 int SymbolTable::add_symbol(const std::string& id, SymbolObject obj, int type,
                             int ref, int nrm, bool initialized,
                             const std::string& value, int size) {
@@ -126,6 +133,7 @@ int SymbolTable::add_symbol(const std::string& id, SymbolObject obj, int type,
     return raw_add_symbol(id, obj, type, ref, nrm, current_level(), adr, initialized, value);
 }
 
+// Lookup visible symbol
 int SymbolTable::lookup(const std::string& id) const {
     const auto predefined = predefined_symbols.find(normalize(id));
     if (predefined != predefined_symbols.end()) return predefined->second;
@@ -136,6 +144,7 @@ int SymbolTable::lookup(const std::string& id) const {
     return -1;
 }
 
+// Lookup current scope
 int SymbolTable::lookup_current_scope(const std::string& id) const {
     if (scopes.empty()) return -1;
     const auto predefined = predefined_symbols.find(normalize(id));
@@ -145,6 +154,7 @@ int SymbolTable::lookup_current_scope(const std::string& id) const {
     return -1;
 }
 
+// Lookup global value
 int SymbolTable::lookup_global_const_or_var(const std::string& id) const {
     for (size_t i = 0; i < tab.size(); ++i) {
         const auto& entry = tab[i];
@@ -164,6 +174,7 @@ int SymbolTable::lookup_global_const_or_var(const std::string& id) const {
     return -1;
 }
 
+// Add array metadata
 int SymbolTable::add_array_entry(int index_type, int element_type, int low, int high,
                                  int element_size, int element_ref) {
     const int count = high >= low ? high - low + 1 : 0;
@@ -213,6 +224,7 @@ const std::vector<ATabEntry>& SymbolTable::atab_entries() const {
     return atab;
 }
 
+// Format symbol object
 std::string symbol_object_name(SymbolObject obj) {
     switch (obj) {
         case SymbolObject::Reserved: return "reserved";
@@ -228,4 +240,4 @@ std::string symbol_object_name(SymbolObject obj) {
     return "unknown";
 }
 
-} // namespace semantic
+} 

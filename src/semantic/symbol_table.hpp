@@ -7,6 +7,7 @@
 
 namespace semantic {
 
+// Symbol object category
 enum class SymbolObject {
     Reserved,
     Constant,
@@ -19,6 +20,7 @@ enum class SymbolObject {
     Field
 };
 
+// Identifier table entry
 struct TabEntry {
     std::string identifier;
     SymbolObject obj = SymbolObject::Variable;
@@ -32,6 +34,7 @@ struct TabEntry {
     std::string value;
 };
 
+// Block table entry
 struct BTabEntry {
     int last = 0;
     int lpar = 0;
@@ -39,6 +42,7 @@ struct BTabEntry {
     int vsze = 0;
 };
 
+// Array table entry
 struct ATabEntry {
     int xtyp = 0;
     int etyp = 0;
@@ -49,6 +53,7 @@ struct ATabEntry {
     int size = 0;
 };
 
+// Semantic symbol tables
 class SymbolTable {
 public:
     SymbolTable() = default;
@@ -98,4 +103,4 @@ private:
 
 std::string symbol_object_name(SymbolObject obj);
 
-} // namespace semantic
+} 

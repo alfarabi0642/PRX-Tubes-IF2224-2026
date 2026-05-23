@@ -14,11 +14,13 @@ using namespace std;
 
 namespace {
 
+// Append diagnostic list
 void append_diagnostics(vector<semantic::Diagnostic>& target,
                         const vector<semantic::Diagnostic>& source) {
     target.insert(target.end(), source.begin(), source.end());
 }
 
+// Print error summary
 void print_diagnostic_summary(const vector<semantic::Diagnostic>& diagnostics) {
     for (const auto& diagnostic : diagnostics) {
         if (diagnostic.severity != semantic::DiagnosticSeverity::Error) continue;
@@ -30,7 +32,7 @@ void print_diagnostic_summary(const vector<semantic::Diagnostic>& diagnostics) {
     }
 }
 
-} // namespace
+} 
 
 int main(int argc, char* argv[]) {
     if (argc != 2) {
@@ -49,6 +51,7 @@ int main(int argc, char* argv[]) {
     Lexer lexer(input_file);
     vector<Token> tokens = lexer.tokenize();
 
+    // Stop lexical errors
     bool has_lexer_error = false;
     for (const auto& token : tokens) {
         if (token.get_type() == TokenType::TOKEN_ERROR) {
@@ -64,6 +67,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
+    // Filter parser noise
     vector<Token> filtered;
     for (const auto& token : tokens) {
         if (token.get_type() != TokenType::TOKEN_COMMENT &&
@@ -93,6 +97,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
+    // Build compact AST
     semantic::AstBuilder ast_builder;
     auto ast_result = ast_builder.build(tree);
 
@@ -101,17 +106,20 @@ int main(int argc, char* argv[]) {
     append_diagnostics(diagnostics, ast_result.diagnostics);
 
     if (ast_result.root) {
+        // Decorate semantic AST
         semantic::SemanticAnalyzer analyzer;
         semantic_result = analyzer.analyze(ast_result.root);
         append_diagnostics(diagnostics, semantic_result.diagnostics);
     }
 
+    // Print semantic report
     const auto report_root = semantic_result.decorated_ast ? semantic_result.decorated_ast : ast_result.root;
     semantic::print_semantic_report(cout, report_root,
                                     semantic_result.symbols,
                                     semantic_result.types,
                                     diagnostics);
 
+    // Save semantic report
     string semantic_output_path = "test/milestone-3/" + filename + "_SEMANTIC.txt";
     ofstream semantic_out(semantic_output_path);
     if (semantic_out.is_open()) {

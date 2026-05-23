@@ -4,6 +4,7 @@
 
 namespace semantic {
 
+// Collect parameter types
 std::vector<int> SemanticAnalyzer::parameter_types_for(const TabEntry& entry) const {
     std::vector<int> parameter_types;
     if (!result ||
@@ -23,6 +24,7 @@ std::vector<int> SemanticAnalyzer::parameter_types_for(const TabEntry& entry) co
     return parameter_types;
 }
 
+// Check assignment target
 bool SemanticAnalyzer::is_assignable_storage(const ValueInfo& target,
                                              bool allow_current_function) const {
     if (!result ||
@@ -40,6 +42,7 @@ bool SemanticAnalyzer::is_assignable_storage(const ValueInfo& target,
            entry.ref == result->symbols.current_block_index();
 }
 
+// Check IO value type
 bool SemanticAnalyzer::is_scalar_or_string_type(int type_id) const {
     if (!result || type_id == 0) return true;
     if (type_id < 0 || static_cast<size_t>(type_id) >= result->types.entries().size()) {
@@ -52,6 +55,7 @@ bool SemanticAnalyzer::is_scalar_or_string_type(int type_id) const {
            kind != TypeKind::Record;
 }
 
+// Mark assigned storage
 void SemanticAnalyzer::mark_target_initialized(const ValueInfo& target) {
     if (!result) return;
     if (target.tab_index >= 0 &&
@@ -64,6 +68,7 @@ void SemanticAnalyzer::mark_target_initialized(const ValueInfo& target) {
     }
 }
 
+// Validate user call
 void SemanticAnalyzer::validate_user_call_arguments(
     const AstNodePtr& node,
     const TabEntry& entry,
@@ -94,6 +99,7 @@ void SemanticAnalyzer::validate_user_call_arguments(
     }
 }
 
+// Validate built-in call
 bool SemanticAnalyzer::validate_builtin_call(const AstNodePtr& node,
                                              const TabEntry& entry,
                                              ValueInfo* out) {
@@ -150,6 +156,7 @@ bool SemanticAnalyzer::validate_builtin_call(const AstNodePtr& node,
     return true;
 }
 
+// Visit assignment statement
 AstNodePtr SemanticAnalyzer::visit_assignment(const AstNodePtr& node) {
     if (!node || node->children.size() < 2) return node;
 
@@ -190,6 +197,7 @@ AstNodePtr SemanticAnalyzer::visit_assignment(const AstNodePtr& node) {
     return node;
 }
 
+// Visit if statement
 AstNodePtr SemanticAnalyzer::visit_if(const AstNodePtr& node) {
     if (!node || node->children.empty()) return node;
     ValueInfo cond = eval_expression(node->children[0]);
@@ -203,6 +211,7 @@ AstNodePtr SemanticAnalyzer::visit_if(const AstNodePtr& node) {
     return node;
 }
 
+// Visit while statement
 AstNodePtr SemanticAnalyzer::visit_while(const AstNodePtr& node) {
     if (!node || node->children.empty()) return node;
     ValueInfo cond = eval_expression(node->children[0]);
@@ -214,6 +223,7 @@ AstNodePtr SemanticAnalyzer::visit_while(const AstNodePtr& node) {
     return node;
 }
 
+// Visit repeat statement
 AstNodePtr SemanticAnalyzer::visit_repeat(const AstNodePtr& node) {
     if (!node) return node;
     if (!node->children.empty()) visit_compound_statement(node->children.front());
@@ -227,6 +237,7 @@ AstNodePtr SemanticAnalyzer::visit_repeat(const AstNodePtr& node) {
     return node;
 }
 
+// Visit for statement
 AstNodePtr SemanticAnalyzer::visit_for(const AstNodePtr& node) {
     if (!node) return node;
     const int idx = result->symbols.lookup(node->name);
@@ -266,6 +277,7 @@ AstNodePtr SemanticAnalyzer::visit_for(const AstNodePtr& node) {
     return node;
 }
 
+// Visit case statement
 AstNodePtr SemanticAnalyzer::visit_case(const AstNodePtr& node) {
     if (!node || node->children.empty()) return node;
     ValueInfo selector = eval_expression(node->children.front());
@@ -291,6 +303,7 @@ AstNodePtr SemanticAnalyzer::visit_case(const AstNodePtr& node) {
     return node;
 }
 
+// Visit callable node
 AstNodePtr SemanticAnalyzer::visit_call(const AstNodePtr& node, ValueInfo* out) {
     if (!node) return node;
     const int idx = result->symbols.lookup(node->name);
@@ -340,4 +353,4 @@ AstNodePtr SemanticAnalyzer::visit_call(const AstNodePtr& node, ValueInfo* out) 
     return node;
 }
 
-} // namespace semantic
+}

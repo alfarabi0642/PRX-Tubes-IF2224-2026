@@ -8,6 +8,7 @@
 
 namespace semantic {
 
+// AST build result
 struct AstBuildResult {
     AstNodePtr root;
     std::vector<Diagnostic> diagnostics;
@@ -15,9 +16,10 @@ struct AstBuildResult {
     bool ok() const;
 };
 
+// Parse tree converter
 class AstBuilder {
 public:
     AstBuildResult build(const std::shared_ptr<ParseTreeNode>& parse_tree_root);
 };
 
-} // namespace semantic
+} 

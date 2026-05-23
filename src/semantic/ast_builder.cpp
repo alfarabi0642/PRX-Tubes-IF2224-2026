@@ -7,10 +7,12 @@ namespace semantic {
 
 namespace {
 
+// Check parse node name
 bool is_node(const std::shared_ptr<ParseTreeNode>& node, const std::string& name) {
     return node && node->name == name;
 }
 
+// Read terminal token
 std::string terminal_token(const std::shared_ptr<ParseTreeNode>& node) {
     if (!node) return "";
     if (node->token.has_value()) return Token::get_type_name(node->token->get_type());
@@ -18,10 +20,12 @@ std::string terminal_token(const std::shared_ptr<ParseTreeNode>& node) {
     return pos == std::string::npos ? node->name : node->name.substr(0, pos);
 }
 
+// Match terminal token
 bool terminal_is(const std::shared_ptr<ParseTreeNode>& node, const std::string& token_name) {
     return terminal_token(node) == token_name;
 }
 
+// Read terminal value
 std::string terminal_value(const std::shared_ptr<ParseTreeNode>& node) {
     if (!node) return "";
     if (node->token.has_value()) return node->token->get_value();
@@ -31,6 +35,7 @@ std::string terminal_value(const std::shared_ptr<ParseTreeNode>& node) {
     return node->name.substr(open + 1, close - open - 1);
 }
 
+// Find source location
 SourceLocation location_from_node(const std::shared_ptr<ParseTreeNode>& node) {
     if (!node) return {};
     if (node->token.has_value()) {
@@ -43,6 +48,7 @@ SourceLocation location_from_node(const std::shared_ptr<ParseTreeNode>& node) {
     return {};
 }
 
+// Find first child
 std::shared_ptr<ParseTreeNode> first_child(const std::shared_ptr<ParseTreeNode>& node,
                                            const std::string& name) {
     if (!node) return nullptr;
@@ -52,6 +58,7 @@ std::shared_ptr<ParseTreeNode> first_child(const std::shared_ptr<ParseTreeNode>&
     return nullptr;
 }
 
+// Collect named children
 std::vector<std::shared_ptr<ParseTreeNode>> children_named(const std::shared_ptr<ParseTreeNode>& node,
                                                            const std::string& name) {
     std::vector<std::shared_ptr<ParseTreeNode>> result;
@@ -62,6 +69,7 @@ std::vector<std::shared_ptr<ParseTreeNode>> children_named(const std::shared_ptr
     return result;
 }
 
+// Convert literal terminal
 AstNodePtr literal_from_terminal(const std::shared_ptr<ParseTreeNode>& node, bool identifier_constant) {
     auto ast = make_ast(AstKind::Literal, location_from_node(node));
     const std::string token = terminal_token(node);
@@ -81,6 +89,7 @@ AstNodePtr literal_from_terminal(const std::shared_ptr<ParseTreeNode>& node, boo
     return ast;
 }
 
+// Collect identifiers
 std::vector<std::string> collect_identifiers(const std::shared_ptr<ParseTreeNode>& node) {
     std::vector<std::string> ids;
     if (!node) return ids;
@@ -108,6 +117,7 @@ AstNodePtr build_factor(const std::shared_ptr<ParseTreeNode>& node);
 AstNodePtr build_variable(const std::shared_ptr<ParseTreeNode>& node);
 AstNodePtr build_call(const std::shared_ptr<ParseTreeNode>& node);
 
+// Build program AST
 AstNodePtr build_program(const std::shared_ptr<ParseTreeNode>& node) {
     auto ast = make_ast(AstKind::Program, location_from_node(node));
     auto header = first_child(node, "<program-header>");
@@ -124,6 +134,7 @@ AstNodePtr build_program(const std::shared_ptr<ParseTreeNode>& node) {
     return ast;
 }
 
+// Build declaration AST
 AstNodePtr build_declaration_part(const std::shared_ptr<ParseTreeNode>& node) {
     auto ast = make_ast(AstKind::DeclarationPart, location_from_node(node));
     if (!node) return ast;
@@ -141,6 +152,7 @@ AstNodePtr build_declaration_part(const std::shared_ptr<ParseTreeNode>& node) {
     return ast;
 }
 
+// Build const declarations
 std::vector<AstNodePtr> build_const_declaration(const std::shared_ptr<ParseTreeNode>& node) {
     std::vector<AstNodePtr> declarations;
     for (size_t i = 0; node && i < node->children.size(); ++i) {
@@ -155,6 +167,7 @@ std::vector<AstNodePtr> build_const_declaration(const std::shared_ptr<ParseTreeN
     return declarations;
 }
 
+// Build type declarations
 std::vector<AstNodePtr> build_type_declaration(const std::shared_ptr<ParseTreeNode>& node) {
     std::vector<AstNodePtr> declarations;
     for (size_t i = 0; node && i < node->children.size(); ++i) {
@@ -169,6 +182,7 @@ std::vector<AstNodePtr> build_type_declaration(const std::shared_ptr<ParseTreeNo
     return declarations;
 }
 
+// Build variable declaration
 std::vector<AstNodePtr> build_var_declaration(const std::shared_ptr<ParseTreeNode>& node) {
     std::vector<AstNodePtr> declarations;
     for (size_t i = 0; node && i < node->children.size(); ++i) {
@@ -187,6 +201,7 @@ std::vector<AstNodePtr> build_var_declaration(const std::shared_ptr<ParseTreeNod
     return declarations;
 }
 
+// Build formal parameters
 AstNodePtr build_formal_parameter_list(const std::shared_ptr<ParseTreeNode>& node) {
     auto params = make_ast(AstKind::ParameterGroup, location_from_node(node));
     if (!node) return params;
@@ -211,6 +226,7 @@ AstNodePtr build_formal_parameter_list(const std::shared_ptr<ParseTreeNode>& nod
     return params;
 }
 
+// Build subprogram AST
 AstNodePtr build_subprogram_declaration(const std::shared_ptr<ParseTreeNode>& node) {
     if (!node || node->children.empty()) return nullptr;
     const auto& decl_node = node->children.front();
@@ -247,6 +263,7 @@ AstNodePtr build_subprogram_declaration(const std::shared_ptr<ParseTreeNode>& no
     return ast;
 }
 
+// Build type AST
 AstNodePtr build_type_node(const std::shared_ptr<ParseTreeNode>& node) {
     if (!node) return nullptr;
     if (is_node(node, "<type>") && !node->children.empty()) return build_type_node(node->children.front());
@@ -310,6 +327,7 @@ AstNodePtr build_type_node(const std::shared_ptr<ParseTreeNode>& node) {
     return nullptr;
 }
 
+// Build constant AST
 AstNodePtr build_constant(const std::shared_ptr<ParseTreeNode>& node) {
     if (!node) return nullptr;
     std::string sign;
@@ -332,6 +350,7 @@ AstNodePtr build_constant(const std::shared_ptr<ParseTreeNode>& node) {
     return literal;
 }
 
+// Build block AST
 AstNodePtr build_compound_statement(const std::shared_ptr<ParseTreeNode>& node) {
     auto ast = make_ast(AstKind::CompoundStatement, location_from_node(node));
     for (auto& statement : build_statement_list(first_child(node, "<statement-list>"))) {
@@ -340,6 +359,7 @@ AstNodePtr build_compound_statement(const std::shared_ptr<ParseTreeNode>& node) 
     return ast;
 }
 
+// Build statement list
 std::vector<AstNodePtr> build_statement_list(const std::shared_ptr<ParseTreeNode>& node) {
     std::vector<AstNodePtr> statements;
     if (!node) return statements;
@@ -349,6 +369,7 @@ std::vector<AstNodePtr> build_statement_list(const std::shared_ptr<ParseTreeNode
     return statements;
 }
 
+// Build case branch
 AstNodePtr build_case_branch(const std::shared_ptr<ParseTreeNode>& node) {
     auto branch = make_ast(AstKind::CaseBranch, location_from_node(node));
     for (const auto& child : node ? node->children : std::vector<std::shared_ptr<ParseTreeNode>>{}) {
@@ -358,6 +379,7 @@ AstNodePtr build_case_branch(const std::shared_ptr<ParseTreeNode>& node) {
     return branch;
 }
 
+// Append case branches
 void append_case_branches(const std::shared_ptr<ParseTreeNode>& node, const AstNodePtr& parent) {
     if (!node) return;
     parent->add_child(build_case_branch(node));
@@ -366,6 +388,7 @@ void append_case_branches(const std::shared_ptr<ParseTreeNode>& node, const AstN
     }
 }
 
+// Build statement AST
 AstNodePtr build_statement(const std::shared_ptr<ParseTreeNode>& node) {
     if (!node || node->children.empty()) return make_ast(AstKind::EmptyStatement, location_from_node(node));
     const auto& child = node->children.front();
@@ -424,6 +447,7 @@ AstNodePtr build_statement(const std::shared_ptr<ParseTreeNode>& node) {
     return make_ast(AstKind::EmptyStatement, location_from_node(node));
 }
 
+// Build variable AST
 AstNodePtr build_variable(const std::shared_ptr<ParseTreeNode>& node) {
     auto ast = make_ast(AstKind::Variable, location_from_node(node));
     if (!node) return ast;
@@ -459,6 +483,7 @@ AstNodePtr build_variable(const std::shared_ptr<ParseTreeNode>& node) {
     return ast;
 }
 
+// Build call AST
 AstNodePtr build_call(const std::shared_ptr<ParseTreeNode>& node) {
     auto ast = make_ast(AstKind::Call, location_from_node(node));
     if (!node) return ast;
@@ -473,11 +498,13 @@ AstNodePtr build_call(const std::shared_ptr<ParseTreeNode>& node) {
     return ast;
 }
 
+// Extract operator token
 std::string operator_token_from_node(const std::shared_ptr<ParseTreeNode>& node) {
     if (!node || node->children.empty()) return terminal_token(node);
     return terminal_token(node->children.front());
 }
 
+// Build expression AST
 AstNodePtr build_expression(const std::shared_ptr<ParseTreeNode>& node) {
     auto simple_exprs = children_named(node, "<simple-expression>");
     if (simple_exprs.empty()) return nullptr;
@@ -492,6 +519,7 @@ AstNodePtr build_expression(const std::shared_ptr<ParseTreeNode>& node) {
     return result;
 }
 
+// Build simple expression
 AstNodePtr build_simple_expression(const std::shared_ptr<ParseTreeNode>& node) {
     if (!node) return nullptr;
     std::vector<AstNodePtr> terms;
@@ -520,6 +548,7 @@ AstNodePtr build_simple_expression(const std::shared_ptr<ParseTreeNode>& node) {
     return result;
 }
 
+// Build term AST
 AstNodePtr build_term(const std::shared_ptr<ParseTreeNode>& node) {
     if (!node) return nullptr;
     std::vector<AstNodePtr> factors;
@@ -540,6 +569,7 @@ AstNodePtr build_term(const std::shared_ptr<ParseTreeNode>& node) {
     return result;
 }
 
+// Build factor AST
 AstNodePtr build_factor(const std::shared_ptr<ParseTreeNode>& node) {
     if (!node) return nullptr;
     for (const auto& child : node->children) {
@@ -562,10 +592,12 @@ AstNodePtr build_factor(const std::shared_ptr<ParseTreeNode>& node) {
 
 } // namespace
 
+// Check build success
 bool AstBuildResult::ok() const {
     return !has_errors(diagnostics) && root != nullptr;
 }
 
+// Convert parse tree
 AstBuildResult AstBuilder::build(const std::shared_ptr<ParseTreeNode>& parse_tree_root) {
     AstBuildResult result;
     if (!parse_tree_root) {
@@ -576,4 +608,4 @@ AstBuildResult AstBuilder::build(const std::shared_ptr<ParseTreeNode>& parse_tre
     return result;
 }
 
-} // namespace semantic
+} 

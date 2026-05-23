@@ -7,6 +7,7 @@
 
 namespace semantic {
 
+// Semantic type categories
 enum class TypeKind {
     None,
     Error,
@@ -21,6 +22,7 @@ enum class TypeKind {
     Record
 };
 
+// Compile-time constant value
 struct ConstantValue {
     int type_id = 0;
     std::string text;
@@ -30,6 +32,7 @@ struct ConstantValue {
     bool bool_value = false;
 };
 
+// Type metadata entry
 struct TypeInfo {
     TypeKind kind = TypeKind::None;
     std::string name;
@@ -42,6 +45,7 @@ struct TypeInfo {
     std::unordered_map<std::string, int> fields;
 };
 
+// Semantic type registry
 class TypeRegistry {
 public:
     TypeRegistry();
@@ -78,4 +82,4 @@ private:
 
 std::string type_kind_name(TypeKind kind);
 
-} // namespace semantic
+}

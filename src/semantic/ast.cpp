@@ -4,11 +4,13 @@
 
 namespace semantic {
 
+// Create AST node
 AstNode::AstNode(AstKind kind) : kind(kind) {}
 
 AstNode::AstNode(AstKind kind, SourceLocation location)
     : kind(kind), location(location) {}
 
+// Attach child node
 AstNodePtr AstNode::add_child(AstNodePtr child) {
     if (child) {
         children.push_back(child);
@@ -16,6 +18,7 @@ AstNodePtr AstNode::add_child(AstNodePtr child) {
     return child;
 }
 
+// Allocate AST node
 AstNodePtr make_ast(AstKind kind) {
     return std::make_shared<AstNode>(kind);
 }
@@ -24,6 +27,7 @@ AstNodePtr make_ast(AstKind kind, SourceLocation location) {
     return std::make_shared<AstNode>(kind, location);
 }
 
+// Format AST kind
 std::string ast_kind_name(AstKind kind) {
     switch (kind) {
         case AstKind::Program: return "Program";
@@ -61,4 +65,4 @@ std::string ast_kind_name(AstKind kind) {
     return "Unknown";
 }
 
-} // namespace semantic
+}

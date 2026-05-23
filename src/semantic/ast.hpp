@@ -7,6 +7,7 @@
 
 namespace semantic {
 
+// AST node categories
 enum class AstKind {
     Program,
     DeclarationPart,
@@ -41,6 +42,7 @@ enum class AstKind {
     FieldDecl
 };
 
+// Literal value categories
 enum class LiteralKind {
     None,
     Integer,
@@ -51,6 +53,7 @@ enum class LiteralKind {
     IdentifierConstant
 };
 
+// AST node metadata
 struct AstAnnotation {
     int type_id = 0;
     int tab_index = -1;
@@ -62,6 +65,7 @@ struct AstAnnotation {
 struct AstNode;
 using AstNodePtr = std::shared_ptr<AstNode>;
 
+// Compact semantic node
 struct AstNode {
     AstKind kind;
     SourceLocation location;
@@ -77,8 +81,9 @@ struct AstNode {
     AstNodePtr add_child(AstNodePtr child);
 };
 
+// AST node factories
 AstNodePtr make_ast(AstKind kind);
 AstNodePtr make_ast(AstKind kind, SourceLocation location);
 std::string ast_kind_name(AstKind kind);
 
-} // namespace semantic
+} 

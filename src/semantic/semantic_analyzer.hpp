@@ -9,6 +9,7 @@
 
 namespace semantic {
 
+// Expression value metadata
 struct ValueInfo {
     int type = 0;
     bool is_constant = false;
@@ -23,6 +24,7 @@ struct ValueInfo {
     std::string string_value;
 };
 
+// Semantic pass result
 struct SemanticResult {
     AstNodePtr decorated_ast;
     TypeRegistry types;
@@ -33,6 +35,7 @@ struct SemanticResult {
     bool ok() const;
 };
 
+// AST semantic visitor
 class SemanticAnalyzer {
 public:
     SemanticResult analyze(const AstNodePtr& ast_root);
@@ -91,4 +94,4 @@ private:
     ValueInfo value_from_literal(const AstNodePtr& node);
 };
 
-} // namespace semantic
+}

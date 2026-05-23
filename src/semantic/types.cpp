@@ -5,6 +5,7 @@
 namespace semantic {
 
 namespace {
+// Build primitive type
 TypeInfo make_builtin(TypeKind kind, const std::string& name) {
     TypeInfo type;
     type.kind = kind;
@@ -13,6 +14,7 @@ TypeInfo make_builtin(TypeKind kind, const std::string& name) {
 }
 }
 
+// Register primitive types
 TypeRegistry::TypeRegistry() {
     types.push_back(make_builtin(TypeKind::None, "none"));
     integer_id = add_type(make_builtin(TypeKind::Integer, "Integer"));
@@ -29,11 +31,13 @@ int TypeRegistry::char_type() const { return char_id; }
 int TypeRegistry::boolean_type() const { return boolean_id; }
 int TypeRegistry::string_type() const { return string_id; }
 
+// Add semantic type
 int TypeRegistry::add_type(const TypeInfo& type) {
     types.push_back(type);
     return static_cast<int>(types.size()) - 1;
 }
 
+// Read type metadata
 const TypeInfo& TypeRegistry::get(int type_id) const {
     if (type_id < 0 || static_cast<size_t>(type_id) >= types.size()) {
         throw std::out_of_range("invalid semantic type id");
@@ -41,6 +45,7 @@ const TypeInfo& TypeRegistry::get(int type_id) const {
     return types[static_cast<size_t>(type_id)];
 }
 
+// Edit type metadata
 TypeInfo& TypeRegistry::get_mutable(int type_id) {
     if (type_id < 0 || static_cast<size_t>(type_id) >= types.size()) {
         throw std::out_of_range("invalid semantic type id");
@@ -52,6 +57,7 @@ const std::vector<TypeInfo>& TypeRegistry::entries() const {
     return types;
 }
 
+// Render type name
 std::string TypeRegistry::type_name(int type_id) const {
     if (type_id > 0 && static_cast<size_t>(type_id) < types.size()) {
         return types[static_cast<size_t>(type_id)].name;
@@ -59,11 +65,13 @@ std::string TypeRegistry::type_name(int type_id) const {
     return "unknown";
 }
 
+// Estimate type size
 int TypeRegistry::type_size(int type_id) const {
     if (type_id <= 0 || static_cast<size_t>(type_id) >= types.size()) return 1;
     return types[static_cast<size_t>(type_id)].kind == TypeKind::Real ? 2 : 1;
 }
 
+// Check compatible types
 bool TypeRegistry::compatible(int left_type, int right_type) const {
     if (left_type == 0 || right_type == 0) return true;
     if (left_type == right_type) return true;
@@ -81,6 +89,7 @@ bool TypeRegistry::compatible(int left_type, int right_type) const {
     return base(left_type) == base(right_type);
 }
 
+// Check assignment rules
 bool TypeRegistry::assignment_compatible(int target_type, int value_type,
                                          const std::optional<ConstantValue>& value) const {
     if (target_type == 0 || value_type == 0) return true;
@@ -100,6 +109,7 @@ bool TypeRegistry::assignment_compatible(int target_type, int value_type,
     return true;
 }
 
+// Check numeric type
 bool TypeRegistry::numeric(int type_id) const {
     return type_id == integer_id || type_id == real_id ||
            (type_id > 0 && static_cast<size_t>(type_id) < types.size() &&
@@ -107,6 +117,7 @@ bool TypeRegistry::numeric(int type_id) const {
             types[static_cast<size_t>(type_id)].base_type == integer_id);
 }
 
+// Check ordinal index
 bool TypeRegistry::simple_non_real(int type_id) const {
     if (type_id == integer_id || type_id == char_id || type_id == boolean_id) return true;
     if (type_id > 0 && static_cast<size_t>(type_id) < types.size()) {
@@ -117,6 +128,7 @@ bool TypeRegistry::simple_non_real(int type_id) const {
     return false;
 }
 
+// Format type kind
 std::string type_kind_name(TypeKind kind) {
     switch (kind) {
         case TypeKind::None: return "None";
@@ -134,4 +146,4 @@ std::string type_kind_name(TypeKind kind) {
     return "Unknown";
 }
 
-} // namespace semantic
+} 
