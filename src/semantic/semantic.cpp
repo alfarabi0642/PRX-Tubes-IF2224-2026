@@ -403,6 +403,20 @@ std::shared_ptr<DecoratedAstNode> SemanticAnalyzer::visit_subprogram_declaration
                     }
                 }
                 for (const auto& param : ids) {
+                    const std::string param_key = lowercase(param);
+                    bool shadows_global_value = false;
+                    for (const auto& entry : tab) {
+                        if (entry.lev == 0 &&
+                            (entry.obj == "constant" || entry.obj == "variable") &&
+                            lowercase(entry.identifier) == param_key) {
+                            semantic_error("Formal parameter '" + param +
+                                           "' cannot reuse global " + entry.obj + " name");
+                            shadows_global_value = true;
+                        }
+                    }
+                    if (shadows_global_value) {
+                        continue;
+                    }
                     const int idx = add_symbol(param, "parameter", param_type, 0, 1, true);
                     btab[static_cast<size_t>(block_index)].lpar = idx;
                     btab[static_cast<size_t>(block_index)].psze += type_size(param_type);
@@ -791,6 +805,10 @@ int SemanticAnalyzer::resolve_enumerated_type(const std::shared_ptr<ParseTreeNod
         const int idx = lookup(id);
         if (idx < 0) {
             semantic_error("Enumerated identifier '" + id + "' must be declared before the enumerated type");
+            continue;
+        }
+        if (tab[static_cast<size_t>(idx)].obj != "constant") {
+            semantic_error("Enumerated identifier '" + id + "' must be a constant");
             continue;
         }
         const int current_type = tab[static_cast<size_t>(idx)].type;
