@@ -473,16 +473,50 @@ std::shared_ptr<DecoratedAstNode> SemanticAnalyzer::visit_statement(const std::s
 
 std::shared_ptr<DecoratedAstNode> SemanticAnalyzer::visit_assignment(const std::shared_ptr<ParseTreeNode>& node) {
     auto ast = std::make_shared<DecoratedAstNode>("Assign");
-    ValueInfo target = eval_variable(first_child(node, "<variable>"), true);
+    auto variable_node = first_child(node, "<variable>");
+    ValueInfo target = eval_variable(variable_node, true);
     ValueInfo value = eval_expression(first_child(node, "<expression>"));
     ast->type = target.type;
     ast->tab_index = target.tab_index;
-    if (!assignment_compatible(target.type, value)) {
+
+    int base_index = -1;
+    std::string target_name = "<target>";
+    if (variable_node) {
+        for (const auto& child : variable_node->children) {
+            if (terminal_is(child, "ident")) {
+                target_name = terminal_value(child);
+                base_index = lookup(target_name);
+                break;
+            }
+        }
+    }
+
+    bool assignable = false;
+    if (target.tab_index >= 0 && static_cast<size_t>(target.tab_index) < tab.size()) {
+        const auto& entry = tab[static_cast<size_t>(target.tab_index)];
+        assignable = entry.obj == "variable" || entry.obj == "parameter" || entry.obj == "field";
+        if (entry.obj == "function" && !display.empty() && entry.ref == display.back()) {
+            assignable = true;
+        }
+        if (!assignable) {
+            semantic_error("Identifier '" + target_name + "' is not an assignable target (" + entry.obj + ")");
+        }
+    }
+
+    const bool compatible_assignment = assignment_compatible(target.type, value);
+    if (!compatible_assignment) {
         semantic_error("Cannot assign " + type_name(value.type) + " to " + type_name(target.type));
     }
-    if (target.tab_index >= 0 && static_cast<size_t>(target.tab_index) < tab.size()) {
+
+    if (assignable && compatible_assignment && value.type != 0 &&
+        target.tab_index >= 0 && static_cast<size_t>(target.tab_index) < tab.size()) {
         tab[static_cast<size_t>(target.tab_index)].initialized = true;
     }
+    if (assignable && compatible_assignment && value.type != 0 &&
+        base_index >= 0 && static_cast<size_t>(base_index) < tab.size()) {
+        tab[static_cast<size_t>(base_index)].initialized = true;
+    }
+
     ast->add_child(std::make_shared<DecoratedAstNode>("target"));
     ast->children.back()->type = target.type;
     ast->children.back()->tab_index = target.tab_index;
@@ -533,8 +567,11 @@ std::shared_ptr<DecoratedAstNode> SemanticAnalyzer::visit_for(const std::shared_
     }
     const int idx = lookup(iterator);
     if (idx < 0) semantic_error("for iterator '" + iterator + "' is not declared");
-    else if (tab[static_cast<size_t>(idx)].type != integer_type && tab[static_cast<size_t>(idx)].type != char_type) {
-        semantic_error("for iterator '" + iterator + "' must be Integer or Char");
+    else if (tab[static_cast<size_t>(idx)].obj != "variable" &&
+             tab[static_cast<size_t>(idx)].obj != "parameter") {
+        semantic_error("for iterator '" + iterator + "' must be an assignable variable");
+    } else if (!simple_non_real(tab[static_cast<size_t>(idx)].type)) {
+        semantic_error("for iterator '" + iterator + "' must be a simple ordinal non-Real type");
     }
     for (const auto& expr : expressions) {
         ValueInfo value = eval_expression(expr);
@@ -543,6 +580,9 @@ std::shared_ptr<DecoratedAstNode> SemanticAnalyzer::visit_for(const std::shared_
         }
     }
     ast->tab_index = idx;
+    if (idx >= 0 && static_cast<size_t>(idx) < tab.size()) {
+        tab[static_cast<size_t>(idx)].initialized = true;
+    }
     ast->add_child(visit_compound_statement(first_child(node, "<compound-statement>")));
     return ast;
 }
@@ -576,6 +616,7 @@ std::shared_ptr<DecoratedAstNode> SemanticAnalyzer::visit_call(const std::shared
         }
     }
     const int idx = lookup(id);
+    std::vector<ValueInfo> arguments;
     if (idx < 0) {
         semantic_error("Procedure/function '" + id + "' is not declared");
     } else if (tab[static_cast<size_t>(idx)].obj != "procedure" &&
@@ -591,10 +632,43 @@ std::shared_ptr<DecoratedAstNode> SemanticAnalyzer::visit_call(const std::shared
         for (const auto& child : params->children) {
             if (is_node(child, "<expression>")) {
                 ValueInfo arg = eval_expression(child);
+                arguments.push_back(arg);
                 auto arg_ast = std::make_shared<DecoratedAstNode>("arg");
                 arg_ast->type = arg.type;
                 ast->add_child(arg_ast);
             }
+        }
+    }
+    if (idx >= 0 && static_cast<size_t>(idx) < tab.size()) {
+        const auto& entry = tab[static_cast<size_t>(idx)];
+        if (entry.ref > 0 && static_cast<size_t>(entry.ref) < btab.size()) {
+            std::vector<int> parameter_types;
+            int parameter = btab[static_cast<size_t>(entry.ref)].lpar;
+            while (parameter > 0 && static_cast<size_t>(parameter) < tab.size() &&
+                   tab[static_cast<size_t>(parameter)].obj == "parameter") {
+                parameter_types.push_back(tab[static_cast<size_t>(parameter)].type);
+                parameter = tab[static_cast<size_t>(parameter)].link;
+            }
+            std::reverse(parameter_types.begin(), parameter_types.end());
+
+            if (parameter_types.size() != arguments.size()) {
+                semantic_error("Call to '" + id + "' expects " +
+                               std::to_string(parameter_types.size()) + " argument(s), got " +
+                               std::to_string(arguments.size()));
+            }
+
+            const size_t checked = std::min(parameter_types.size(), arguments.size());
+            for (size_t i = 0; i < checked; ++i) {
+                if (!assignment_compatible(parameter_types[i], arguments[i])) {
+                    semantic_error("Argument " + std::to_string(i + 1) + " of '" + id +
+                                   "' expects " + type_name(parameter_types[i]) +
+                                   ", got " + type_name(arguments[i].type));
+                }
+            }
+        }
+
+        if (out && entry.obj == "procedure") {
+            semantic_error("Procedure '" + id + "' does not produce a value");
         }
     }
     if (out) {
@@ -804,9 +878,37 @@ SemanticAnalyzer::ValueInfo SemanticAnalyzer::eval_expression(const std::shared_
     result = eval_simple_expression(simple_exprs[0]);
     if (has_relation && simple_exprs.size() == 2) {
         ValueInfo right = eval_simple_expression(simple_exprs[1]);
+        std::string op;
+        for (const auto& child : node->children) {
+            if (is_node(child, "<relational-operator>") && !child->children.empty()) {
+                op = terminal_token(child->children.front());
+                break;
+            }
+        }
+        auto orderable = [&](int type) {
+            if (type == integer_type || type == real_type ||
+                type == char_type || type == boolean_type) {
+                return true;
+            }
+            if (type > 0 && static_cast<size_t>(type) < types.size()) {
+                const auto& info = types[static_cast<size_t>(type)];
+                return info.kind == SemanticTypeKind::Subrange ||
+                       info.kind == SemanticTypeKind::Enumerated;
+            }
+            return false;
+        };
+
+        if (result.type == 0 || right.type == 0) {
+            result.type = boolean_type;
+            result.is_constant = false;
+            return result;
+        }
         if (!compatible(result.type, right.type)) {
             semantic_error("Relational operands are incompatible: " + type_name(result.type) +
                            " and " + type_name(right.type));
+        } else if (op != "eql" && op != "neq" &&
+                   (!orderable(result.type) || !orderable(right.type))) {
+            semantic_error("Relational operator " + op + " requires orderable operands");
         }
         result.type = boolean_type;
         result.is_constant = false;
@@ -829,11 +931,19 @@ SemanticAnalyzer::ValueInfo SemanticAnalyzer::eval_simple_expression(const std::
     }
     if (terms.empty()) return result;
     result = terms[0];
+    if (sign == -1 && !numeric(result.type) && result.type != 0) {
+        semantic_error("Unary minus requires a numeric operand");
+    }
     if (result.type == integer_type) result.int_value *= sign;
     if (result.type == real_type) result.real_value *= sign;
 
     for (size_t i = 1; i < terms.size(); ++i) {
         const std::string op = i - 1 < ops.size() ? ops[i - 1] : "";
+        if (result.type == 0 || terms[i].type == 0) {
+            result.type = 0;
+            result.is_constant = false;
+            continue;
+        }
         if (op == "orsy") {
             if (result.type != boolean_type || terms[i].type != boolean_type) {
                 semantic_error("Operator or requires Boolean operands");
@@ -866,13 +976,24 @@ SemanticAnalyzer::ValueInfo SemanticAnalyzer::eval_term(const std::shared_ptr<Pa
     result = factors[0];
     for (size_t i = 1; i < factors.size(); ++i) {
         const std::string op = i - 1 < ops.size() ? ops[i - 1] : "";
+        if (result.type == 0 || factors[i].type == 0) {
+            result.type = 0;
+            result.is_constant = false;
+            continue;
+        }
         if (op == "andsy") {
             if (result.type != boolean_type || factors[i].type != boolean_type) {
                 semantic_error("Operator and requires Boolean operands");
             }
             result.type = boolean_type;
         } else if (op == "idiv" || op == "imod") {
-            if (result.type != integer_type || factors[i].type != integer_type) {
+            auto integer_like = [&](int type) {
+                if (type == integer_type) return true;
+                return type > 0 && static_cast<size_t>(type) < types.size() &&
+                       types[static_cast<size_t>(type)].kind == SemanticTypeKind::Subrange &&
+                       types[static_cast<size_t>(type)].base_type == integer_type;
+            };
+            if (!integer_like(result.type) || !integer_like(factors[i].type)) {
                 semantic_error("Operator " + op + " requires Integer operands");
             }
             result.type = integer_type;
@@ -907,7 +1028,9 @@ SemanticAnalyzer::ValueInfo SemanticAnalyzer::eval_factor(const std::shared_ptr<
         }
     }
     if (negated) {
-        if (result.type != boolean_type) semantic_error("Operator not requires a Boolean operand");
+        if (result.type != 0 && result.type != boolean_type) {
+            semantic_error("Operator not requires a Boolean operand");
+        }
         result.type = boolean_type;
     }
     return result;
@@ -937,7 +1060,36 @@ SemanticAnalyzer::ValueInfo SemanticAnalyzer::eval_variable(const std::shared_pt
     result.type = tab[static_cast<size_t>(idx)].type;
     result.tab_index = idx;
     result.initialized = tab[static_cast<size_t>(idx)].initialized;
-    if (!as_assignment_target && !result.initialized && tab[static_cast<size_t>(idx)].obj == "variable") {
+    const auto& base_entry = tab[static_cast<size_t>(idx)];
+    if (!as_assignment_target &&
+        base_entry.obj != "variable" && base_entry.obj != "parameter" &&
+        base_entry.obj != "constant" && base_entry.obj != "function") {
+        semantic_error("Identifier '" + id + "' is not a value (" + base_entry.obj + ")");
+        result.type = 0;
+        return result;
+    }
+    if (base_entry.obj == "constant") {
+        result.is_constant = true;
+        result.string_value = base_entry.value;
+        const std::string lowered_value = lowercase(id);
+        const std::string lowered_text = lowercase(base_entry.value);
+        try {
+            if (result.type == integer_type && !base_entry.value.empty()) {
+                result.int_value = std::stoi(base_entry.value);
+            } else if (result.type == real_type && !base_entry.value.empty()) {
+                result.real_value = std::stod(base_entry.value);
+            } else if (result.type == char_type && base_entry.value.size() >= 3) {
+                result.char_value = base_entry.value[1];
+            } else if (result.type == boolean_type) {
+                result.bool_value = lowered_value == "true" || lowered_text == "true";
+            }
+        } catch (const std::exception&) {
+            semantic_error("Invalid constant value for '" + id + "'");
+        }
+    }
+    const int current_level = static_cast<int>(scopes.size()) - 1;
+    if (!as_assignment_target && !result.initialized && base_entry.obj == "variable" &&
+        base_entry.lev == current_level) {
         semantic_error("Variable '" + id + "' may be used before initialization");
     }
 
@@ -946,14 +1098,48 @@ SemanticAnalyzer::ValueInfo SemanticAnalyzer::eval_variable(const std::shared_pt
         if (!is_node(component, "<component-variable>")) continue;
         if (component->children.empty()) continue;
         if (terminal_is(component->children.front(), "lbrack")) {
-            if (result.type <= 0 || static_cast<size_t>(result.type) >= types.size() ||
-                types[static_cast<size_t>(result.type)].kind != SemanticTypeKind::Array) {
-                semantic_error("Indexed access requires an Array type");
-                result.type = 0;
-                continue;
-            }
-            const int array_ref = types[static_cast<size_t>(result.type)].ref;
-            if (array_ref >= 0 && static_cast<size_t>(array_ref) < atab.size()) {
+            std::vector<std::shared_ptr<ParseTreeNode>> indexes;
+            std::function<void(const std::shared_ptr<ParseTreeNode>&)> collect_indexes =
+                [&](const std::shared_ptr<ParseTreeNode>& index_node) {
+                    if (!index_node) return;
+                    for (const auto& child : index_node->children) {
+                        if (terminal_is(child, "intcon") || terminal_is(child, "charcon") ||
+                            terminal_is(child, "ident")) {
+                            indexes.push_back(child);
+                        } else if (is_node(child, "<index-list>")) {
+                            collect_indexes(child);
+                        }
+                    }
+                };
+            collect_indexes(first_child(component, "<index-list>"));
+
+            for (const auto& index_node : indexes) {
+                if (result.type <= 0 || static_cast<size_t>(result.type) >= types.size() ||
+                    types[static_cast<size_t>(result.type)].kind != SemanticTypeKind::Array) {
+                    semantic_error("Indexed access requires an Array type");
+                    result.type = 0;
+                    break;
+                }
+
+                const int array_ref = types[static_cast<size_t>(result.type)].ref;
+                if (array_ref < 0 || static_cast<size_t>(array_ref) >= atab.size()) {
+                    semantic_error("Array type is missing atab metadata");
+                    result.type = 0;
+                    break;
+                }
+
+                ValueInfo index_value = value_from_terminal(index_node);
+                const int expected = atab[static_cast<size_t>(array_ref)].xtyp;
+                if (!compatible(expected, index_value.type)) {
+                    semantic_error("Array index type " + type_name(index_value.type) +
+                                   " is incompatible with " + type_name(expected));
+                } else if (!assignment_compatible(expected, index_value)) {
+                    semantic_error("Array index value is outside bounds " +
+                                   std::to_string(atab[static_cast<size_t>(array_ref)].low) +
+                                   ".." +
+                                   std::to_string(atab[static_cast<size_t>(array_ref)].high));
+                }
+
                 result.type = atab[static_cast<size_t>(array_ref)].etyp;
             }
         } else if (terminal_is(component->children.front(), "period")) {
@@ -1007,11 +1193,21 @@ SemanticAnalyzer::ValueInfo SemanticAnalyzer::value_from_terminal(const std::sha
                 semantic_error("Identifier '" + value + "' is not declared");
             } else {
                 const auto& entry = tab[static_cast<size_t>(idx)];
+                if (entry.obj != "variable" && entry.obj != "parameter" &&
+                    entry.obj != "constant" && entry.obj != "function") {
+                    semantic_error("Identifier '" + value + "' is not a value (" + entry.obj + ")");
+                    result.type = 0;
+                    return result;
+                }
                 result.type = entry.type;
                 result.tab_index = idx;
                 result.initialized = entry.initialized;
                 result.is_constant = entry.obj == "constant";
                 result.string_value = entry.value;
+                const int current_level = static_cast<int>(scopes.size()) - 1;
+                if (entry.obj == "variable" && !entry.initialized && entry.lev == current_level) {
+                    semantic_error("Variable '" + value + "' may be used before initialization");
+                }
                 const std::string lowered_value = lowercase(value);
                 const std::string lowered_text = lowercase(result.string_value);
                 if (result.type == integer_type && !result.string_value.empty()) {
@@ -1035,9 +1231,12 @@ bool SemanticAnalyzer::compatible(int left_type, int right_type) const {
     if (left_type == 0 || right_type == 0) return true;
     if (left_type == right_type) return true;
     auto base = [&](int type) {
-        if (type > 0 && static_cast<size_t>(type) < types.size() &&
-            types[static_cast<size_t>(type)].kind == SemanticTypeKind::Subrange) {
-            return types[static_cast<size_t>(type)].base_type;
+        if (type > 0 && static_cast<size_t>(type) < types.size()) {
+            const auto& info = types[static_cast<size_t>(type)];
+            if (info.kind == SemanticTypeKind::Subrange ||
+                info.kind == SemanticTypeKind::Enumerated) {
+                return info.base_type;
+            }
         }
         return type;
     };

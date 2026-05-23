@@ -1,0 +1,11 @@
+berarprogram TypeError;
+var
+  i: integer;
+  b: boolean;
+  c: char;
+begin
+  i := 1;
+  b := false;
+  i := b + 2;
+  c := i;
+end.
