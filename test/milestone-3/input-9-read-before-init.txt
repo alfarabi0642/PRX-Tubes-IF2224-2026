@@ -1,0 +1,6 @@
+program ReadBeforeInit;
+var
+  x, y: integer;
+begin
+  y := x + 1;
+end.

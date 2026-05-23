@@ -1,0 +1,6 @@
+program UndeclaredUse;
+var
+  x: integer;
+begin
+  x := missingValue + 1;
+end.

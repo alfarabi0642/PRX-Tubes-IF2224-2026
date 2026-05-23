@@ -1,0 +1,19 @@
+program WhileForCompound;
+var
+  i, total: integer;
+  keepGoing: boolean;
+begin
+  total := 0;
+  keepGoing := true;
+
+  while keepGoing do
+  begin
+    total := total + 1;
+    keepGoing := total < 3;
+  end;
+
+  for i := 1 to 2 do
+  begin
+    total := total + i;
+  end;
+end.
