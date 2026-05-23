@@ -1,0 +1,279 @@
+=== Parse Tree ===
+<program>
+├── <program-header>
+│   ├── programsy
+│   ├── ident(ArrayAndRecordAccessError)
+│   └── semicolon
+├── <declaration-part>
+│   ├── <type-declaration>
+│   │   ├── typesy
+│   │   ├── ident(IndexRange)
+│   │   ├── eql
+│   │   ├── <type>
+│   │   │   └── <range>
+│   │   │       ├── <constant>
+│   │   │       │   └── intcon(1)
+│   │   │       ├── period
+│   │   │       ├── period
+│   │   │       └── <constant>
+│   │   │           └── intcon(3)
+│   │   ├── semicolon
+│   │   ├── ident(Values)
+│   │   ├── eql
+│   │   ├── <type>
+│   │   │   └── <array-type>
+│   │   │       ├── arraysy
+│   │   │       ├── lbrack
+│   │   │       ├── ident(IndexRange)
+│   │   │       ├── rbrack
+│   │   │       ├── ofsy
+│   │   │       └── <type>
+│   │   │           └── ident(integer)
+│   │   ├── semicolon
+│   │   ├── ident(Point)
+│   │   ├── eql
+│   │   ├── <type>
+│   │   │   └── <record-type>
+│   │   │       ├── recordsy
+│   │   │       ├── <field-list>
+│   │   │       │   ├── <field-part>
+│   │   │       │   │   ├── <identifier-list>
+│   │   │       │   │   │   ├── ident(x)
+│   │   │       │   │   │   ├── comma
+│   │   │       │   │   │   └── ident(y)
+│   │   │       │   │   ├── colon
+│   │   │       │   │   └── <type>
+│   │   │       │   │       └── ident(integer)
+│   │   │       │   └── semicolon
+│   │   │       └── endsy
+│   │   └── semicolon
+│   └── <var-declaration>
+│       ├── varsy
+│       ├── <identifier-list>
+│       │   └── ident(values)
+│       ├── colon
+│       ├── <type>
+│       │   └── ident(Values)
+│       ├── semicolon
+│       ├── <identifier-list>
+│       │   └── ident(p)
+│       ├── colon
+│       ├── <type>
+│       │   └── ident(Point)
+│       ├── semicolon
+│       ├── <identifier-list>
+│       │   └── ident(i)
+│       ├── colon
+│       ├── <type>
+│       │   └── ident(integer)
+│       ├── semicolon
+│       ├── <identifier-list>
+│       │   └── ident(r)
+│       ├── colon
+│       ├── <type>
+│       │   └── ident(real)
+│       └── semicolon
+├── <compound-statement>
+│   ├── beginsy
+│   ├── <statement-list>
+│   │   ├── <statement>
+│   │   │   └── <assignment-statement>
+│   │   │       ├── <variable>
+│   │   │       │   └── ident(r)
+│   │   │       ├── becomes
+│   │   │       └── <expression>
+│   │   │           └── <simple-expression>
+│   │   │               └── <term>
+│   │   │                   └── <factor>
+│   │   │                       └── realcon(2.5)
+│   │   ├── semicolon
+│   │   ├── <statement>
+│   │   │   └── <assignment-statement>
+│   │   │       ├── <variable>
+│   │   │       │   ├── ident(values)
+│   │   │       │   └── <component-variable>
+│   │   │       │       ├── lbrack
+│   │   │       │       ├── <index-list>
+│   │   │       │       │   └── <expression>
+│   │   │       │       │       └── <simple-expression>
+│   │   │       │       │           └── <term>
+│   │   │       │       │               └── <factor>
+│   │   │       │       │                   └── <variable>
+│   │   │       │       │                       └── ident(r)
+│   │   │       │       └── rbrack
+│   │   │       ├── becomes
+│   │   │       └── <expression>
+│   │   │           └── <simple-expression>
+│   │   │               └── <term>
+│   │   │                   └── <factor>
+│   │   │                       └── intcon(10)
+│   │   ├── semicolon
+│   │   ├── <statement>
+│   │   │   └── <assignment-statement>
+│   │   │       ├── <variable>
+│   │   │       │   ├── ident(values)
+│   │   │       │   └── <component-variable>
+│   │   │       │       ├── lbrack
+│   │   │       │       ├── <index-list>
+│   │   │       │       │   └── <expression>
+│   │   │       │       │       └── <simple-expression>
+│   │   │       │       │           └── <term>
+│   │   │       │       │               └── <factor>
+│   │   │       │       │                   └── intcon(4)
+│   │   │       │       └── rbrack
+│   │   │       ├── becomes
+│   │   │       └── <expression>
+│   │   │           └── <simple-expression>
+│   │   │               └── <term>
+│   │   │                   └── <factor>
+│   │   │                       └── intcon(20)
+│   │   ├── semicolon
+│   │   ├── <statement>
+│   │   │   └── <assignment-statement>
+│   │   │       ├── <variable>
+│   │   │       │   ├── ident(p)
+│   │   │       │   └── <component-variable>
+│   │   │       │       ├── period
+│   │   │       │       └── ident(z)
+│   │   │       ├── becomes
+│   │   │       └── <expression>
+│   │   │           └── <simple-expression>
+│   │   │               └── <term>
+│   │   │                   └── <factor>
+│   │   │                       └── intcon(10)
+│   │   ├── semicolon
+│   │   ├── <statement>
+│   │   │   └── <assignment-statement>
+│   │   │       ├── <variable>
+│   │   │       │   ├── ident(i)
+│   │   │       │   └── <component-variable>
+│   │   │       │       ├── period
+│   │   │       │       └── ident(x)
+│   │   │       ├── becomes
+│   │   │       └── <expression>
+│   │   │           └── <simple-expression>
+│   │   │               └── <term>
+│   │   │                   └── <factor>
+│   │   │                       └── intcon(1)
+│   │   ├── semicolon
+│   │   └── <statement>
+│   └── endsy
+└── period
+
+=== Decorated AST ===
+Program(ArrayAndRecordAccessError), tab_index=41
+|-- DeclarationPart
+|   |-- TypeDecl(IndexRange) : type=IndexRange, tab_index=42
+|   |   \-- RangeType : type=IndexRange
+|   |       |-- Literal(1) value=1 literal=Integer : type=Integer
+|   |       \-- Literal(3) value=3 literal=Integer : type=Integer
+|   |-- TypeDecl(Values) : type=Values, tab_index=43
+|   |   \-- ArrayType : type=Values
+|   |       |-- TypeRef(IndexRange) : type=IndexRange, tab_index=42
+|   |       \-- TypeRef(integer) : type=Integer, tab_index=32
+|   |-- TypeDecl(Point) : type=Point, tab_index=46
+|   |   \-- RecordType : type=Point
+|   |       |-- FieldDecl(x) : type=Integer, tab_index=44
+|   |       |   \-- TypeRef(integer) : type=Integer, tab_index=32
+|   |       \-- FieldDecl(y) : type=Integer, tab_index=45
+|   |           \-- TypeRef(integer) : type=Integer, tab_index=32
+|   |-- VarDecl(values) : type=Values, tab_index=47
+|   |   \-- TypeRef(Values) : type=Values, tab_index=43
+|   |-- VarDecl(p) : type=Point, tab_index=48
+|   |   \-- TypeRef(Point) : type=Point, tab_index=46
+|   |-- VarDecl(i) : type=Integer, tab_index=49
+|   |   \-- TypeRef(integer) : type=Integer, tab_index=32
+|   \-- VarDecl(r) : type=Real, tab_index=50
+|       \-- TypeRef(real) : type=Real, tab_index=33
+\-- CompoundStatement
+    |-- AssignStatement : type=Real, tab_index=50
+    |   |-- Variable(r) : type=Real, tab_index=50
+    |   \-- Literal(2.5) value=2.5 literal=Real : type=Real
+    |-- AssignStatement : type=Integer, tab_index=47
+    |   |-- Variable(values) : type=Integer, tab_index=47
+    |   |   \-- IndexComponent
+    |   |       \-- Variable(r) : type=Real, tab_index=50
+    |   \-- Literal(10) value=10 literal=Integer : type=Integer
+    |-- AssignStatement : type=Integer, tab_index=47
+    |   |-- Variable(values) : type=Integer, tab_index=47
+    |   |   \-- IndexComponent
+    |   |       \-- Literal(4) value=4 literal=Integer : type=Integer
+    |   \-- Literal(20) value=20 literal=Integer : type=Integer
+    |-- AssignStatement, tab_index=48
+    |   |-- Variable(p), tab_index=48
+    |   |   \-- FieldComponent(z)
+    |   \-- Literal(10) value=10 literal=Integer : type=Integer
+    |-- AssignStatement, tab_index=49
+    |   |-- Variable(i), tab_index=49
+    |   |   \-- FieldComponent(x)
+    |   \-- Literal(1) value=1 literal=Integer : type=Integer
+    \-- EmptyStatement
+
+=== Symbol Table: tab ===
+idx	identifier	obj	type	ref	nrm	lev	adr	link	init	value
+0	and	reserved	unknown	0	1	0	0	0	yes	
+1	array	reserved	unknown	0	1	0	0	0	yes	
+2	begin	reserved	unknown	0	1	0	0	1	yes	
+3	case	reserved	unknown	0	1	0	0	2	yes	
+4	const	reserved	unknown	0	1	0	0	3	yes	
+5	div	reserved	unknown	0	1	0	0	4	yes	
+6	downto	reserved	unknown	0	1	0	0	5	yes	
+7	do	reserved	unknown	0	1	0	0	6	yes	
+8	else	reserved	unknown	0	1	0	0	7	yes	
+9	end	reserved	unknown	0	1	0	0	8	yes	
+10	for	reserved	unknown	0	1	0	0	9	yes	
+11	function	reserved	unknown	0	1	0	0	10	yes	
+12	if	reserved	unknown	0	1	0	0	11	yes	
+13	mod	reserved	unknown	0	1	0	0	12	yes	
+14	not	reserved	unknown	0	1	0	0	13	yes	
+15	of	reserved	unknown	0	1	0	0	14	yes	
+16	or	reserved	unknown	0	1	0	0	15	yes	
+17	procedure	reserved	unknown	0	1	0	0	16	yes	
+18	program	reserved	unknown	0	1	0	0	17	yes	
+19	record	reserved	unknown	0	1	0	0	18	yes	
+20	repeat	reserved	unknown	0	1	0	0	19	yes	
+21	integer	reserved	unknown	0	1	0	0	20	yes	
+22	real	reserved	unknown	0	1	0	0	21	yes	
+23	boolean	reserved	unknown	0	1	0	0	22	yes	
+24	char	reserved	unknown	0	1	0	0	23	yes	
+25	string	reserved	unknown	0	1	0	0	24	yes	
+26	then	reserved	unknown	0	1	0	0	25	yes	
+27	to	reserved	unknown	0	1	0	0	26	yes	
+28	type	reserved	unknown	0	1	0	0	27	yes	
+29	until	reserved	unknown	0	1	0	0	28	yes	
+30	var	reserved	unknown	0	1	0	0	29	yes	
+31	while	reserved	unknown	0	1	0	0	30	yes	
+32	Integer	type	Integer	0	1	0	0	31	yes	
+33	Real	type	Real	0	1	0	0	32	yes	
+34	Char	type	Char	0	1	0	0	33	yes	
+35	Boolean	type	Boolean	0	1	0	0	34	yes	
+36	String	type	String	0	1	0	0	35	yes	
+37	True	constant	Boolean	0	1	0	1	36	yes	true
+38	False	constant	Boolean	0	1	0	0	37	yes	false
+39	readln	procedure	unknown	0	1	0	0	38	yes	
+40	writeln	procedure	unknown	0	1	0	0	39	yes	
+41	ArrayAndRecordAccessError	program	unknown	0	1	0	0	40	yes	
+42	IndexRange	type	IndexRange	0	1	0	0	41	yes	
+43	Values	type	Values	0	1	0	0	42	yes	
+44	x	field	Integer	0	1	1	0	0	yes	
+45	y	field	Integer	0	1	1	1	44	yes	
+46	Point	type	Point	1	1	0	0	43	yes	
+47	values	variable	Values	0	1	0	0	46	yes	
+48	p	variable	Point	1	1	0	3	47	yes	
+49	i	variable	Integer	0	1	0	5	48	yes	
+50	r	variable	Real	0	1	0	6	49	yes	
+
+=== Symbol Table: btab ===
+idx	last	lpar	psze	vsze
+0	50	0	0	8
+1	45	0	0	2
+
+=== Symbol Table: atab ===
+idx	xtyp	etyp	eref	low	high	elsz	size
+0	IndexRange	Integer	0	1	3	1	3
+
+=== Semantic Errors ===
+15:10: Error: Semantic error: Array index type Real is incompatible with IndexRange
+16:10: Error: Semantic error: Array index value is outside bounds 1..3
+17:4: Error: Semantic error: Record field 'z' is not declared
+18:4: Error: Semantic error: Field access requires a Record type

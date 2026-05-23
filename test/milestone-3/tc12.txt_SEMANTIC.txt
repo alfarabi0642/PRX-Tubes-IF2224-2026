@@ -1,0 +1,200 @@
+=== Parse Tree ===
+<program>
+├── <program-header>
+│   ├── programsy
+│   ├── ident(TypeDeclarationAndEnumError)
+│   └── semicolon
+├── <declaration-part>
+│   ├── <type-declaration>
+│   │   ├── typesy
+│   │   ├── ident(Color)
+│   │   ├── eql
+│   │   ├── <type>
+│   │   │   └── <enumerated>
+│   │   │       ├── lparent
+│   │   │       ├── ident(Red)
+│   │   │       ├── comma
+│   │   │       ├── ident(Green)
+│   │   │       ├── comma
+│   │   │       ├── ident(Blue)
+│   │   │       └── rparent
+│   │   ├── semicolon
+│   │   ├── ident(BadRangeOrder)
+│   │   ├── eql
+│   │   ├── <type>
+│   │   │   └── <range>
+│   │   │       ├── <constant>
+│   │   │       │   └── intcon(10)
+│   │   │       ├── period
+│   │   │       ├── period
+│   │   │       └── <constant>
+│   │   │           └── intcon(1)
+│   │   ├── semicolon
+│   │   ├── ident(BadRealRange)
+│   │   ├── eql
+│   │   ├── <type>
+│   │   │   └── <range>
+│   │   │       ├── <constant>
+│   │   │       │   └── realcon(1.5)
+│   │   │       ├── period
+│   │   │       ├── period
+│   │   │       └── <constant>
+│   │   │           └── realcon(3.5)
+│   │   ├── semicolon
+│   │   ├── ident(BadArray)
+│   │   ├── eql
+│   │   ├── <type>
+│   │   │   └── <array-type>
+│   │   │       ├── arraysy
+│   │   │       ├── lbrack
+│   │   │       ├── ident(BadRealRange)
+│   │   │       ├── rbrack
+│   │   │       ├── ofsy
+│   │   │       └── <type>
+│   │   │           └── ident(integer)
+│   │   └── semicolon
+│   └── <var-declaration>
+│       ├── varsy
+│       ├── <identifier-list>
+│       │   └── ident(x)
+│       ├── colon
+│       ├── <type>
+│       │   └── ident(BadRangeOrder)
+│       ├── semicolon
+│       ├── <identifier-list>
+│       │   └── ident(color)
+│       ├── colon
+│       ├── <type>
+│       │   └── ident(Color)
+│       └── semicolon
+├── <compound-statement>
+│   ├── beginsy
+│   ├── <statement-list>
+│   │   ├── <statement>
+│   │   │   └── <assignment-statement>
+│   │   │       ├── <variable>
+│   │   │       │   └── ident(x)
+│   │   │       ├── becomes
+│   │   │       └── <expression>
+│   │   │           └── <simple-expression>
+│   │   │               └── <term>
+│   │   │                   └── <factor>
+│   │   │                       └── intcon(5)
+│   │   ├── semicolon
+│   │   ├── <statement>
+│   │   │   └── <assignment-statement>
+│   │   │       ├── <variable>
+│   │   │       │   └── ident(color)
+│   │   │       ├── becomes
+│   │   │       └── <expression>
+│   │   │           └── <simple-expression>
+│   │   │               └── <term>
+│   │   │                   └── <factor>
+│   │   │                       └── <variable>
+│   │   │                           └── ident(Red)
+│   │   ├── semicolon
+│   │   └── <statement>
+│   └── endsy
+└── period
+
+=== Decorated AST ===
+Program(TypeDeclarationAndEnumError), tab_index=41
+|-- DeclarationPart
+|   |-- TypeDecl(Color) : type=Color, tab_index=42
+|   |   \-- EnumType : type=Color
+|   |       |-- Literal(Red) value=Red literal=IdentifierConstant
+|   |       |-- Literal(Green) value=Green literal=IdentifierConstant
+|   |       \-- Literal(Blue) value=Blue literal=IdentifierConstant
+|   |-- TypeDecl(BadRangeOrder) : type=BadRangeOrder, tab_index=43
+|   |   \-- RangeType : type=BadRangeOrder
+|   |       |-- Literal(10) value=10 literal=Integer : type=Integer
+|   |       \-- Literal(1) value=1 literal=Integer : type=Integer
+|   |-- TypeDecl(BadRealRange) : type=BadRealRange, tab_index=44
+|   |   \-- RangeType : type=BadRealRange
+|   |       |-- Literal(1.5) value=1.5 literal=Real : type=Real
+|   |       \-- Literal(3.5) value=3.5 literal=Real : type=Real
+|   |-- TypeDecl(BadArray) : type=BadArray, tab_index=45
+|   |   \-- ArrayType : type=BadArray
+|   |       |-- TypeRef(BadRealRange) : type=BadRealRange, tab_index=44
+|   |       \-- TypeRef(integer) : type=Integer, tab_index=32
+|   |-- VarDecl(x) : type=BadRangeOrder, tab_index=46
+|   |   \-- TypeRef(BadRangeOrder) : type=BadRangeOrder, tab_index=43
+|   \-- VarDecl(color) : type=Color, tab_index=47
+|       \-- TypeRef(Color) : type=Color, tab_index=42
+\-- CompoundStatement
+    |-- AssignStatement : type=BadRangeOrder, tab_index=46
+    |   |-- Variable(x) : type=BadRangeOrder, tab_index=46
+    |   \-- Literal(5) value=5 literal=Integer : type=Integer
+    |-- AssignStatement : type=Color, tab_index=47
+    |   |-- Variable(color) : type=Color, tab_index=47
+    |   \-- Variable(Red)
+    \-- EmptyStatement
+
+=== Symbol Table: tab ===
+idx	identifier	obj	type	ref	nrm	lev	adr	link	init	value
+0	and	reserved	unknown	0	1	0	0	0	yes	
+1	array	reserved	unknown	0	1	0	0	0	yes	
+2	begin	reserved	unknown	0	1	0	0	1	yes	
+3	case	reserved	unknown	0	1	0	0	2	yes	
+4	const	reserved	unknown	0	1	0	0	3	yes	
+5	div	reserved	unknown	0	1	0	0	4	yes	
+6	downto	reserved	unknown	0	1	0	0	5	yes	
+7	do	reserved	unknown	0	1	0	0	6	yes	
+8	else	reserved	unknown	0	1	0	0	7	yes	
+9	end	reserved	unknown	0	1	0	0	8	yes	
+10	for	reserved	unknown	0	1	0	0	9	yes	
+11	function	reserved	unknown	0	1	0	0	10	yes	
+12	if	reserved	unknown	0	1	0	0	11	yes	
+13	mod	reserved	unknown	0	1	0	0	12	yes	
+14	not	reserved	unknown	0	1	0	0	13	yes	
+15	of	reserved	unknown	0	1	0	0	14	yes	
+16	or	reserved	unknown	0	1	0	0	15	yes	
+17	procedure	reserved	unknown	0	1	0	0	16	yes	
+18	program	reserved	unknown	0	1	0	0	17	yes	
+19	record	reserved	unknown	0	1	0	0	18	yes	
+20	repeat	reserved	unknown	0	1	0	0	19	yes	
+21	integer	reserved	unknown	0	1	0	0	20	yes	
+22	real	reserved	unknown	0	1	0	0	21	yes	
+23	boolean	reserved	unknown	0	1	0	0	22	yes	
+24	char	reserved	unknown	0	1	0	0	23	yes	
+25	string	reserved	unknown	0	1	0	0	24	yes	
+26	then	reserved	unknown	0	1	0	0	25	yes	
+27	to	reserved	unknown	0	1	0	0	26	yes	
+28	type	reserved	unknown	0	1	0	0	27	yes	
+29	until	reserved	unknown	0	1	0	0	28	yes	
+30	var	reserved	unknown	0	1	0	0	29	yes	
+31	while	reserved	unknown	0	1	0	0	30	yes	
+32	Integer	type	Integer	0	1	0	0	31	yes	
+33	Real	type	Real	0	1	0	0	32	yes	
+34	Char	type	Char	0	1	0	0	33	yes	
+35	Boolean	type	Boolean	0	1	0	0	34	yes	
+36	String	type	String	0	1	0	0	35	yes	
+37	True	constant	Boolean	0	1	0	1	36	yes	true
+38	False	constant	Boolean	0	1	0	0	37	yes	false
+39	readln	procedure	unknown	0	1	0	0	38	yes	
+40	writeln	procedure	unknown	0	1	0	0	39	yes	
+41	TypeDeclarationAndEnumError	program	unknown	0	1	0	0	40	yes	
+42	Color	type	Color	0	1	0	0	41	yes	
+43	BadRangeOrder	type	BadRangeOrder	0	1	0	0	42	yes	
+44	BadRealRange	type	BadRealRange	0	1	0	0	43	yes	
+45	BadArray	type	BadArray	0	1	0	0	44	yes	
+46	x	variable	BadRangeOrder	0	1	0	0	45	no	
+47	color	variable	Color	0	1	0	1	46	no	
+
+=== Symbol Table: btab ===
+idx	last	lpar	psze	vsze
+0	47	0	0	2
+
+=== Symbol Table: atab ===
+idx	xtyp	etyp	eref	low	high	elsz	size
+0	BadRealRange	Integer	0	0	0	1	1
+
+=== Semantic Errors ===
+3:13: Error: Semantic error: Enumerated identifier 'Red' must be declared before the enumerated type
+3:18: Error: Semantic error: Enumerated identifier 'Green' must be declared before the enumerated type
+3:25: Error: Semantic error: Enumerated identifier 'Blue' must be declared before the enumerated type
+4:20: Error: Semantic error: Range lower bound is greater than upper bound
+5:19: Error: Semantic error: Subrange cannot use Real bounds
+6:15: Error: Semantic error: Array index type must be a simple non-Real type
+11:3: Error: Semantic error: Cannot assign Integer to BadRangeOrder
+12:12: Error: Semantic error: Identifier 'Red' is not declared
