@@ -1,0 +1,234 @@
+#include "semantic_analyzer.hpp"
+
+#include <algorithm>
+
+namespace semantic {
+
+AstNodePtr SemanticAnalyzer::visit_assignment(const AstNodePtr& node) {
+    if (!node || node->children.size() < 2) return node;
+
+    ValueInfo target = eval_variable(node->children[0], true);
+    ValueInfo value = eval_expression(node->children[1]);
+
+    node->annotation.type_id = target.type;
+    node->annotation.tab_index = target.tab_index;
+
+    bool assignable = false;
+    std::string target_name = node->children[0] ? node->children[0]->name : "<target>";
+    if (target.tab_index >= 0 &&
+        static_cast<size_t>(target.tab_index) < result->symbols.tab_entries().size()) {
+        const auto& entry = result->symbols.tab_entry(target.tab_index);
+        assignable = entry.obj == SymbolObject::Variable ||
+                     entry.obj == SymbolObject::Parameter ||
+                     entry.obj == SymbolObject::Field;
+        if (entry.obj == SymbolObject::Function && entry.ref == result->symbols.current_block_index()) {
+            assignable = true;
+        }
+        if (!assignable) {
+            semantic_error(node, "Identifier '" + target_name + "' is not an assignable target (" +
+                                 symbol_object_name(entry.obj) + ")");
+        }
+    }
+
+    const bool compatible = result->types.assignment_compatible(
+        target.type, value.type,
+        value.is_constant
+            ? std::optional<ConstantValue>(ConstantValue{value.type, value.string_value,
+                                                         value.int_value, value.real_value,
+                                                         value.char_value, value.bool_value})
+            : std::nullopt);
+    if (!compatible) {
+        semantic_error(node, "Cannot assign " + result->types.type_name(value.type) +
+                             " to " + result->types.type_name(target.type));
+    }
+
+    if (assignable && compatible && value.type != 0) {
+        if (target.tab_index >= 0 &&
+            static_cast<size_t>(target.tab_index) < result->symbols.tab_entries().size()) {
+            result->symbols.tab_mutable(target.tab_index).initialized = true;
+        }
+        if (target.base_tab_index >= 0 &&
+            static_cast<size_t>(target.base_tab_index) < result->symbols.tab_entries().size()) {
+            result->symbols.tab_mutable(target.base_tab_index).initialized = true;
+        }
+    }
+
+    return node;
+}
+
+AstNodePtr SemanticAnalyzer::visit_if(const AstNodePtr& node) {
+    if (!node || node->children.empty()) return node;
+    ValueInfo cond = eval_expression(node->children[0]);
+    if (cond.type != result->types.boolean_type()) {
+        semantic_error(node, "if condition must be Boolean");
+    }
+    node->annotation.type_id = cond.type;
+    for (size_t i = 1; i < node->children.size(); ++i) {
+        visit_statement(node->children[i]);
+    }
+    return node;
+}
+
+AstNodePtr SemanticAnalyzer::visit_while(const AstNodePtr& node) {
+    if (!node || node->children.empty()) return node;
+    ValueInfo cond = eval_expression(node->children[0]);
+    if (cond.type != result->types.boolean_type()) {
+        semantic_error(node, "while condition must be Boolean");
+    }
+    node->annotation.type_id = cond.type;
+    if (node->children.size() > 1) visit_compound_statement(node->children[1]);
+    return node;
+}
+
+AstNodePtr SemanticAnalyzer::visit_repeat(const AstNodePtr& node) {
+    if (!node) return node;
+    if (!node->children.empty()) visit_compound_statement(node->children.front());
+    if (node->children.size() > 1) {
+        ValueInfo cond = eval_expression(node->children[1]);
+        if (cond.type != result->types.boolean_type()) {
+            semantic_error(node, "repeat-until condition must be Boolean");
+        }
+        node->annotation.type_id = cond.type;
+    }
+    return node;
+}
+
+AstNodePtr SemanticAnalyzer::visit_for(const AstNodePtr& node) {
+    if (!node) return node;
+    const int idx = result->symbols.lookup(node->name);
+    if (idx < 0) {
+        semantic_error(node, "for iterator '" + node->name + "' is not declared");
+    } else {
+        const auto& entry = result->symbols.tab_entry(idx);
+        if (entry.obj != SymbolObject::Variable && entry.obj != SymbolObject::Parameter) {
+            semantic_error(node, "for iterator '" + node->name + "' must be an assignable variable");
+        } else if (!result->types.simple_non_real(entry.type)) {
+            semantic_error(node, "for iterator '" + node->name + "' must be a simple ordinal non-Real type");
+        }
+    }
+
+    for (size_t i = 0; i < node->children.size() && i < 2; ++i) {
+        ValueInfo bound = eval_expression(node->children[i]);
+        if (idx >= 0) {
+            const auto& entry = result->symbols.tab_entry(idx);
+            if (!result->types.assignment_compatible(
+                    entry.type, bound.type,
+                    bound.is_constant
+                        ? std::optional<ConstantValue>(ConstantValue{bound.type, bound.string_value,
+                                                                     bound.int_value, bound.real_value,
+                                                                     bound.char_value, bound.bool_value})
+                        : std::nullopt)) {
+                semantic_error(node->children[i],
+                               "for bound type is incompatible with iterator '" + node->name + "'");
+            }
+        }
+    }
+
+    node->annotation.tab_index = idx;
+    if (idx >= 0 && static_cast<size_t>(idx) < result->symbols.tab_entries().size()) {
+        result->symbols.tab_mutable(idx).initialized = true;
+    }
+    if (node->children.size() > 2) visit_compound_statement(node->children[2]);
+    return node;
+}
+
+AstNodePtr SemanticAnalyzer::visit_case(const AstNodePtr& node) {
+    if (!node || node->children.empty()) return node;
+    ValueInfo selector = eval_expression(node->children.front());
+    node->annotation.type_id = selector.type;
+
+    for (size_t i = 1; i < node->children.size(); ++i) {
+        const auto& branch = node->children[i];
+        if (!branch || branch->kind != AstKind::CaseBranch) continue;
+        for (const auto& child : branch->children) {
+            if (!child) continue;
+            if (child->kind == AstKind::Literal || child->kind == AstKind::UnaryOp) {
+                ValueInfo label = eval_constant(child);
+                if (!result->types.compatible(selector.type, label.type)) {
+                    semantic_error(child, "case label type " + result->types.type_name(label.type) +
+                                           " is incompatible with selector " +
+                                           result->types.type_name(selector.type));
+                }
+            } else {
+                visit_statement(child);
+            }
+        }
+    }
+    return node;
+}
+
+AstNodePtr SemanticAnalyzer::visit_call(const AstNodePtr& node, ValueInfo* out) {
+    if (!node) return node;
+    const int idx = result->symbols.lookup(node->name);
+    std::vector<ValueInfo> arguments;
+
+    if (idx < 0) {
+        semantic_error(node, "Procedure/function '" + node->name + "' is not declared");
+    } else {
+        const auto& entry = result->symbols.tab_entry(idx);
+        if (entry.obj != SymbolObject::Procedure && entry.obj != SymbolObject::Function) {
+            semantic_error(node, "Identifier '" + node->name + "' is not callable");
+        }
+        node->annotation.tab_index = idx;
+        node->annotation.type_id = entry.type;
+    }
+
+    for (const auto& child : node->children) {
+        ValueInfo arg = eval_expression(child);
+        arguments.push_back(arg);
+        if (child) child->annotation.type_id = arg.type;
+    }
+
+    if (idx >= 0 && static_cast<size_t>(idx) < result->symbols.tab_entries().size()) {
+        const auto& entry = result->symbols.tab_entry(idx);
+        if (entry.ref > 0 && static_cast<size_t>(entry.ref) < result->symbols.btab_entries().size()) {
+            std::vector<int> parameter_types;
+            int parameter = result->symbols.btab_entries()[static_cast<size_t>(entry.ref)].lpar;
+            while (parameter > 0 &&
+                   static_cast<size_t>(parameter) < result->symbols.tab_entries().size() &&
+                   result->symbols.tab_entry(parameter).obj == SymbolObject::Parameter) {
+                parameter_types.push_back(result->symbols.tab_entry(parameter).type);
+                parameter = result->symbols.tab_entry(parameter).link;
+            }
+            std::reverse(parameter_types.begin(), parameter_types.end());
+
+            if (parameter_types.size() != arguments.size()) {
+                semantic_error(node, "Call to '" + node->name + "' expects " +
+                                     std::to_string(parameter_types.size()) +
+                                     " argument(s), got " + std::to_string(arguments.size()));
+            }
+
+            const size_t checked = std::min(parameter_types.size(), arguments.size());
+            for (size_t i = 0; i < checked; ++i) {
+                if (!result->types.assignment_compatible(
+                        parameter_types[i], arguments[i].type,
+                        arguments[i].is_constant
+                            ? std::optional<ConstantValue>(ConstantValue{
+                                  arguments[i].type, arguments[i].string_value,
+                                  arguments[i].int_value, arguments[i].real_value,
+                                  arguments[i].char_value, arguments[i].bool_value})
+                            : std::nullopt)) {
+                    semantic_error(node->children[i],
+                                   "Argument " + std::to_string(i + 1) + " of '" +
+                                       node->name + "' expects " +
+                                       result->types.type_name(parameter_types[i]) +
+                                       ", got " + result->types.type_name(arguments[i].type));
+                }
+            }
+        }
+
+        if (out && entry.obj == SymbolObject::Procedure) {
+            semantic_error(node, "Procedure '" + node->name + "' does not produce a value");
+        }
+    }
+
+    if (out) {
+        out->type = node->annotation.type_id;
+        out->tab_index = idx;
+        out->base_tab_index = idx;
+        out->initialized = true;
+    }
+    return node;
+}
+
+} // namespace semantic
