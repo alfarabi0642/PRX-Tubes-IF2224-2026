@@ -5,9 +5,32 @@
 #include "common/token.hpp"
 #include "lexer/lexer.hpp"
 #include "parser/parser.hpp"
-#include "semantic/semantic.hpp"
+#include "semantic/ast_builder.hpp"
+#include "semantic/diagnostic.hpp"
+#include "semantic/printer.hpp"
+#include "semantic/semantic_analyzer.hpp"
 
 using namespace std;
+
+namespace {
+
+void append_diagnostics(vector<semantic::Diagnostic>& target,
+                        const vector<semantic::Diagnostic>& source) {
+    target.insert(target.end(), source.begin(), source.end());
+}
+
+void print_diagnostic_summary(const vector<semantic::Diagnostic>& diagnostics) {
+    for (const auto& diagnostic : diagnostics) {
+        if (diagnostic.severity != semantic::DiagnosticSeverity::Error) continue;
+        cerr << "  ";
+        if (diagnostic.location.line > 0 || diagnostic.location.column > 0) {
+            cerr << diagnostic.location.line << ':' << diagnostic.location.column << ": ";
+        }
+        cerr << diagnostic.message << endl;
+    }
+}
+
+} // namespace
 
 int main(int argc, char* argv[]) {
     if (argc != 2) {
@@ -54,6 +77,7 @@ int main(int argc, char* argv[]) {
 
     const auto& errors = parser.get_errors();
 
+    cout << "=== Parse Tree ===" << endl;
     tree->print(cout);
 
     string filename = input_file;
@@ -61,16 +85,6 @@ int main(int argc, char* argv[]) {
     if (last_slash != string::npos) {
         filename = filename.substr(last_slash + 1);
     }
-    string parse_output_path = "test/milestone-2/" + filename + "_OUTPUT.txt";
-
-    ofstream parse_out(parse_output_path);
-    if (parse_out.is_open()) {
-        tree->print(parse_out);
-        parse_out.close();
-    } else {
-        cerr << "Warning: Could not open output file: " << parse_output_path << endl;
-    }
-
     if (!errors.empty()) {
         cerr << endl << "Parser errors (" << errors.size() << "):" << endl;
         for (const auto& err : errors) {
@@ -79,27 +93,42 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    SemanticAnalyzer semantic;
-    semantic.analyze(tree);
-    semantic.print_report(cout);
+    semantic::AstBuilder ast_builder;
+    auto ast_result = ast_builder.build(tree);
+
+    semantic::SemanticResult semantic_result;
+    vector<semantic::Diagnostic> diagnostics;
+    append_diagnostics(diagnostics, ast_result.diagnostics);
+
+    if (ast_result.root) {
+        semantic::SemanticAnalyzer analyzer;
+        semantic_result = analyzer.analyze(ast_result.root);
+        append_diagnostics(diagnostics, semantic_result.diagnostics);
+    }
+
+    const auto report_root = semantic_result.decorated_ast ? semantic_result.decorated_ast : ast_result.root;
+    semantic::print_semantic_report(cout, report_root,
+                                    semantic_result.symbols,
+                                    semantic_result.types,
+                                    diagnostics);
 
     string semantic_output_path = "test/milestone-3/" + filename + "_SEMANTIC.txt";
     ofstream semantic_out(semantic_output_path);
     if (semantic_out.is_open()) {
         semantic_out << "=== Parse Tree ===" << endl;
         tree->print(semantic_out);
-        semantic.print_report(semantic_out);
+        semantic::print_semantic_report(semantic_out, report_root,
+                                        semantic_result.symbols,
+                                        semantic_result.types,
+                                        diagnostics);
         semantic_out.close();
     } else {
         cerr << "Warning: Could not open output file: " << semantic_output_path << endl;
     }
 
-    const auto& semantic_errors = semantic.get_errors();
-    if (!semantic_errors.empty()) {
-        cerr << endl << "Semantic errors (" << semantic_errors.size() << "):" << endl;
-        for (const auto& err : semantic_errors) {
-            cerr << "  " << err << endl;
-        }
+    if (semantic::has_errors(diagnostics)) {
+        cerr << endl << "Semantic errors:" << endl;
+        print_diagnostic_summary(diagnostics);
         return 1;
     }
 
