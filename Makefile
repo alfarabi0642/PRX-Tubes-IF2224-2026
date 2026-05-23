@@ -17,7 +17,15 @@ SRCS := \
 	src/parser/parser_declarations.cpp \
 	src/parser/parser_statements.cpp \
 	src/parser/parser_expressions.cpp \
-	src/semantic/semantic.cpp
+	src/semantic/ast.cpp \
+	src/semantic/types.cpp \
+	src/semantic/symbol_table.cpp \
+	src/semantic/ast_builder.cpp \
+	src/semantic/semantic_analyzer.cpp \
+	src/semantic/semantic_analyzer_declarations.cpp \
+	src/semantic/semantic_analyzer_statements.cpp \
+	src/semantic/semantic_analyzer_expressions.cpp \
+	src/semantic/printer.cpp
 
 OBJS := $(patsubst src/%.cpp,$(OBJ_DIR)/%.o,$(SRCS))
 
