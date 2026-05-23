@@ -2,16 +2,22 @@
 
 #include <iostream>
 #include <memory>
+#include <optional>
 #include <ostream>
 #include <string>
 #include <vector>
+#include "../common/token.hpp"
 
 class ParseTreeNode {
 public:
     std::string name;
+    std::optional<Token> token;
     std::vector<std::shared_ptr<ParseTreeNode>> children;
 
-    explicit ParseTreeNode(const std::string& name) : name(name) {}
+    explicit ParseTreeNode(const std::string& name) : name(name), token(std::nullopt) {}
+
+    ParseTreeNode(const std::string& name, const Token& token)
+        : name(name), token(token) {}
 
     void add_child(const std::shared_ptr<ParseTreeNode>& child) {
         if (child) {
@@ -23,6 +29,10 @@ public:
 
     bool is_terminal() const {
         return children.empty();
+    }
+
+    bool has_token(TokenType type) const {
+        return token.has_value() && token->get_type() == type;
     }
 
     void print_children(std::ostream& os, const std::string& prefix = "") const {
@@ -43,3 +53,6 @@ inline std::shared_ptr<ParseTreeNode> make_node(const std::string& name) {
     return std::make_shared<ParseTreeNode>(name);
 }
 
+inline std::shared_ptr<ParseTreeNode> make_terminal_node(const std::string& name, const Token& token) {
+    return std::make_shared<ParseTreeNode>(name, token);
+}

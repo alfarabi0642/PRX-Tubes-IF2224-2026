@@ -86,7 +86,7 @@ std::string Parser::terminal_name(const Token& token) const {
 }
 
 std::shared_ptr<ParseTreeNode> Parser::terminal(Token token) {
-    return make_node(terminal_name(token));
+    return make_terminal_node(terminal_name(token), token);
 }
 
 // error handling
