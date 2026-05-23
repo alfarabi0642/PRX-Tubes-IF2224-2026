@@ -1,0 +1,459 @@
+=== Parse Tree ===
+<program>
+├── <program-header>
+│   ├── programsy
+│   ├── ident(PredefinedAndDeclarationsValid)
+│   └── semicolon
+├── <declaration-part>
+│   ├── <const-declaration>
+│   │   ├── constsy
+│   │   ├── ident(Low)
+│   │   ├── eql
+│   │   ├── <constant>
+│   │   │   └── intcon(1)
+│   │   ├── semicolon
+│   │   ├── ident(High)
+│   │   ├── eql
+│   │   ├── <constant>
+│   │   │   └── intcon(5)
+│   │   ├── semicolon
+│   │   ├── ident(Red)
+│   │   ├── eql
+│   │   ├── <constant>
+│   │   │   └── intcon(1)
+│   │   ├── semicolon
+│   │   ├── ident(Green)
+│   │   ├── eql
+│   │   ├── <constant>
+│   │   │   └── intcon(2)
+│   │   ├── semicolon
+│   │   ├── ident(Blue)
+│   │   ├── eql
+│   │   ├── <constant>
+│   │   │   └── intcon(3)
+│   │   └── semicolon
+│   ├── <type-declaration>
+│   │   ├── typesy
+│   │   ├── ident(SmallRange)
+│   │   ├── eql
+│   │   ├── <type>
+│   │   │   └── <range>
+│   │   │       ├── <constant>
+│   │   │       │   └── ident(Low)
+│   │   │       ├── period
+│   │   │       ├── period
+│   │   │       └── <constant>
+│   │   │           └── ident(High)
+│   │   ├── semicolon
+│   │   ├── ident(ColorCode)
+│   │   ├── eql
+│   │   ├── <type>
+│   │   │   └── <enumerated>
+│   │   │       ├── lparent
+│   │   │       ├── ident(Red)
+│   │   │       ├── comma
+│   │   │       ├── ident(Green)
+│   │   │       ├── comma
+│   │   │       ├── ident(Blue)
+│   │   │       └── rparent
+│   │   ├── semicolon
+│   │   ├── ident(IntVector)
+│   │   ├── eql
+│   │   ├── <type>
+│   │   │   └── <array-type>
+│   │   │       ├── arraysy
+│   │   │       ├── lbrack
+│   │   │       ├── ident(SmallRange)
+│   │   │       ├── rbrack
+│   │   │       ├── ofsy
+│   │   │       └── <type>
+│   │   │           └── ident(integer)
+│   │   ├── semicolon
+│   │   ├── ident(Student)
+│   │   ├── eql
+│   │   ├── <type>
+│   │   │   └── <record-type>
+│   │   │       ├── recordsy
+│   │   │       ├── <field-list>
+│   │   │       │   ├── <field-part>
+│   │   │       │   │   ├── <identifier-list>
+│   │   │       │   │   │   └── ident(id)
+│   │   │       │   │   ├── colon
+│   │   │       │   │   └── <type>
+│   │   │       │   │       └── ident(integer)
+│   │   │       │   ├── semicolon
+│   │   │       │   ├── <field-part>
+│   │   │       │   │   ├── <identifier-list>
+│   │   │       │   │   │   └── ident(grade)
+│   │   │       │   │   ├── colon
+│   │   │       │   │   └── <type>
+│   │   │       │   │       └── ident(char)
+│   │   │       │   ├── semicolon
+│   │   │       │   ├── <field-part>
+│   │   │       │   │   ├── <identifier-list>
+│   │   │       │   │   │   └── ident(scores)
+│   │   │       │   │   ├── colon
+│   │   │       │   │   └── <type>
+│   │   │       │   │       └── ident(IntVector)
+│   │   │       │   └── semicolon
+│   │   │       └── endsy
+│   │   └── semicolon
+│   └── <var-declaration>
+│       ├── varsy
+│       ├── <identifier-list>
+│       │   ├── ident(flag)
+│       │   ├── comma
+│       │   └── ident(other)
+│       ├── colon
+│       ├── <type>
+│       │   └── ident(Boolean)
+│       ├── semicolon
+│       ├── <identifier-list>
+│       │   └── ident(index)
+│       ├── colon
+│       ├── <type>
+│       │   └── ident(SmallRange)
+│       ├── semicolon
+│       ├── <identifier-list>
+│       │   └── ident(color)
+│       ├── colon
+│       ├── <type>
+│       │   └── ident(ColorCode)
+│       ├── semicolon
+│       ├── <identifier-list>
+│       │   └── ident(student)
+│       ├── colon
+│       ├── <type>
+│       │   └── ident(Student)
+│       └── semicolon
+├── <compound-statement>
+│   ├── beginsy
+│   ├── <statement-list>
+│   │   ├── <statement>
+│   │   │   └── <assignment-statement>
+│   │   │       ├── <variable>
+│   │   │       │   └── ident(flag)
+│   │   │       ├── becomes
+│   │   │       └── <expression>
+│   │   │           └── <simple-expression>
+│   │   │               └── <term>
+│   │   │                   └── <factor>
+│   │   │                       └── <variable>
+│   │   │                           └── ident(true)
+│   │   ├── semicolon
+│   │   ├── <statement>
+│   │   │   └── <assignment-statement>
+│   │   │       ├── <variable>
+│   │   │       │   └── ident(other)
+│   │   │       ├── becomes
+│   │   │       └── <expression>
+│   │   │           └── <simple-expression>
+│   │   │               └── <term>
+│   │   │                   └── <factor>
+│   │   │                       └── <variable>
+│   │   │                           └── ident(FALSE)
+│   │   ├── semicolon
+│   │   ├── <statement>
+│   │   │   └── <assignment-statement>
+│   │   │       ├── <variable>
+│   │   │       │   └── ident(index)
+│   │   │       ├── becomes
+│   │   │       └── <expression>
+│   │   │           └── <simple-expression>
+│   │   │               └── <term>
+│   │   │                   └── <factor>
+│   │   │                       └── intcon(3)
+│   │   ├── semicolon
+│   │   ├── <statement>
+│   │   │   └── <assignment-statement>
+│   │   │       ├── <variable>
+│   │   │       │   └── ident(color)
+│   │   │       ├── becomes
+│   │   │       └── <expression>
+│   │   │           └── <simple-expression>
+│   │   │               └── <term>
+│   │   │                   └── <factor>
+│   │   │                       └── <variable>
+│   │   │                           └── ident(Red)
+│   │   ├── semicolon
+│   │   ├── <statement>
+│   │   │   └── <assignment-statement>
+│   │   │       ├── <variable>
+│   │   │       │   ├── ident(student)
+│   │   │       │   └── <component-variable>
+│   │   │       │       ├── period
+│   │   │       │       └── ident(id)
+│   │   │       ├── becomes
+│   │   │       └── <expression>
+│   │   │           └── <simple-expression>
+│   │   │               └── <term>
+│   │   │                   └── <factor>
+│   │   │                       └── <variable>
+│   │   │                           └── ident(index)
+│   │   ├── semicolon
+│   │   ├── <statement>
+│   │   │   └── <assignment-statement>
+│   │   │       ├── <variable>
+│   │   │       │   ├── ident(student)
+│   │   │       │   └── <component-variable>
+│   │   │       │       ├── period
+│   │   │       │       └── ident(grade)
+│   │   │       ├── becomes
+│   │   │       └── <expression>
+│   │   │           └── <simple-expression>
+│   │   │               └── <term>
+│   │   │                   └── <factor>
+│   │   │                       └── charcon('A')
+│   │   ├── semicolon
+│   │   ├── <statement>
+│   │   │   └── <assignment-statement>
+│   │   │       ├── <variable>
+│   │   │       │   ├── ident(student)
+│   │   │       │   ├── <component-variable>
+│   │   │       │   │   ├── period
+│   │   │       │   │   └── ident(scores)
+│   │   │       │   └── <component-variable>
+│   │   │       │       ├── lbrack
+│   │   │       │       ├── <index-list>
+│   │   │       │       │   └── <expression>
+│   │   │       │       │       └── <simple-expression>
+│   │   │       │       │           └── <term>
+│   │   │       │       │               └── <factor>
+│   │   │       │       │                   └── <variable>
+│   │   │       │       │                       └── ident(index)
+│   │   │       │       └── rbrack
+│   │   │       ├── becomes
+│   │   │       └── <expression>
+│   │   │           └── <simple-expression>
+│   │   │               └── <term>
+│   │   │                   └── <factor>
+│   │   │                       └── intcon(100)
+│   │   ├── semicolon
+│   │   ├── <statement>
+│   │   │   └── <if-statement>
+│   │   │       ├── ifsy
+│   │   │       ├── <expression>
+│   │   │       │   └── <simple-expression>
+│   │   │       │       ├── <term>
+│   │   │       │       │   ├── <factor>
+│   │   │       │       │   │   └── <variable>
+│   │   │       │       │   │       └── ident(flag)
+│   │   │       │       │   ├── <multiplicative-operator>
+│   │   │       │       │   │   └── andsy
+│   │   │       │       │   └── <factor>
+│   │   │       │       │       ├── notsy
+│   │   │       │       │       └── <factor>
+│   │   │       │       │           └── <variable>
+│   │   │       │       │               └── ident(other)
+│   │   │       │       ├── <additive-operator>
+│   │   │       │       │   └── orsy
+│   │   │       │       └── <term>
+│   │   │       │           └── <factor>
+│   │   │       │               └── <variable>
+│   │   │       │                   └── ident(false)
+│   │   │       ├── thensy
+│   │   │       ├── <statement>
+│   │   │       │   └── <compound-statement>
+│   │   │       │       ├── beginsy
+│   │   │       │       ├── <statement-list>
+│   │   │       │       │   ├── <statement>
+│   │   │       │       │   │   └── <assignment-statement>
+│   │   │       │       │   │       ├── <variable>
+│   │   │       │       │   │       │   └── ident(other)
+│   │   │       │       │   │       ├── becomes
+│   │   │       │       │   │       └── <expression>
+│   │   │       │       │   │           └── <simple-expression>
+│   │   │       │       │   │               └── <term>
+│   │   │       │       │   │                   └── <factor>
+│   │   │       │       │   │                       └── <variable>
+│   │   │       │       │   │                           └── ident(true)
+│   │   │       │       │   ├── semicolon
+│   │   │       │       │   └── <statement>
+│   │   │       │       └── endsy
+│   │   │       ├── elsesy
+│   │   │       └── <statement>
+│   │   │           └── <compound-statement>
+│   │   │               ├── beginsy
+│   │   │               ├── <statement-list>
+│   │   │               │   ├── <statement>
+│   │   │               │   │   └── <assignment-statement>
+│   │   │               │   │       ├── <variable>
+│   │   │               │   │       │   └── ident(other)
+│   │   │               │   │       ├── becomes
+│   │   │               │   │       └── <expression>
+│   │   │               │   │           └── <simple-expression>
+│   │   │               │   │               └── <term>
+│   │   │               │   │                   └── <factor>
+│   │   │               │   │                       └── <variable>
+│   │   │               │   │                           └── ident(false)
+│   │   │               │   ├── semicolon
+│   │   │               │   └── <statement>
+│   │   │               └── endsy
+│   │   ├── semicolon
+│   │   └── <statement>
+│   └── endsy
+└── period
+
+=== Decorated AST ===
+Program(PredefinedAndDeclarationsValid), tab_index=41
+|-- DeclarationPart
+|   |-- ConstDecl(Low) : type=Integer, tab_index=42
+|   |   \-- Literal(1) value=1 literal=Integer : type=Integer
+|   |-- ConstDecl(High) : type=Integer, tab_index=43
+|   |   \-- Literal(5) value=5 literal=Integer : type=Integer
+|   |-- ConstDecl(Red) : type=Integer, tab_index=44
+|   |   \-- Literal(1) value=1 literal=Integer : type=Integer
+|   |-- ConstDecl(Green) : type=Integer, tab_index=45
+|   |   \-- Literal(2) value=2 literal=Integer : type=Integer
+|   |-- ConstDecl(Blue) : type=Integer, tab_index=46
+|   |   \-- Literal(3) value=3 literal=Integer : type=Integer
+|   |-- TypeDecl(SmallRange) : type=SmallRange, tab_index=47
+|   |   \-- RangeType : type=SmallRange
+|   |       |-- Literal(Low) value=Low literal=IdentifierConstant : type=Integer, tab_index=42
+|   |       \-- Literal(High) value=High literal=IdentifierConstant : type=Integer, tab_index=43
+|   |-- TypeDecl(ColorCode) : type=ColorCode, tab_index=48
+|   |   \-- EnumType : type=ColorCode
+|   |       |-- Literal(Red) value=Red literal=IdentifierConstant
+|   |       |-- Literal(Green) value=Green literal=IdentifierConstant
+|   |       \-- Literal(Blue) value=Blue literal=IdentifierConstant
+|   |-- TypeDecl(IntVector) : type=IntVector, tab_index=49
+|   |   \-- ArrayType : type=IntVector
+|   |       |-- TypeRef(SmallRange) : type=SmallRange, tab_index=47
+|   |       \-- TypeRef(integer) : type=Integer, tab_index=32
+|   |-- TypeDecl(Student) : type=Student, tab_index=53
+|   |   \-- RecordType : type=Student
+|   |       |-- FieldDecl(id) : type=Integer, tab_index=50
+|   |       |   \-- TypeRef(integer) : type=Integer, tab_index=32
+|   |       |-- FieldDecl(grade) : type=Char, tab_index=51
+|   |       |   \-- TypeRef(char) : type=Char, tab_index=34
+|   |       \-- FieldDecl(scores) : type=IntVector, tab_index=52
+|   |           \-- TypeRef(IntVector) : type=IntVector, tab_index=49
+|   |-- VarDecl(flag) : type=Boolean, tab_index=54
+|   |   \-- TypeRef(Boolean) : type=Boolean, tab_index=35
+|   |-- VarDecl(other) : type=Boolean, tab_index=55
+|   |   \-- TypeRef(Boolean) : type=Boolean, tab_index=35
+|   |-- VarDecl(index) : type=SmallRange, tab_index=56
+|   |   \-- TypeRef(SmallRange) : type=SmallRange, tab_index=47
+|   |-- VarDecl(color) : type=ColorCode, tab_index=57
+|   |   \-- TypeRef(ColorCode) : type=ColorCode, tab_index=48
+|   \-- VarDecl(student) : type=Student, tab_index=58
+|       \-- TypeRef(Student) : type=Student, tab_index=53
+\-- CompoundStatement
+    |-- AssignStatement : type=Boolean, tab_index=54
+    |   |-- Variable(flag) : type=Boolean, tab_index=54
+    |   \-- Variable(true) : type=Boolean, tab_index=37
+    |-- AssignStatement : type=Boolean, tab_index=55
+    |   |-- Variable(other) : type=Boolean, tab_index=55
+    |   \-- Variable(FALSE) : type=Boolean, tab_index=38
+    |-- AssignStatement : type=SmallRange, tab_index=56
+    |   |-- Variable(index) : type=SmallRange, tab_index=56
+    |   \-- Literal(3) value=3 literal=Integer : type=Integer
+    |-- AssignStatement : type=ColorCode, tab_index=57
+    |   |-- Variable(color) : type=ColorCode, tab_index=57
+    |   \-- Variable(Red) : type=Integer, tab_index=44
+    |-- AssignStatement : type=Integer, tab_index=50
+    |   |-- Variable(student) : type=Integer, tab_index=50
+    |   |   \-- FieldComponent(id)
+    |   \-- Variable(index) : type=SmallRange, tab_index=56
+    |-- AssignStatement : type=Char, tab_index=51
+    |   |-- Variable(student) : type=Char, tab_index=51
+    |   |   \-- FieldComponent(grade)
+    |   \-- Literal('A') value='A' literal=Char : type=Char
+    |-- AssignStatement : type=Integer, tab_index=52
+    |   |-- Variable(student) : type=Integer, tab_index=52
+    |   |   |-- FieldComponent(scores)
+    |   |   \-- IndexComponent
+    |   |       \-- Variable(index) : type=SmallRange, tab_index=56
+    |   \-- Literal(100) value=100 literal=Integer : type=Integer
+    |-- IfStatement : type=Boolean
+    |   |-- BinaryOp op=orsy : type=Boolean
+    |   |   |-- BinaryOp op=andsy : type=Boolean
+    |   |   |   |-- Variable(flag) : type=Boolean, tab_index=54
+    |   |   |   \-- UnaryOp op=notsy : type=Boolean, tab_index=55
+    |   |   |       \-- Variable(other) : type=Boolean, tab_index=55
+    |   |   \-- Variable(false) : type=Boolean, tab_index=38
+    |   |-- CompoundStatement
+    |   |   |-- AssignStatement : type=Boolean, tab_index=55
+    |   |   |   |-- Variable(other) : type=Boolean, tab_index=55
+    |   |   |   \-- Variable(true) : type=Boolean, tab_index=37
+    |   |   \-- EmptyStatement
+    |   \-- CompoundStatement
+    |       |-- AssignStatement : type=Boolean, tab_index=55
+    |       |   |-- Variable(other) : type=Boolean, tab_index=55
+    |       |   \-- Variable(false) : type=Boolean, tab_index=38
+    |       \-- EmptyStatement
+    \-- EmptyStatement
+
+=== Symbol Table: tab ===
+idx	identifier	obj	type	ref	nrm	lev	adr	link	init	value
+0	and	reserved	unknown	0	1	0	0	0	yes	
+1	array	reserved	unknown	0	1	0	0	0	yes	
+2	begin	reserved	unknown	0	1	0	0	1	yes	
+3	case	reserved	unknown	0	1	0	0	2	yes	
+4	const	reserved	unknown	0	1	0	0	3	yes	
+5	div	reserved	unknown	0	1	0	0	4	yes	
+6	downto	reserved	unknown	0	1	0	0	5	yes	
+7	do	reserved	unknown	0	1	0	0	6	yes	
+8	else	reserved	unknown	0	1	0	0	7	yes	
+9	end	reserved	unknown	0	1	0	0	8	yes	
+10	for	reserved	unknown	0	1	0	0	9	yes	
+11	function	reserved	unknown	0	1	0	0	10	yes	
+12	if	reserved	unknown	0	1	0	0	11	yes	
+13	mod	reserved	unknown	0	1	0	0	12	yes	
+14	not	reserved	unknown	0	1	0	0	13	yes	
+15	of	reserved	unknown	0	1	0	0	14	yes	
+16	or	reserved	unknown	0	1	0	0	15	yes	
+17	procedure	reserved	unknown	0	1	0	0	16	yes	
+18	program	reserved	unknown	0	1	0	0	17	yes	
+19	record	reserved	unknown	0	1	0	0	18	yes	
+20	repeat	reserved	unknown	0	1	0	0	19	yes	
+21	integer	reserved	unknown	0	1	0	0	20	yes	
+22	real	reserved	unknown	0	1	0	0	21	yes	
+23	boolean	reserved	unknown	0	1	0	0	22	yes	
+24	char	reserved	unknown	0	1	0	0	23	yes	
+25	string	reserved	unknown	0	1	0	0	24	yes	
+26	then	reserved	unknown	0	1	0	0	25	yes	
+27	to	reserved	unknown	0	1	0	0	26	yes	
+28	type	reserved	unknown	0	1	0	0	27	yes	
+29	until	reserved	unknown	0	1	0	0	28	yes	
+30	var	reserved	unknown	0	1	0	0	29	yes	
+31	while	reserved	unknown	0	1	0	0	30	yes	
+32	Integer	type	Integer	0	1	0	0	31	yes	
+33	Real	type	Real	0	1	0	0	32	yes	
+34	Char	type	Char	0	1	0	0	33	yes	
+35	Boolean	type	Boolean	0	1	0	0	34	yes	
+36	String	type	String	0	1	0	0	35	yes	
+37	True	constant	Boolean	0	1	0	1	36	yes	true
+38	False	constant	Boolean	0	1	0	0	37	yes	false
+39	readln	procedure	unknown	0	1	0	0	38	yes	
+40	writeln	procedure	unknown	0	1	0	0	39	yes	
+41	PredefinedAndDeclarationsValid	program	unknown	0	1	0	0	40	yes	
+42	Low	constant	Integer	0	1	0	0	41	yes	1
+43	High	constant	Integer	0	1	0	0	42	yes	5
+44	Red	constant	Integer	0	1	0	0	43	yes	1
+45	Green	constant	Integer	0	1	0	0	44	yes	2
+46	Blue	constant	Integer	0	1	0	0	45	yes	3
+47	SmallRange	type	SmallRange	0	1	0	0	46	yes	
+48	ColorCode	type	ColorCode	0	1	0	0	47	yes	
+49	IntVector	type	IntVector	0	1	0	0	48	yes	
+50	id	field	Integer	0	1	1	0	0	yes	
+51	grade	field	Char	0	1	1	1	50	yes	
+52	scores	field	IntVector	0	1	1	2	51	yes	
+53	Student	type	Student	1	1	0	0	49	yes	
+54	flag	variable	Boolean	0	1	0	0	53	yes	
+55	other	variable	Boolean	0	1	0	1	54	yes	
+56	index	variable	SmallRange	0	1	0	2	55	yes	
+57	color	variable	ColorCode	0	1	0	3	56	yes	
+58	student	variable	Student	1	1	0	4	57	yes	
+
+=== Symbol Table: btab ===
+idx	last	lpar	psze	vsze
+0	58	0	0	11
+1	52	0	0	7
+
+=== Symbol Table: atab ===
+idx	xtyp	etyp	eref	low	high	elsz	size
+0	SmallRange	Integer	0	1	5	1	5
+
+=== Semantic Errors ===
+No semantic errors.
