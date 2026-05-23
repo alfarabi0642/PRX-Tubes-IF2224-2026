@@ -18,6 +18,7 @@ void SymbolTable::initialize_predefined(const TypeRegistry& types) {
     btab.clear();
     atab.clear();
     scopes.clear();
+    predefined_symbols.clear();
     scope_last.clear();
     display.clear();
     next_address.clear();
@@ -34,18 +35,29 @@ void SymbolTable::initialize_predefined(const TypeRegistry& types) {
     };
 
     for (const auto& word : reserved) {
-        raw_add_symbol(word, SymbolObject::Reserved, 0, 0, 1, 0, 0);
+        const int idx = raw_add_symbol(word, SymbolObject::Reserved, 0, 0, 1, 0, 0);
+        predefined_symbols[normalize(word)] = idx;
     }
 
-    raw_add_symbol("Integer", SymbolObject::Type, types.integer_type(), 0, 1, 0, 0);
-    raw_add_symbol("Real", SymbolObject::Type, types.real_type(), 0, 1, 0, 0);
-    raw_add_symbol("Char", SymbolObject::Type, types.char_type(), 0, 1, 0, 0);
-    raw_add_symbol("Boolean", SymbolObject::Type, types.boolean_type(), 0, 1, 0, 0);
-    raw_add_symbol("String", SymbolObject::Type, types.string_type(), 0, 1, 0, 0);
-    raw_add_symbol("True", SymbolObject::Constant, types.boolean_type(), 0, 1, 0, 1, true, "true");
-    raw_add_symbol("False", SymbolObject::Constant, types.boolean_type(), 0, 1, 0, 0, true, "false");
-    raw_add_symbol("readln", SymbolObject::Procedure, 0, 0, 1, 0, 0);
-    raw_add_symbol("writeln", SymbolObject::Procedure, 0, 0, 1, 0, 0);
+    const int integer_idx = raw_add_symbol("Integer", SymbolObject::Type, types.integer_type(), 0, 1, 0, 0);
+    const int real_idx = raw_add_symbol("Real", SymbolObject::Type, types.real_type(), 0, 1, 0, 0);
+    const int char_idx = raw_add_symbol("Char", SymbolObject::Type, types.char_type(), 0, 1, 0, 0);
+    const int boolean_idx = raw_add_symbol("Boolean", SymbolObject::Type, types.boolean_type(), 0, 1, 0, 0);
+    const int string_idx = raw_add_symbol("String", SymbolObject::Type, types.string_type(), 0, 1, 0, 0);
+    const int true_idx = raw_add_symbol("True", SymbolObject::Constant, types.boolean_type(), 0, 1, 0, 1, true, "true");
+    const int false_idx = raw_add_symbol("False", SymbolObject::Constant, types.boolean_type(), 0, 1, 0, 0, true, "false");
+    const int readln_idx = raw_add_symbol("readln", SymbolObject::Procedure, 0, 0, 1, 0, 0);
+    const int writeln_idx = raw_add_symbol("writeln", SymbolObject::Procedure, 0, 0, 1, 0, 0);
+
+    predefined_symbols[normalize("Integer")] = integer_idx;
+    predefined_symbols[normalize("Real")] = real_idx;
+    predefined_symbols[normalize("Char")] = char_idx;
+    predefined_symbols[normalize("Boolean")] = boolean_idx;
+    predefined_symbols[normalize("String")] = string_idx;
+    predefined_symbols[normalize("True")] = true_idx;
+    predefined_symbols[normalize("False")] = false_idx;
+    predefined_symbols[normalize("readln")] = readln_idx;
+    predefined_symbols[normalize("writeln")] = writeln_idx;
 }
 
 void SymbolTable::push_scope(int block_index) {
@@ -83,7 +95,7 @@ int SymbolTable::raw_add_symbol(const std::string& id, SymbolObject obj, int typ
     tab.push_back({id, obj, type, ref, nrm, lev, adr, link, initialized, value});
 
     if (!scopes.empty()) {
-        scopes.back()[normalize(id)] = index;
+        scopes.back()[id] = index;
         scope_last.back() = index;
         const int block_index = current_block_index();
         if (block_index >= 0 && static_cast<size_t>(block_index) < btab.size()) {
@@ -98,8 +110,13 @@ int SymbolTable::add_symbol(const std::string& id, SymbolObject obj, int type,
                             int ref, int nrm, bool initialized,
                             const std::string& value, int size) {
     const int adr = next_address.empty() ? 0 : next_address.back();
-    if (obj == SymbolObject::Variable) {
+    if (obj == SymbolObject::Variable ||
+        obj == SymbolObject::Parameter ||
+        obj == SymbolObject::Field) {
         if (!next_address.empty()) next_address.back() += size;
+    }
+
+    if (obj == SymbolObject::Variable || obj == SymbolObject::Field) {
         const int block_index = current_block_index();
         if (block_index >= 0 && static_cast<size_t>(block_index) < btab.size()) {
             btab[static_cast<size_t>(block_index)].vsze += size;
@@ -110,9 +127,10 @@ int SymbolTable::add_symbol(const std::string& id, SymbolObject obj, int type,
 }
 
 int SymbolTable::lookup(const std::string& id) const {
-    const std::string key = normalize(id);
+    const auto predefined = predefined_symbols.find(normalize(id));
+    if (predefined != predefined_symbols.end()) return predefined->second;
     for (auto it = scopes.rbegin(); it != scopes.rend(); ++it) {
-        const auto found = it->find(key);
+        const auto found = it->find(id);
         if (found != it->end()) return found->second;
     }
     return -1;
@@ -120,18 +138,27 @@ int SymbolTable::lookup(const std::string& id) const {
 
 int SymbolTable::lookup_current_scope(const std::string& id) const {
     if (scopes.empty()) return -1;
-    const auto found = scopes.back().find(normalize(id));
-    return found == scopes.back().end() ? -1 : found->second;
+    const auto predefined = predefined_symbols.find(normalize(id));
+    if (predefined != predefined_symbols.end()) return predefined->second;
+    const auto found = scopes.back().find(id);
+    if (found != scopes.back().end()) return found->second;
+    return -1;
 }
 
 int SymbolTable::lookup_global_const_or_var(const std::string& id) const {
-    const std::string key = normalize(id);
     for (size_t i = 0; i < tab.size(); ++i) {
         const auto& entry = tab[i];
         if (entry.lev == 0 &&
             (entry.obj == SymbolObject::Constant || entry.obj == SymbolObject::Variable) &&
-            normalize(entry.identifier) == key) {
+            entry.identifier == id) {
             return static_cast<int>(i);
+        }
+    }
+    const auto predefined = predefined_symbols.find(normalize(id));
+    if (predefined != predefined_symbols.end()) {
+        const auto& entry = tab[static_cast<size_t>(predefined->second)];
+        if (entry.obj == SymbolObject::Constant || entry.obj == SymbolObject::Variable) {
+            return predefined->second;
         }
     }
     return -1;

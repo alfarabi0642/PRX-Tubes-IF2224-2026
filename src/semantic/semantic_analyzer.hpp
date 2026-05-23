@@ -42,6 +42,18 @@ private:
 
     void semantic_error(const AstNodePtr& node, const std::string& message);
     int type_size(int type_id) const;
+    int type_ref(int type_id) const;
+    std::vector<int> parameter_types_for(const TabEntry& entry) const;
+    void validate_user_call_arguments(const AstNodePtr& node,
+                                      const TabEntry& entry,
+                                      const std::vector<ValueInfo>& arguments);
+    bool validate_builtin_call(const AstNodePtr& node,
+                               const TabEntry& entry,
+                               ValueInfo* out);
+    bool is_assignable_storage(const ValueInfo& target,
+                               bool allow_current_function) const;
+    bool is_scalar_or_string_type(int type_id) const;
+    void mark_target_initialized(const ValueInfo& target);
     int add_symbol_checked(const AstNodePtr& node,
                            const std::string& id,
                            SymbolObject obj,

@@ -23,7 +23,8 @@ AstNodePtr SemanticAnalyzer::visit_type_decl(const AstNodePtr& node) {
             info.anonymous = false;
         }
     }
-    const int idx = add_symbol_checked(node, node->name, SymbolObject::Type, resolved, 0, 1, true);
+    const int idx = add_symbol_checked(node, node->name, SymbolObject::Type,
+                                       resolved, type_ref(resolved), 1, true);
     node->annotation.type_id = resolved;
     node->annotation.tab_index = idx;
     node->annotation.lexical_level = result->symbols.current_level();
@@ -32,7 +33,8 @@ AstNodePtr SemanticAnalyzer::visit_type_decl(const AstNodePtr& node) {
 
 AstNodePtr SemanticAnalyzer::visit_var_decl(const AstNodePtr& node) {
     int resolved = node && !node->children.empty() ? resolve_type_node(node->children.front()) : 0;
-    const int idx = add_symbol_checked(node, node->name, SymbolObject::Variable, resolved, 0, 1, false);
+    const int idx = add_symbol_checked(node, node->name, SymbolObject::Variable,
+                                       resolved, type_ref(resolved), 1, false);
     node->annotation.type_id = resolved;
     node->annotation.tab_index = idx;
     node->annotation.lexical_level = result->symbols.current_level();
@@ -73,7 +75,7 @@ AstNodePtr SemanticAnalyzer::visit_subprogram_decl(const AstNodePtr& node) {
                     continue;
                 }
                 const int idx = add_symbol_checked(param, param->name, SymbolObject::Parameter,
-                                                   param_type, 0, 1, true);
+                                                   param_type, type_ref(param_type), 1, true);
                 result->symbols.btab_mutable(block_index).lpar = idx;
                 result->symbols.btab_mutable(block_index).psze += type_size(param_type);
                 param->annotation.type_id = param_type;
@@ -142,7 +144,9 @@ int SemanticAnalyzer::resolve_array_type(const AstNodePtr& node) {
     }
 
     const int elem_size = type_size(element_type);
-    const int array_ref = result->symbols.add_array_entry(index_type, element_type, low, high, elem_size, 0);
+    const int array_ref = result->symbols.add_array_entry(index_type, element_type, low,
+                                                          high, elem_size,
+                                                          type_ref(element_type));
 
     TypeInfo type;
     type.kind = TypeKind::Array;
@@ -246,14 +250,15 @@ int SemanticAnalyzer::resolve_record_type(const AstNodePtr& node) {
             const int existing = result->symbols.lookup_current_scope(field->name);
             if (existing != -1) {
                 semantic_error(field, "Identifier '" + field->name + "' is already declared in the current scope");
-                type.fields[SymbolTable::normalize(field->name)] = existing;
+                type.fields[field->name] = existing;
                 continue;
             }
             const int idx = result->symbols.add_symbol(field->name, SymbolObject::Field,
-                                                       field_type, 0, 1, true, "", type_size(field_type));
+                                                       field_type, type_ref(field_type),
+                                                       1, true, "", type_size(field_type));
             field->annotation.type_id = field_type;
             field->annotation.tab_index = idx;
-            type.fields[SymbolTable::normalize(field->name)] = idx;
+            type.fields[field->name] = idx;
         }
     }
 

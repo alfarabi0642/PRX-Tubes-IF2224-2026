@@ -140,6 +140,18 @@ ValueInfo SemanticAnalyzer::eval_variable(const AstNodePtr& node, bool as_assign
     value.base_tab_index = idx;
     value.initialized = base_entry.initialized;
 
+    if (!as_assignment_target && base_entry.obj == SymbolObject::Function) {
+        validate_user_call_arguments(node, base_entry, {});
+        value.initialized = true;
+        if (node->children.empty()) {
+            node->annotation.type_id = value.type;
+            node->annotation.tab_index = value.tab_index;
+            node->annotation.lexical_level = result->symbols.current_level();
+            node->annotation.initialized = true;
+            return value;
+        }
+    }
+
     if (!as_assignment_target &&
         base_entry.obj != SymbolObject::Variable &&
         base_entry.obj != SymbolObject::Parameter &&
@@ -226,7 +238,7 @@ ValueInfo SemanticAnalyzer::eval_variable(const AstNodePtr& node, bool as_assign
                 continue;
             }
             const auto& fields = result->types.get(value.type).fields;
-            const auto found = fields.find(SymbolTable::normalize(component->name));
+            const auto found = fields.find(component->name);
             if (found == fields.end()) {
                 semantic_error(component, "Record field '" + component->name + "' is not declared");
                 value.type = 0;

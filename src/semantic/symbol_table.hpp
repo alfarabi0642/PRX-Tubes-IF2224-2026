@@ -90,6 +90,7 @@ private:
     std::vector<BTabEntry> btab;
     std::vector<ATabEntry> atab;
     std::vector<std::unordered_map<std::string, int>> scopes;
+    std::unordered_map<std::string, int> predefined_symbols;
     std::vector<int> scope_last;
     std::vector<int> display;
     std::vector<int> next_address;

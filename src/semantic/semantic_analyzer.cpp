@@ -38,7 +38,20 @@ int SemanticAnalyzer::type_size(int type_id) const {
         static_cast<size_t>(type.ref) < result->symbols.atab_entries().size()) {
         return result->symbols.atab_entries()[static_cast<size_t>(type.ref)].size;
     }
+    if (type.kind == TypeKind::Record && type.ref >= 0 &&
+        static_cast<size_t>(type.ref) < result->symbols.btab_entries().size()) {
+        return result->symbols.btab_entries()[static_cast<size_t>(type.ref)].vsze;
+    }
     return 1;
+}
+
+int SemanticAnalyzer::type_ref(int type_id) const {
+    if (!result) return 0;
+    const auto& types = result->types.entries();
+    if (type_id <= 0 || static_cast<size_t>(type_id) >= types.size()) return 0;
+    const auto& type = types[static_cast<size_t>(type_id)];
+    if (type.kind == TypeKind::Array || type.kind == TypeKind::Record) return type.ref;
+    return 0;
 }
 
 int SemanticAnalyzer::add_symbol_checked(const AstNodePtr& node,
@@ -117,9 +130,21 @@ AstNodePtr SemanticAnalyzer::visit_statement(const AstNodePtr& node) {
         case AstKind::Call: return visit_call(node);
         case AstKind::CompoundStatement: return visit_compound_statement(node);
         case AstKind::Variable: {
-            ValueInfo value = eval_variable(node);
-            node->annotation.type_id = value.type;
-            node->annotation.tab_index = value.tab_index;
+            const int idx = result->symbols.lookup(node->name);
+            if (idx < 0) {
+                semantic_error(node, "Identifier '" + node->name + "' is not declared");
+                return node;
+            }
+
+            const auto& entry = result->symbols.tab_entry(idx);
+            if (node->children.empty() &&
+                (entry.obj == SymbolObject::Procedure || entry.obj == SymbolObject::Function)) {
+                return visit_call(node);
+            }
+
+            node->annotation.tab_index = idx;
+            node->annotation.type_id = entry.type;
+            semantic_error(node, "Standalone identifier '" + node->name + "' is not a statement");
             return node;
         }
         default:

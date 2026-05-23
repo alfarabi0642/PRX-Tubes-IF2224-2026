@@ -445,12 +445,8 @@ AstNodePtr build_variable(const std::shared_ptr<ParseTreeNode>& node) {
                     auto current = stack.back();
                     stack.pop_back();
                     for (const auto& item : current->children) {
-                        if (terminal_is(item, "intcon") || terminal_is(item, "charcon")) {
-                            index->add_child(literal_from_terminal(item, false));
-                        } else if (terminal_is(item, "ident")) {
-                            auto variable = make_ast(AstKind::Variable, location_from_node(item));
-                            variable->name = terminal_value(item);
-                            index->add_child(variable);
+                        if (is_node(item, "<expression>")) {
+                            index->add_child(build_expression(item));
                         } else if (is_node(item, "<index-list>")) {
                             stack.push_back(item);
                         }

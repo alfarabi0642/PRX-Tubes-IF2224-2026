@@ -181,7 +181,6 @@ std::shared_ptr<ParseTreeNode> Parser::parse_procedure_function_call() {
     node->add_child(terminal(expect(TokenType::TOKEN_LPARENT)));
 
     if (check(TokenType::TOKEN_RPARENT)) {
-        error(expected_message(current_token(), "<parameter-list>"));
         node->add_child(make_node("<parameter-list>"));
     } else {
         node->add_child(parse_parameter_list());
