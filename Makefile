@@ -25,7 +25,11 @@ SRCS := \
 	src/semantic/semantic_analyzer_declarations.cpp \
 	src/semantic/semantic_analyzer_statements.cpp \
 	src/semantic/semantic_analyzer_expressions.cpp \
-	src/semantic/printer.cpp
+	src/semantic/printer.cpp \
+	src/backend/tac.cpp \
+	src/backend/code_generator.cpp \
+	src/backend/runtime_stack.cpp \
+	src/backend/interpreter.cpp
 
 OBJS := $(patsubst src/%.cpp,$(OBJ_DIR)/%.o,$(SRCS))
 
