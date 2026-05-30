@@ -2,6 +2,7 @@
 
 #include <cstddef>
 #include <string>
+#include <vector>
 
 #include "runtime_layout.hpp"
 #include "runtime_value.hpp"
@@ -37,8 +38,13 @@ public:
     std::size_t value_count() const;
 
 private:
+    std::vector<StackFrame> frames;
+    std::vector<RuntimeValue> values;
     std::size_t max_frames;
 
+    bool resolve_frame_address(std::size_t address,
+                               std::size_t* resolved,
+                               std::string* error = nullptr) const;
     static void set_error(std::string* target, const std::string& message);
 };
 
