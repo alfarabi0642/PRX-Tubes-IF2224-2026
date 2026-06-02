@@ -1,0 +1,10 @@
+program M4Tc6RepeatUntil;
+var
+  total: integer;
+begin
+  total := 3;
+  repeat
+    writeln(total);
+    total := total - 1;
+  until total == 0;
+end.

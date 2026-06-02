@@ -1,0 +1,11 @@
+program M4Tc9RealArithmetic;
+var
+  r: real;
+begin
+  r := -2.5 + 6.0 / 2.0;
+  writeln(r);
+  if r >= 0.5 then
+    writeln('real-ok')
+  else
+    writeln('real-bad');
+end.

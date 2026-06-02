@@ -1,0 +1,22 @@
+program M4Tc8BooleanShortCircuit;
+var
+  zero: integer;
+  flag: boolean;
+begin
+  zero := 0;
+  flag := false;
+
+  if flag and ((10 div zero) == 0) then
+    writeln('and-bad')
+  else
+    writeln('and-ok');
+
+  flag := true;
+  if flag or ((10 div zero) == 0) then
+    writeln('or-ok')
+  else
+    writeln('or-bad');
+
+  if not false then
+    writeln('not-ok');
+end.

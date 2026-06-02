@@ -1,0 +1,33 @@
+program M4Tc10CompositeCallCaseCoverage;
+type
+  Index == 1..2;
+  Values == array[Index] of integer;
+  Box == record
+    value: integer
+  end;
+var
+  values: Values;
+  box: Box;
+  x: integer;
+
+procedure SetX(value: integer);
+begin
+  x := value;
+end;
+
+function Twice(value: integer): integer;
+begin
+  Twice := value * 2;
+end;
+
+begin
+  values[1] := 7;
+  box.value := values[1];
+  SetX(box.value);
+  x := Twice(x);
+
+  case x of
+    14: writeln('fourteen');
+    0: writeln('zero');
+  end;
+end.

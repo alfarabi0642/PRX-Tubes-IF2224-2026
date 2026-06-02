@@ -1,0 +1,8 @@
+program M4Tc3TypedWrite;
+var
+  flag: boolean;
+begin
+  flag := true;
+  writeln('A', ' ', 'ok');
+  writeln(flag);
+end.

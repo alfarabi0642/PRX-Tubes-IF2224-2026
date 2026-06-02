@@ -1,0 +1,18 @@
+program M4Tc5WhileLoopEdges;
+var
+  i: integer;
+begin
+  i := 3;
+  while i < 3 do
+  begin
+    writeln(99);
+  end;
+  writeln('after-zero-iteration');
+
+  i := 0;
+  while i < 3 do
+  begin
+    writeln(i);
+    i := i + 1;
+  end;
+end.

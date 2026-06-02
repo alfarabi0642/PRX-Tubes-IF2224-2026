@@ -1,0 +1,18 @@
+program M4Tc4IfElseBranches;
+var
+  x, y: integer;
+begin
+  x := 8;
+  if x > 5 then
+    y := 1
+  else
+    y := 0;
+  writeln(y);
+
+  x := 2;
+  if x > 5 then
+    y := 9
+  else
+    y := 4;
+  writeln(y);
+end.
