@@ -187,52 +187,6 @@ Output backend menggunakan section stabil:
 ...
 ```
 
-Sesuai QNA Milestone 4, intermediate code yang wajib dicetak dan dieksekusi adalah
-instruksi stack machine. Three Address Code dipakai sebagai konsep flattening AST,
-bukan format akhir yang dibaca interpreter.
-
-Side-file Milestone 4 memakai suffix `_BACKEND.txt` agar fixture M4 tidak menimpa
-snapshot semantic Milestone 3 yang memakai suffix `_SEMANTIC.txt`.
-
-## Cakupan Semantic Analyzer
-
-Implementasi milestone 3 mencakup:
-
-- Konversi parse tree menjadi AST.
-- Inisialisasi predefined identifier seperti `Integer`, `Real`, `Char`, `Boolean`,
-  `String`, `True`, `False`, `readln`, dan `writeln`.
-- Pencatatan deklarasi konstanta, tipe, variabel, prosedur, fungsi, parameter, dan field record.
-- Pengecekan deklarasi ulang identifier dalam scope yang sama.
-- Lookup identifier dari scope terdalam ke scope luar.
-- Pengecekan tipe assignment, ekspresi aritmetika, ekspresi logika, dan operator relasional.
-- Pengecekan kondisi `if`, `while`, `repeat until`, `for`, dan `case`.
-- Pengecekan akses array dan field record.
-- Pengecekan argumen procedure/function call.
-- Pengecekan penggunaan variabel lokal sebelum inisialisasi.
-
-## Cakupan Backend Milestone 4
-
-Backend MVP saat ini mencakup:
-
-- Variabel global scalar dan address frame-relative.
-- Literal `integer`, `real`, `char`, `boolean`, dan `string`.
-- Assignment, ekspresi unary/binary, aritmetika, modulo, comparison, dan boolean
-  short-circuit.
-- `write` dan `writeln`, termasuk beberapa argumen.
-- Control flow `if`, `while`, `repeat until`, dan `for to/downto`.
-- Runtime diagnostic untuk stack underflow/overflow frame, invalid address,
-  invalid jump, division/modulo by zero, dan guard jumlah langkah interpreter.
-
-Batasan yang masih partial atau belum didukung backend:
-
-- `readln`.
-- Array indexing dan record field pada code generation.
-- Source-level procedure/function call, termasuk `CAL` runtime.
-- `case` statement.
-- Lexical level selain 0.
-
-Input yang memakai fitur partial tetap harus gagal dengan diagnostic backend/runtime
-yang informatif, bukan crash.
 
 ## Revisi Milestone 3
 
@@ -244,14 +198,6 @@ Implementasi juga menyesuaikan beberapa revisi dari milestone sebelumnya:
 - `while` dan `for` wajib menggunakan `compound-statement` setelah `do`.
 - Satu semicolon setelah blok `while` atau `for` cukup mengikuti aturan `statement-list`.
 
-## Pembagian Tugas Milestone 3
-
-| NIM | Tugas |
-| :--- | :--- |
-| 13524002 | Parser dan lexer revisions untuk Milestone 3, termasuk validasi empty statement, comment filtering serta perubahan while, for agar wajib compound statement, dan dokumen bagian implementasi. |
-| 13524022 | Implementasi AST model dan AST Builder, termasuk konversi parse tree menjadi AST ringkas untuk deklarasi, statement, expression, array, record, procedure, function call, dan testing. |
-| 13524086 | Implementasi type system dan symbol table (TypeRegistry, tab, btab, atab, predefined identifiers), serta integrasi dan refactoring modul semantic analysis. |
-| 13524094 | Implementasi semantic analyzer, decorated AST, printer, diagnostics, integrasi main.cpp, refactoring akhir, dan pengujian Milestone 3. |
 
 ## Testing
 
@@ -291,6 +237,4 @@ mingw32-make -B
 git diff --check
 ```
 
-`tc1` sampai `tc9` adalah happy-path backend MVP. `tc10` memuat fitur composite,
-procedure/function, dan `case`; hasil yang diharapkan untuk saat ini adalah diagnostic
-backend yang rapi.
+`
