@@ -1,4 +1,4 @@
-# Arion Compiler - Milestone 1, 2 & 3
+# Arion Compiler - Milestone 1, 2, 3 & 4
 
 **Tugas Besar IF2224 Teori Bahasa Formal dan Otomata 2026**
 
@@ -9,6 +9,7 @@ Program ini adalah compiler sederhana untuk bahasa Arion.
 - **Milestone 1:** lexical analyzer berbasis DFA.
 - **Milestone 2:** syntax analyzer berbasis recursive descent parser.
 - **Milestone 3:** semantic analyzer berbasis AST, symbol table, dan type checking.
+- **Milestone 4:** backend MVP yang mengubah Decorated AST menjadi instruksi stack machine dan mengeksekusinya dengan interpreter.
 
 Alur program saat ini:
 
@@ -21,13 +22,26 @@ Source File
   -> AST Builder
   -> Semantic Analyzer
   -> Decorated AST + Symbol Table + Semantic Diagnostics
+  -> Intermediate Code Generator
+  -> Stack Machine Instructions
+  -> Interpreter
+  -> Program Output
 ```
 
 Program akan menampilkan parse tree, decorated AST, tabel simbol, dan hasil pengecekan
-semantik ke terminal. Laporan semantik juga disimpan ke:
+semantik ke terminal. Jika analisis semantik sukses, program juga menampilkan
+intermediate code dan output akhir program Arion.
+
+Untuk input milestone 3, laporan semantik disimpan ke:
 
 ```text
 test/milestone-3/<nama_file>_SEMANTIC.txt
+```
+
+Untuk input milestone 4, laporan backend disimpan ke:
+
+```text
+test/milestone-4/<nama_file>_BACKEND.txt
 ```
 
 ## Identitas Kelompok
@@ -92,7 +106,8 @@ PRX-Tubes-IF2224-2026/
 |-- test/
 |   |-- milestone-1/
 |   |-- milestone-2/
-|   `-- milestone-3/
+|   |-- milestone-3/
+|   `-- milestone-4/
 |-- doc/
 |-- bin/
 |-- build/
@@ -149,10 +164,35 @@ Untuk input yang valid secara lexical dan syntax, program menghasilkan:
 - Tabel blok `btab` untuk informasi blok prosedur, fungsi, dan record.
 - Tabel array `atab` untuk metadata tipe array.
 - Daftar semantic error jika ditemukan pelanggaran semantik.
+- Intermediate code dalam format instruksi stack machine, misalnya `INT`, `LIT`,
+  `LOD`, `STO`, `JMP`, `JPC`, `OPR`, dan `RET`.
+- Output final program Arion dari interpreter.
 
 Jika ditemukan lexical error, proses parser dan semantic analyzer tidak dijalankan.
 Jika ditemukan parser error, proses semantic analyzer tidak dijalankan. Jika semantic
 error ditemukan, program tetap mencetak laporan semantik lalu keluar dengan kode error.
+Backend hanya dijalankan setelah lexical, parser, AST builder, dan semantic analyzer
+sukses. Jika code generation gagal, program mencetak `=== Backend Errors ===` dan
+interpreter tidak dijalankan. Jika runtime gagal, intermediate code tetap dicetak,
+lalu program mencetak `=== Runtime Errors ===`.
+
+Output backend menggunakan section stabil:
+
+```text
+=== Intermediate Code ===
+0 INT 0 ...
+1 LIT 0 ...
+
+=== Program Output ===
+...
+```
+
+Sesuai QNA Milestone 4, intermediate code yang wajib dicetak dan dieksekusi adalah
+instruksi stack machine. Three Address Code dipakai sebagai konsep flattening AST,
+bukan format akhir yang dibaca interpreter.
+
+Side-file Milestone 4 memakai suffix `_BACKEND.txt` agar fixture M4 tidak menimpa
+snapshot semantic Milestone 3 yang memakai suffix `_SEMANTIC.txt`.
 
 ## Cakupan Semantic Analyzer
 
@@ -169,6 +209,30 @@ Implementasi milestone 3 mencakup:
 - Pengecekan akses array dan field record.
 - Pengecekan argumen procedure/function call.
 - Pengecekan penggunaan variabel lokal sebelum inisialisasi.
+
+## Cakupan Backend Milestone 4
+
+Backend MVP saat ini mencakup:
+
+- Variabel global scalar dan address frame-relative.
+- Literal `integer`, `real`, `char`, `boolean`, dan `string`.
+- Assignment, ekspresi unary/binary, aritmetika, modulo, comparison, dan boolean
+  short-circuit.
+- `write` dan `writeln`, termasuk beberapa argumen.
+- Control flow `if`, `while`, `repeat until`, dan `for to/downto`.
+- Runtime diagnostic untuk stack underflow/overflow frame, invalid address,
+  invalid jump, division/modulo by zero, dan guard jumlah langkah interpreter.
+
+Batasan yang masih partial atau belum didukung backend:
+
+- `readln`.
+- Array indexing dan record field pada code generation.
+- Source-level procedure/function call, termasuk `CAL` runtime.
+- `case` statement.
+- Lexical level selain 0.
+
+Input yang memakai fitur partial tetap harus gagal dengan diagnostic backend/runtime
+yang informatif, bukan crash.
 
 ## Revisi Milestone 3
 
@@ -194,9 +258,39 @@ Implementasi juga menyesuaikan beberapa revisi dari milestone sebelumnya:
 - Test Milestone 1 ada di `test/milestone-1`.
 - Test Milestone 2 ada di `test/milestone-2`.
 - Test Milestone 3 ada di `test/milestone-3`.
+- Test Milestone 4 ada di `test/milestone-4`.
 
 Contoh menjalankan salah satu test milestone 3:
 
 ```powershell
 .\bin\arion.exe test\milestone-3\tc1.txt
 ```
+
+Contoh menjalankan test milestone 4:
+
+```powershell
+.\bin\arion.exe test\milestone-4\tc1.txt
+```
+
+Smoke test final yang digunakan untuk release candidate:
+
+```powershell
+mingw32-make -B
+.\bin\arion.exe test\milestone-4\tc1.txt
+.\bin\arion.exe test\milestone-4\tc2.txt
+.\bin\arion.exe test\milestone-4\tc3.txt
+.\bin\arion.exe test\milestone-4\tc4.txt
+.\bin\arion.exe test\milestone-4\tc5.txt
+.\bin\arion.exe test\milestone-4\tc6.txt
+.\bin\arion.exe test\milestone-4\tc7.txt
+.\bin\arion.exe test\milestone-4\tc8.txt
+.\bin\arion.exe test\milestone-4\tc9.txt
+.\bin\arion.exe test\milestone-4\tc10.txt
+.\bin\arion.exe test\milestone-3\tc1.txt
+.\bin\arion.exe test\milestone-3\tc10.txt
+git diff --check
+```
+
+`tc1` sampai `tc9` adalah happy-path backend MVP. `tc10` memuat fitur composite,
+procedure/function, dan `case`; hasil yang diharapkan untuk saat ini adalah diagnostic
+backend yang rapi.

@@ -669,12 +669,15 @@ private:
         }
 
         const std::string op = normalize(node->op);
-        if (!emit_expression(node->children.front())) {
+        const auto& operand = node->children.front();
+        if (!emit_expression(operand)) {
             return false;
         }
 
         if (op == "minus") {
-            emit_opr(OprCode::Neg);
+            if (!operand_is_already_signed_numeric_literal(operand)) {
+                emit_opr(OprCode::Neg);
+            }
             return true;
         }
         if (op == "plus") {
@@ -688,6 +691,17 @@ private:
 
         add_diagnostic(node, "Unsupported unary operator '" + node->op + "'.");
         return false;
+    }
+
+    bool operand_is_already_signed_numeric_literal(const semantic::AstNodePtr& node) const {
+        if (!node || node->kind != semantic::AstKind::Literal || node->value.empty()) {
+            return false;
+        }
+        if (node->literal_kind != semantic::LiteralKind::Integer &&
+            node->literal_kind != semantic::LiteralKind::Real) {
+            return false;
+        }
+        return node->value.front() == '-';
     }
 
     bool emit_binary_expression(const semantic::AstNodePtr& node) {
