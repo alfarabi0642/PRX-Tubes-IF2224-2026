@@ -15,21 +15,6 @@ void add_diagnostic(InterpreterResult* result, std::size_t ip, const std::string
     result->success = false;
 }
 
-bool require_level_zero(const Instruction& instruction,
-                        std::size_t ip,
-                        InterpreterResult* result,
-                        const char* opcode) {
-    if (instruction.level == 0) {
-        return true;
-    }
-
-    std::ostringstream out;
-    out << opcode << " with lexical level " << instruction.level
-        << " is not supported yet; only current-frame level 0 is implemented.";
-    add_diagnostic(result, ip, out.str());
-    return false;
-}
-
 bool validate_target(int target,
                      std::size_t code_size,
                      std::size_t ip,
@@ -56,6 +41,64 @@ bool pop_operand(RuntimeStack* stack,
     add_diagnostic(result, ip, error);
     return false;
 }
+
+bool require_frame_operand(const Instruction& instruction,
+                           std::size_t ip,
+                           InterpreterResult* result,
+                           const char* opcode) {
+    if (instruction.level < 0) {
+        std::ostringstream out;
+        out << opcode << " lexical level cannot be negative.";
+        add_diagnostic(result, ip, out.str());
+        return false;
+    }
+    if (instruction.argument < 0) {
+        std::ostringstream out;
+        out << opcode << " address cannot be negative.";
+        add_diagnostic(result, ip, out.str());
+        return false;
+    }
+    return true;
+}
+
+bool to_ordinal(const RuntimeValue& value, int* out) {
+    switch (value.kind) {
+        case RuntimeValueKind::Integer:
+            *out = value.int_value;
+            return true;
+        case RuntimeValueKind::Boolean:
+            *out = value.bool_value ? 1 : 0;
+            return true;
+        case RuntimeValueKind::Char:
+            *out = static_cast<unsigned char>(value.char_value);
+            return true;
+        case RuntimeValueKind::Real:
+        case RuntimeValueKind::String:
+        case RuntimeValueKind::Empty:
+            return false;
+    }
+    return false;
+}
+
+bool to_absolute_address(const RuntimeValue& value,
+                         std::size_t* out,
+                         InterpreterResult* result,
+                         std::size_t ip) {
+    int address = 0;
+    if (!to_ordinal(value, &address) || address < 0) {
+        add_diagnostic(result, ip, "Indirect memory instruction requires a non-negative address.");
+        return false;
+    }
+    *out = static_cast<std::size_t>(address);
+    return true;
+}
+
+struct PendingCall {
+    bool active = false;
+    int static_link = 0;
+    int dynamic_link = 0;
+    int return_address = 0;
+};
 
 bool is_numeric(const RuntimeValue& value) {
     return value.kind == RuntimeValueKind::Integer || value.kind == RuntimeValueKind::Real;
@@ -315,6 +358,7 @@ InterpreterResult Interpreter::execute(const std::vector<Instruction>& code) {
 
     RuntimeStack stack(options.max_frames);
     std::size_t ip = 0;
+    PendingCall pending_call;
 
     while (true) {
         if (result.executed_instructions >= options.max_steps) {
@@ -339,17 +383,16 @@ InterpreterResult Interpreter::execute(const std::vector<Instruction>& code) {
                 break;
 
             case OpCode::Lod: {
-                if (!require_level_zero(instruction, current_ip, &result, "LOD")) {
-                    return result;
-                }
-                if (instruction.argument < 0) {
-                    add_diagnostic(&result, current_ip, "LOD address cannot be negative.");
+                if (!require_frame_operand(instruction, current_ip, &result, "LOD")) {
                     return result;
                 }
 
                 RuntimeValue value;
                 std::string error;
-                if (!stack.load(static_cast<std::size_t>(instruction.argument), &value, &error)) {
+                if (!stack.load(static_cast<std::size_t>(instruction.level),
+                                static_cast<std::size_t>(instruction.argument),
+                                &value,
+                                &error)) {
                     add_diagnostic(&result, current_ip, error);
                     return result;
                 }
@@ -358,11 +401,7 @@ InterpreterResult Interpreter::execute(const std::vector<Instruction>& code) {
             }
 
             case OpCode::Sto: {
-                if (!require_level_zero(instruction, current_ip, &result, "STO")) {
-                    return result;
-                }
-                if (instruction.argument < 0) {
-                    add_diagnostic(&result, current_ip, "STO address cannot be negative.");
+                if (!require_frame_operand(instruction, current_ip, &result, "STO")) {
                     return result;
                 }
 
@@ -372,20 +411,106 @@ InterpreterResult Interpreter::execute(const std::vector<Instruction>& code) {
                 }
 
                 std::string error;
-                if (!stack.store(static_cast<std::size_t>(instruction.argument), value, &error)) {
+                if (!stack.store(static_cast<std::size_t>(instruction.level),
+                                 static_cast<std::size_t>(instruction.argument),
+                                 value,
+                                 &error)) {
                     add_diagnostic(&result, current_ip, error);
                     return result;
                 }
                 break;
             }
 
-            case OpCode::Cal:
-                add_diagnostic(&result, current_ip,
-                    "CAL is not supported in the MVP runtime/interpreter slice yet.");
-                return result;
+            case OpCode::Lda: {
+                if (!require_frame_operand(instruction, current_ip, &result, "LDA")) {
+                    return result;
+                }
+
+                std::size_t address = 0;
+                std::string error;
+                if (!stack.address(static_cast<std::size_t>(instruction.level),
+                                   static_cast<std::size_t>(instruction.argument),
+                                   &address,
+                                   &error)) {
+                    add_diagnostic(&result, current_ip, error);
+                    return result;
+                }
+                stack.push(RuntimeValue::integer(static_cast<int>(address)));
+                break;
+            }
+
+            case OpCode::Ldi: {
+                RuntimeValue address_value;
+                if (!pop_operand(&stack, &address_value, &result, current_ip)) {
+                    return result;
+                }
+
+                std::size_t address = 0;
+                if (!to_absolute_address(address_value, &address, &result, current_ip)) {
+                    return result;
+                }
+
+                RuntimeValue value;
+                std::string error;
+                if (!stack.load_absolute(address, &value, &error)) {
+                    add_diagnostic(&result, current_ip, error);
+                    return result;
+                }
+                stack.push(value);
+                break;
+            }
+
+            case OpCode::Sti: {
+                RuntimeValue value;
+                RuntimeValue address_value;
+                if (!pop_operand(&stack, &value, &result, current_ip) ||
+                    !pop_operand(&stack, &address_value, &result, current_ip)) {
+                    return result;
+                }
+
+                std::size_t address = 0;
+                if (!to_absolute_address(address_value, &address, &result, current_ip)) {
+                    return result;
+                }
+
+                std::string error;
+                if (!stack.store_absolute(address, value, &error)) {
+                    add_diagnostic(&result, current_ip, error);
+                    return result;
+                }
+                break;
+            }
+
+            case OpCode::Cal: {
+                if (instruction.level < 0) {
+                    add_diagnostic(&result, current_ip, "CAL lexical level cannot be negative.");
+                    return result;
+                }
+                if (!validate_target(instruction.argument, code.size(), current_ip, &result)) {
+                    return result;
+                }
+                if (pending_call.active) {
+                    add_diagnostic(&result, current_ip, "Nested CAL without callee frame allocation.");
+                    return result;
+                }
+
+                std::string error;
+                if (!stack.static_link_target(static_cast<std::size_t>(instruction.level),
+                                              &pending_call.static_link,
+                                              &error) ||
+                    !stack.current_frame_index(&pending_call.dynamic_link, &error)) {
+                    add_diagnostic(&result, current_ip, error);
+                    return result;
+                }
+                pending_call.active = true;
+                pending_call.return_address = static_cast<int>(ip);
+                ip = static_cast<std::size_t>(instruction.argument);
+                break;
+            }
 
             case OpCode::Int: {
-                if (!require_level_zero(instruction, current_ip, &result, "INT")) {
+                if (instruction.level < 0) {
+                    add_diagnostic(&result, current_ip, "INT parameter slot count cannot be negative.");
                     return result;
                 }
                 if (instruction.argument < 0) {
@@ -394,10 +519,19 @@ InterpreterResult Interpreter::execute(const std::vector<Instruction>& code) {
                 }
 
                 std::string error;
-                if (!stack.push_frame(static_cast<std::size_t>(instruction.argument), 0, 0, 0, &error)) {
+                const int static_link = pending_call.active ? pending_call.static_link : 0;
+                const int dynamic_link = pending_call.active ? pending_call.dynamic_link : 0;
+                const int return_address = pending_call.active ? pending_call.return_address : 0;
+                if (!stack.push_frame(static_cast<std::size_t>(instruction.argument),
+                                      static_cast<std::size_t>(instruction.level),
+                                      static_link,
+                                      dynamic_link,
+                                      return_address,
+                                      &error)) {
                     add_diagnostic(&result, current_ip, error);
                     return result;
                 }
+                pending_call = PendingCall{};
                 break;
             }
 
@@ -436,9 +570,87 @@ InterpreterResult Interpreter::execute(const std::vector<Instruction>& code) {
                 }
                 break;
 
-            case OpCode::Ret:
-                result.success = true;
-                return result;
+            case OpCode::Ret: {
+                if (instruction.argument != 0 && instruction.argument != 1) {
+                    add_diagnostic(&result, current_ip, "RET argument must be 0 or 1.");
+                    return result;
+                }
+                if (stack.frame_count() <= 1) {
+                    result.success = true;
+                    return result;
+                }
+
+                RuntimeValue return_value;
+                if (instruction.argument == 1 &&
+                    !pop_operand(&stack, &return_value, &result, current_ip)) {
+                    return result;
+                }
+
+                int return_address = 0;
+                std::string error;
+                if (!stack.current_return_address(&return_address, &error)) {
+                    add_diagnostic(&result, current_ip, error);
+                    return result;
+                }
+                if (!stack.pop_frame(&error)) {
+                    add_diagnostic(&result, current_ip, error);
+                    return result;
+                }
+                if (instruction.argument == 1) {
+                    stack.push(return_value);
+                }
+                if (!validate_target(return_address, code.size(), current_ip, &result)) {
+                    return result;
+                }
+                ip = static_cast<std::size_t>(return_address);
+                break;
+            }
+
+            case OpCode::Chk: {
+                if (instruction.level > instruction.argument) {
+                    add_diagnostic(&result, current_ip, "CHK lower bound is greater than upper bound.");
+                    return result;
+                }
+
+                RuntimeValue index_value;
+                if (!pop_operand(&stack, &index_value, &result, current_ip)) {
+                    return result;
+                }
+
+                int index = 0;
+                if (!to_ordinal(index_value, &index)) {
+                    add_diagnostic(&result, current_ip, "Array index must be ordinal.");
+                    return result;
+                }
+                if (index < instruction.level || index > instruction.argument) {
+                    std::ostringstream out;
+                    out << "Array index " << index << " is outside bounds "
+                        << instruction.level << ".." << instruction.argument << ".";
+                    add_diagnostic(&result, current_ip, out.str());
+                    return result;
+                }
+                stack.push(RuntimeValue::integer(index));
+                break;
+            }
+
+            case OpCode::Dup: {
+                RuntimeValue value;
+                std::string error;
+                if (!stack.peek(&value, &error)) {
+                    add_diagnostic(&result, current_ip, error);
+                    return result;
+                }
+                stack.push(value);
+                break;
+            }
+
+            case OpCode::Pop: {
+                RuntimeValue discarded;
+                if (!pop_operand(&stack, &discarded, &result, current_ip)) {
+                    return result;
+                }
+                break;
+            }
         }
     }
 

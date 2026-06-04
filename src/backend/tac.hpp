@@ -12,12 +12,18 @@ enum class OpCode {
     Lit,
     Lod,
     Sto,
+    Lda,
+    Ldi,
+    Sti,
     Cal,
     Int,
     Jmp,
     Jpc,
     Opr,
-    Ret
+    Ret,
+    Chk,
+    Dup,
+    Pop
 };
 
 enum class OprCode {

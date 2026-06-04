@@ -40,12 +40,18 @@ std::string to_string(OpCode opcode) {
         case OpCode::Lit: return "LIT";
         case OpCode::Lod: return "LOD";
         case OpCode::Sto: return "STO";
+        case OpCode::Lda: return "LDA";
+        case OpCode::Ldi: return "LDI";
+        case OpCode::Sti: return "STI";
         case OpCode::Cal: return "CAL";
         case OpCode::Int: return "INT";
         case OpCode::Jmp: return "JMP";
         case OpCode::Jpc: return "JPC";
         case OpCode::Opr: return "OPR";
         case OpCode::Ret: return "RET";
+        case OpCode::Chk: return "CHK";
+        case OpCode::Dup: return "DUP";
+        case OpCode::Pop: return "POP";
     }
     return "UNKNOWN";
 }
@@ -73,7 +79,9 @@ std::string to_string(OprCode opcode) {
 std::string format_instruction(std::size_t line, const Instruction& instruction) {
     std::ostringstream out;
     out << line << ' ' << to_string(instruction.opcode);
-    if (instruction.opcode != OpCode::Ret) {
+    if (instruction.opcode != OpCode::Ret ||
+        instruction.level != 0 ||
+        instruction.argument != 0) {
         out << ' ' << instruction.level << ' ';
         if (instruction.opcode == OpCode::Lit && instruction.has_literal_value) {
             out << instruction.literal_value.to_code_literal();
@@ -89,7 +97,9 @@ std::string format_instruction(std::size_t line, const Instruction& instruction)
 
 std::ostream& operator<<(std::ostream& os, const Instruction& instruction) {
     os << to_string(instruction.opcode);
-    if (instruction.opcode != OpCode::Ret) {
+    if (instruction.opcode != OpCode::Ret ||
+        instruction.level != 0 ||
+        instruction.argument != 0) {
         os << ' ' << instruction.level << ' ';
         if (instruction.opcode == OpCode::Lit && instruction.has_literal_value) {
             os << instruction.literal_value.to_code_literal();

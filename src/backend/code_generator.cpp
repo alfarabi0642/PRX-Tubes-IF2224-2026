@@ -4,7 +4,9 @@
 #include <sstream>
 #include <stdexcept>
 #include <string>
+#include <unordered_map>
 #include <utility>
+#include <vector>
 
 namespace backend {
 
@@ -55,9 +57,27 @@ public:
     }
 
 private:
+    struct SubprogramInfo {
+        semantic::AstNodePtr declaration;
+        int tab_index = -1;
+        bool is_function = false;
+        int label = -1;
+        int block_index = -1;
+        int parent_level = 0;
+        int body_level = 0;
+        int parameter_slots = 0;
+        std::size_t frame_slots = kFrameHeaderSlots;
+        int result_slot = -1;
+    };
+
     CodegenResult result;
     const semantic::SymbolTable& symbols;
     const semantic::TypeRegistry& types;
+    std::unordered_map<int, SubprogramInfo> subprograms;
+    std::vector<int> subprogram_order;
+    int current_level = 0;
+    int current_function_tab_index = -1;
+    int current_function_result_slot = -1;
 
     std::size_t current_line() const {
         return result.instructions.size();
@@ -69,7 +89,14 @@ private:
     }
 
     std::size_t emit_simple(OpCode opcode, int argument, std::string comment = "") {
-        return emit(Instruction(opcode, 0, argument, std::move(comment)));
+        return emit_instruction(opcode, 0, argument, std::move(comment));
+    }
+
+    std::size_t emit_instruction(OpCode opcode,
+                                 int level,
+                                 int argument,
+                                 std::string comment = "") {
+        return emit(Instruction(opcode, level, argument, std::move(comment)));
     }
 
     std::size_t emit_opr(OprCode op) {
@@ -106,6 +133,11 @@ private:
     bool valid_block_index(int index) const {
         return index >= 0 &&
                static_cast<std::size_t>(index) < symbols.btab_entries().size();
+    }
+
+    bool valid_array_index(int index) const {
+        return index >= 0 &&
+               static_cast<std::size_t>(index) < symbols.atab_entries().size();
     }
 
     bool valid_type_id(int type_id) const {
@@ -261,11 +293,14 @@ private:
 
     bool runtime_address_for_entry(const semantic::AstNodePtr& node,
                                    const semantic::TabEntry& entry,
+                                   int* lexical_level,
                                    int* address) {
-        if (entry.lev != 0) {
+        const int levels_up = current_level - entry.lev;
+        if (levels_up < 0) {
             add_diagnostic(node, "Identifier '" + entry.identifier +
-                                 "' is at lexical level " + std::to_string(entry.lev) +
-                                 "; the current runtime only supports level 0 codegen.");
+                                 "' is declared at lexical level " + std::to_string(entry.lev) +
+                                 ", which is not reachable from current level " +
+                                 std::to_string(current_level) + ".");
             return false;
         }
         if (entry.adr < 0) {
@@ -274,34 +309,152 @@ private:
             return false;
         }
 
+        *lexical_level = levels_up;
         *address = runtime_address_for_symbol(entry);
         return true;
     }
 
-    bool ensure_simple_variable(const semantic::AstNodePtr& node, const char* context) {
+    bool is_storage_entry(const semantic::TabEntry& entry) const {
+        return entry.obj == semantic::SymbolObject::Variable ||
+               entry.obj == semantic::SymbolObject::Parameter ||
+               entry.obj == semantic::SymbolObject::Constant ||
+               entry.obj == semantic::SymbolObject::Function;
+    }
+
+    const semantic::TabEntry* storage_entry_for_variable_node(const semantic::AstNodePtr& node,
+                                                              int* out_index = nullptr) {
         if (!node || node->kind != semantic::AstKind::Variable) {
-            add_diagnostic(node, std::string(context) + " requires a variable node.");
+            add_diagnostic(node, "Variable access requires a variable node.");
+            return nullptr;
+        }
+
+        int index = node->annotation.tab_index;
+        if (valid_tab_index(index) && is_storage_entry(symbols.tab_entry(index))) {
+            if (out_index) {
+                *out_index = index;
+            }
+            return &symbols.tab_entry(index);
+        }
+
+        int best = -1;
+        for (std::size_t i = 0; i < symbols.tab_entries().size(); ++i) {
+            const auto& entry = symbols.tab_entries()[i];
+            if (entry.identifier == node->name && is_storage_entry(entry) && entry.lev <= current_level) {
+                if (best < 0 || entry.lev >= symbols.tab_entry(best).lev) {
+                    best = static_cast<int>(i);
+                }
+            }
+        }
+        if (!valid_tab_index(best)) {
+            add_diagnostic(node, "No runtime storage symbol is available for '" + node->name + "'.");
+            return nullptr;
+        }
+
+        if (out_index) {
+            *out_index = best;
+        }
+        return &symbols.tab_entry(best);
+    }
+
+    bool emit_variable_address(const semantic::AstNodePtr& node, int* out_type = nullptr) {
+        const semantic::TabEntry* entry = storage_entry_for_variable_node(node);
+        if (!entry) {
             return false;
         }
-        if (!node->children.empty()) {
-            add_diagnostic(node, std::string(context) +
-                                 " for array indexes or record fields is not implemented yet.");
+        if (entry->obj != semantic::SymbolObject::Variable &&
+            entry->obj != semantic::SymbolObject::Parameter) {
+            add_diagnostic(node, "Identifier '" + entry->identifier + "' is a " +
+                                 semantic::symbol_object_name(entry->obj) +
+                                 ", not an addressable runtime storage target.");
             return false;
+        }
+
+        int lexical_level = 0;
+        int address = 0;
+        if (!runtime_address_for_entry(node, *entry, &lexical_level, &address)) {
+            return false;
+        }
+
+        emit_instruction(OpCode::Lda, lexical_level, address, entry->identifier);
+
+        int current_type = entry->type;
+        for (const auto& component : node->children) {
+            if (!component) {
+                continue;
+            }
+
+            if (component->kind == semantic::AstKind::IndexComponent) {
+                if (type_kind(current_type) != semantic::TypeKind::Array) {
+                    add_diagnostic(component, "Indexed access requires an array value.");
+                    return false;
+                }
+                const int array_ref = types.get(current_type).ref;
+                if (!valid_array_index(array_ref)) {
+                    add_diagnostic(component, "Array type metadata is missing.");
+                    return false;
+                }
+                if (component->children.empty()) {
+                    add_diagnostic(component, "Array index component is missing an expression.");
+                    return false;
+                }
+
+                const auto& array = symbols.atab_entry(array_ref);
+                if (!emit_expression(component->children.front())) {
+                    return false;
+                }
+                emit_instruction(OpCode::Chk, array.low, array.high, "array bounds");
+                if (array.low != 0) {
+                    emit_literal(RuntimeValue::integer(array.low), "array low bound");
+                    emit_opr(OprCode::Sub);
+                }
+                if (array.elsz != 1) {
+                    emit_literal(RuntimeValue::integer(array.elsz), "array element size");
+                    emit_opr(OprCode::Mul);
+                }
+                emit_opr(OprCode::Add);
+                current_type = array.etyp;
+            } else if (component->kind == semantic::AstKind::FieldComponent) {
+                if (type_kind(current_type) != semantic::TypeKind::Record) {
+                    add_diagnostic(component, "Field access requires a record value.");
+                    return false;
+                }
+
+                const auto& record = types.get(current_type);
+                auto found = record.fields.find(component->name);
+                if (found == record.fields.end()) {
+                    found = record.fields.find(normalize(component->name));
+                }
+                if (found == record.fields.end() || !valid_tab_index(found->second)) {
+                    add_diagnostic(component, "Record field '" + component->name + "' is not available.");
+                    return false;
+                }
+
+                const auto& field = symbols.tab_entry(found->second);
+                if (field.adr != 0) {
+                    emit_literal(RuntimeValue::integer(field.adr), field.identifier);
+                    emit_opr(OprCode::Add);
+                }
+                current_type = field.type;
+            } else {
+                add_diagnostic(component, "Unsupported variable component " +
+                                         semantic::ast_kind_name(component->kind) + ".");
+                return false;
+            }
+        }
+
+        if (out_type) {
+            *out_type = current_type;
         }
         return true;
     }
 
     bool emit_variable_load(const semantic::AstNodePtr& node) {
-        if (!ensure_simple_variable(node, "Variable load")) {
-            return false;
-        }
-
-        const semantic::TabEntry* entry = tab_entry_for_node(node);
+        const semantic::TabEntry* entry = storage_entry_for_variable_node(node);
         if (!entry) {
             return false;
         }
 
-        if (entry->obj == semantic::SymbolObject::Constant) {
+        if (entry->obj == semantic::SymbolObject::Constant && node->children.empty()) {
             RuntimeValue value;
             if (!literal_from_constant(node, *entry, &value)) {
                 return false;
@@ -310,25 +463,40 @@ private:
             return true;
         }
 
+        if (!node->children.empty()) {
+            if (!emit_variable_address(node)) {
+                return false;
+            }
+            emit_simple(OpCode::Ldi, 0, "load indirect");
+            return true;
+        }
+
         if (entry->obj != semantic::SymbolObject::Variable &&
             entry->obj != semantic::SymbolObject::Parameter) {
             add_diagnostic(node, "Identifier '" + entry->identifier + "' is a " +
                                  semantic::symbol_object_name(entry->obj) +
-                                 ", not a loadable variable in the MVP code generator.");
+                                 ", not a loadable variable.");
             return false;
         }
 
+        int lexical_level = 0;
         int address = 0;
-        if (!runtime_address_for_entry(node, *entry, &address)) {
+        if (!runtime_address_for_entry(node, *entry, &lexical_level, &address)) {
             return false;
         }
 
-        emit_simple(OpCode::Lod, address, entry->identifier);
+        emit_instruction(OpCode::Lod, lexical_level, address, entry->identifier);
         return true;
     }
 
     bool emit_assignment_to_entry(const semantic::AstNodePtr& node,
                                   const semantic::TabEntry& entry) {
+        if (node && node->annotation.tab_index == current_function_tab_index &&
+            current_function_result_slot >= 0) {
+            emit_instruction(OpCode::Sto, 0, current_function_result_slot, entry.identifier + " result");
+            return true;
+        }
+
         if (entry.obj != semantic::SymbolObject::Variable &&
             entry.obj != semantic::SymbolObject::Parameter) {
             add_diagnostic(node, "Identifier '" + entry.identifier + "' is a " +
@@ -337,16 +505,19 @@ private:
             return false;
         }
 
+        int lexical_level = 0;
         int address = 0;
-        if (!runtime_address_for_entry(node, entry, &address)) {
+        if (!runtime_address_for_entry(node, entry, &lexical_level, &address)) {
             return false;
         }
 
-        emit_simple(OpCode::Sto, address, entry.identifier);
+        emit_instruction(OpCode::Sto, lexical_level, address, entry.identifier);
         return true;
     }
 
     void generate_program(const semantic::AstNodePtr& node) {
+        current_level = node->annotation.lexical_level;
+
         std::size_t frame_slots = kFrameHeaderSlots;
         if (valid_block_index(node->annotation.block_index)) {
             frame_slots = frame_slot_count_for_block(
@@ -357,19 +528,29 @@ private:
             add_diagnostic(node, "Program block metadata is missing; using frame header only.");
         }
 
-        emit_simple(OpCode::Int, static_cast<int>(frame_slots), "global frame");
+        emit_instruction(OpCode::Int, 0, static_cast<int>(frame_slots), "global frame");
 
-        bool emitted_body = false;
         for (const auto& child : node->children) {
-            if (!child) {
-                continue;
-            }
-            if (child->kind == semantic::AstKind::DeclarationPart) {
+            if (child && child->kind == semantic::AstKind::DeclarationPart) {
+                collect_subprograms(child);
                 generate_declaration_part(child);
             }
         }
+
+        const std::size_t main_jump = emit_simple(OpCode::Jmp, 0, "main");
+        for (int tab_index : subprogram_order) {
+            auto found = subprograms.find(tab_index);
+            if (found != subprograms.end()) {
+                emit_subprogram_body(found->second);
+            }
+        }
+
+        patch(main_jump, current_line());
+
+        bool emitted_body = false;
         for (const auto& child : node->children) {
             if (child && child->kind == semantic::AstKind::CompoundStatement) {
+                current_level = child->annotation.lexical_level;
                 generate_statement(child);
                 emitted_body = true;
             }
@@ -382,6 +563,49 @@ private:
         emit(Instruction(OpCode::Ret, 0, 0));
     }
 
+    void collect_subprograms(const semantic::AstNodePtr& node) {
+        if (!node) {
+            return;
+        }
+        for (const auto& child : node->children) {
+            if (!child) {
+                continue;
+            }
+            if (child->kind == semantic::AstKind::ProcedureDecl ||
+                child->kind == semantic::AstKind::FunctionDecl) {
+                const int tab_index = child->annotation.tab_index;
+                if (!valid_tab_index(tab_index)) {
+                    add_diagnostic(child, "Subprogram declaration is missing symbol metadata.");
+                    continue;
+                }
+
+                const auto& entry = symbols.tab_entry(tab_index);
+                if (!valid_block_index(entry.ref)) {
+                    add_diagnostic(child, "Subprogram '" + entry.identifier +
+                                         "' is missing block metadata.");
+                    continue;
+                }
+
+                const auto& block = symbols.btab_entries()[static_cast<std::size_t>(entry.ref)];
+                SubprogramInfo info;
+                info.declaration = child;
+                info.tab_index = tab_index;
+                info.is_function = child->kind == semantic::AstKind::FunctionDecl;
+                info.block_index = entry.ref;
+                info.parent_level = child->annotation.lexical_level;
+                info.body_level = child->annotation.lexical_level + 1;
+                info.parameter_slots = block.psze < 0 ? 0 : block.psze;
+                info.frame_slots = frame_slot_count_for_block(block);
+                if (info.is_function) {
+                    info.result_slot = static_cast<int>(info.frame_slots);
+                    ++info.frame_slots;
+                }
+                subprograms[tab_index] = info;
+                subprogram_order.push_back(tab_index);
+            }
+        }
+    }
+
     void generate_declaration_part(const semantic::AstNodePtr& node) {
         for (const auto& child : node->children) {
             if (!child) {
@@ -391,12 +615,8 @@ private:
                 case semantic::AstKind::ConstDecl:
                 case semantic::AstKind::TypeDecl:
                 case semantic::AstKind::VarDecl:
-                    break;
                 case semantic::AstKind::ProcedureDecl:
                 case semantic::AstKind::FunctionDecl:
-                    add_diagnostic(child, "Source-level procedure/function codegen is not "
-                                          "implemented in Ishak's MVP slice; CAL/RET remain "
-                                          "representable in the instruction model.");
                     break;
                 default:
                     add_diagnostic(child, "Unsupported declaration node " +
@@ -404,6 +624,51 @@ private:
                     break;
             }
         }
+    }
+
+    void emit_subprogram_body(SubprogramInfo& info) {
+        info.label = static_cast<int>(current_line());
+        emit_instruction(OpCode::Int,
+                         info.parameter_slots,
+                         static_cast<int>(info.frame_slots),
+                         symbols.tab_entry(info.tab_index).identifier + " frame");
+
+        const int saved_level = current_level;
+        const int saved_function_tab_index = current_function_tab_index;
+        const int saved_function_result_slot = current_function_result_slot;
+
+        current_level = info.body_level;
+        current_function_tab_index = info.is_function ? info.tab_index : -1;
+        current_function_result_slot = info.is_function ? info.result_slot : -1;
+
+        bool emitted_body = false;
+        for (const auto& child : info.declaration->children) {
+            if (!child) {
+                continue;
+            }
+            if (child->kind == semantic::AstKind::DeclarationPart) {
+                generate_declaration_part(child);
+            } else if (child->kind == semantic::AstKind::CompoundStatement) {
+                current_level = child->annotation.lexical_level;
+                generate_statement(child);
+                emitted_body = true;
+            }
+        }
+        if (!emitted_body) {
+            add_diagnostic(info.declaration, "Subprogram body compound statement is missing.");
+        }
+
+        if (info.is_function) {
+            emit_instruction(OpCode::Lod, 0, info.result_slot,
+                             symbols.tab_entry(info.tab_index).identifier + " result");
+            emit(Instruction(OpCode::Ret, 0, 1));
+        } else {
+            emit(Instruction(OpCode::Ret, 0, 0));
+        }
+
+        current_level = saved_level;
+        current_function_tab_index = saved_function_tab_index;
+        current_function_result_slot = saved_function_result_slot;
     }
 
     void generate_statement(const semantic::AstNodePtr& node) {
@@ -441,12 +706,66 @@ private:
                 generate_standalone_variable_statement(node);
                 break;
             case semantic::AstKind::CaseStatement:
-                add_diagnostic(node, "case statement codegen is not implemented yet.");
+                generate_case(node);
                 break;
             default:
                 add_diagnostic(node, "Unsupported statement node " +
                                      semantic::ast_kind_name(node->kind) + ".");
                 break;
+        }
+    }
+
+    void generate_case(const semantic::AstNodePtr& node) {
+        if (!node || node->children.empty()) {
+            add_diagnostic(node, "case statement is missing selector expression.");
+            return;
+        }
+        if (!emit_expression(node->children.front())) {
+            return;
+        }
+
+        std::vector<std::size_t> end_jumps;
+        for (std::size_t i = 1; i < node->children.size(); ++i) {
+            const auto& branch = node->children[i];
+            if (!branch || branch->kind != semantic::AstKind::CaseBranch) {
+                continue;
+            }
+
+            std::vector<semantic::AstNodePtr> labels;
+            std::vector<semantic::AstNodePtr> statements;
+            for (const auto& child : branch->children) {
+                if (!child) {
+                    continue;
+                }
+                if (child->kind == semantic::AstKind::Literal ||
+                    child->kind == semantic::AstKind::UnaryOp) {
+                    labels.push_back(child);
+                } else {
+                    statements.push_back(child);
+                }
+            }
+
+            for (const auto& label : labels) {
+                emit_simple(OpCode::Dup, 0, "case selector");
+                if (!emit_expression(label)) {
+                    return;
+                }
+                emit_opr(OprCode::Eql);
+                const std::size_t no_match = emit_simple(OpCode::Jpc, 0, "case no match");
+
+                emit_simple(OpCode::Pop, 0, "discard matched selector");
+                for (const auto& statement : statements) {
+                    generate_statement(statement);
+                }
+                end_jumps.push_back(emit_simple(OpCode::Jmp, 0, "case end"));
+                patch(no_match, current_line());
+            }
+        }
+
+        emit_simple(OpCode::Pop, 0, "discard unmatched selector");
+        const std::size_t end_line = current_line();
+        for (std::size_t jump : end_jumps) {
+            patch(jump, end_line);
         }
     }
 
@@ -457,16 +776,24 @@ private:
         }
 
         const auto& target = node->children[0];
-        if (!ensure_simple_variable(target, "Assignment")) {
+        if (!target || target->kind != semantic::AstKind::Variable) {
+            add_diagnostic(target, "Assignment target must be a variable.");
             return;
         }
 
-        const semantic::TabEntry* entry = tab_entry_for_node(target);
-        if (!entry) {
+        if (!target->children.empty()) {
+            if (!emit_variable_address(target)) {
+                return;
+            }
+            if (!emit_expression(node->children[1])) {
+                return;
+            }
+            emit_simple(OpCode::Sti, 0, "store indirect");
             return;
         }
 
-        if (!emit_expression(node->children[1])) {
+        const semantic::TabEntry* entry = storage_entry_for_variable_node(target);
+        if (!entry || !emit_expression(node->children[1])) {
             return;
         }
         emit_assignment_to_entry(target, *entry);
@@ -483,8 +810,7 @@ private:
             return;
         }
 
-        add_diagnostic(node, "Procedure/function call codegen for '" + node->name +
-                             "' is not implemented yet.");
+        emit_user_call(node, false, true);
     }
 
     void generate_standalone_variable_statement(const semantic::AstNodePtr& node) {
@@ -495,13 +821,82 @@ private:
 
         if (entry->obj == semantic::SymbolObject::Procedure ||
             entry->obj == semantic::SymbolObject::Function) {
-            add_diagnostic(node, "Procedure/function call codegen for '" + node->name +
-                                 "' is not implemented yet.");
+            emit_user_call(node, false, true);
             return;
         }
 
         add_diagnostic(node, "Standalone variable '" + node->name +
                              "' is not an executable statement.");
+    }
+
+    bool emit_user_call(const semantic::AstNodePtr& node,
+                        bool require_function,
+                        bool discard_function_result) {
+        int tab_index = node ? node->annotation.tab_index : -1;
+        const semantic::TabEntry* entry = tab_entry_for_node(node);
+        if (!entry) {
+            return false;
+        }
+        if (!valid_tab_index(tab_index)) {
+            for (std::size_t i = 0; i < symbols.tab_entries().size(); ++i) {
+                const auto& candidate = symbols.tab_entries()[i];
+                if (candidate.identifier == node->name &&
+                    (candidate.obj == semantic::SymbolObject::Procedure ||
+                     candidate.obj == semantic::SymbolObject::Function)) {
+                    tab_index = static_cast<int>(i);
+                    break;
+                }
+            }
+        }
+
+        if (entry->obj != semantic::SymbolObject::Procedure &&
+            entry->obj != semantic::SymbolObject::Function) {
+            add_diagnostic(node, "Identifier '" + entry->identifier + "' is a " +
+                                 semantic::symbol_object_name(entry->obj) +
+                                 ", not a callable subprogram.");
+            return false;
+        }
+        if (require_function && entry->obj != semantic::SymbolObject::Function) {
+            add_diagnostic(node, "Call to '" + entry->identifier +
+                                 "' is not a function expression.");
+            return false;
+        }
+        if (!valid_tab_index(tab_index)) {
+            add_diagnostic(node, "Callable '" + entry->identifier + "' is missing symbol metadata.");
+            return false;
+        }
+
+        auto found = subprograms.find(tab_index);
+        if (found == subprograms.end()) {
+            add_diagnostic(node, "Callable '" + entry->identifier +
+                                 "' has no generated subprogram body.");
+            return false;
+        }
+        const SubprogramInfo& info = found->second;
+        if (info.label < 0) {
+            add_diagnostic(node, "Callable '" + entry->identifier +
+                                 "' is referenced before its backend label is available.");
+            return false;
+        }
+
+        for (const auto& argument : node->children) {
+            if (!emit_expression(argument)) {
+                return false;
+            }
+        }
+
+        const int levels_up = current_level - info.parent_level;
+        if (levels_up < 0) {
+            add_diagnostic(node, "Callable '" + entry->identifier +
+                                 "' is not reachable from current lexical level.");
+            return false;
+        }
+
+        emit_instruction(OpCode::Cal, levels_up, info.label, entry->identifier);
+        if (discard_function_result && entry->obj == semantic::SymbolObject::Function) {
+            emit_simple(OpCode::Pop, 0, "discard function result");
+        }
+        return true;
     }
 
     void emit_builtin_write(const semantic::AstNodePtr& node, bool newline) {
@@ -599,19 +994,20 @@ private:
             return;
         }
 
+        int lexical_level = 0;
         int address = 0;
-        if (!runtime_address_for_entry(node, *entry, &address)) {
+        if (!runtime_address_for_entry(node, *entry, &lexical_level, &address)) {
             return;
         }
 
         if (!emit_expression(node->children[0])) {
             return;
         }
-        emit_simple(OpCode::Sto, address, entry->identifier);
+        emit_instruction(OpCode::Sto, lexical_level, address, entry->identifier);
 
         const bool downto = normalize(node->op) == "downtosy";
         const std::size_t loop_start = current_line();
-        emit_simple(OpCode::Lod, address, entry->identifier);
+        emit_instruction(OpCode::Lod, lexical_level, address, entry->identifier);
         if (!emit_expression(node->children[1])) {
             return;
         }
@@ -620,10 +1016,10 @@ private:
 
         generate_statement(node->children[2]);
 
-        emit_simple(OpCode::Lod, address, entry->identifier);
+        emit_instruction(OpCode::Lod, lexical_level, address, entry->identifier);
         emit_literal(RuntimeValue::integer(1), "for step");
         emit_opr(downto ? OprCode::Sub : OprCode::Add);
-        emit_simple(OpCode::Sto, address, entry->identifier);
+        emit_instruction(OpCode::Sto, lexical_level, address, entry->identifier);
         emit_simple(OpCode::Jmp, static_cast<int>(loop_start), "for start");
         patch(jpc_end_line, current_line());
     }
@@ -643,9 +1039,7 @@ private:
             case semantic::AstKind::BinaryOp:
                 return emit_binary_expression(node);
             case semantic::AstKind::Call:
-                add_diagnostic(node, "Function call expression codegen for '" + node->name +
-                                     "' is not implemented yet.");
-                return false;
+                return emit_user_call(node, true, false);
             default:
                 add_diagnostic(node, "Unsupported expression node " +
                                      semantic::ast_kind_name(node->kind) + ".");
@@ -866,8 +1260,9 @@ int runtime_address_for_symbol(const semantic::TabEntry& entry) {
 }
 
 std::size_t frame_slot_count_for_block(const semantic::BTabEntry& block) {
+    const int parameter_slots = block.psze < 0 ? 0 : block.psze;
     const int variable_slots = block.vsze < 0 ? 0 : block.vsze;
-    return kFrameHeaderSlots + static_cast<std::size_t>(variable_slots);
+    return kFrameHeaderSlots + static_cast<std::size_t>(parameter_slots + variable_slots);
 }
 
 bool CodegenResult::ok() const {
