@@ -38,8 +38,8 @@ public:
     void print_children(std::ostream& os, const std::string& prefix = "") const {
         for (size_t i = 0; i < children.size(); ++i) {
             const bool is_last = i == children.size() - 1;
-            os << prefix << (is_last ? "\xe2\x94\x94\xe2\x94\x80\xe2\x94\x80 " : "\xe2\x94\x9c\xe2\x94\x80\xe2\x94\x80 ") << children[i]->name << '\n';
-            children[i]->print_children(os, prefix + (is_last ? "    " : "\xe2\x94\x82   "));
+            os << prefix << (is_last ? "\\-- " : "|-- ") << children[i]->name << '\n';
+            children[i]->print_children(os, prefix + (is_last ? "    " : "|   "));
         }
     }
 
