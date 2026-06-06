@@ -1,0 +1,11 @@
+program ParserValidFilteredText;
+
+var
+  x: integer;
+
+begin
+  { hidden parser text }
+  x := 1;
+  (* another hidden parser text *)
+  x := x + 1;
+end.

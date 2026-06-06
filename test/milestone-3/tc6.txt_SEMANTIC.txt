@@ -1,0 +1,481 @@
+=== Parse Tree ===
+<program>
+├── <program-header>
+│   ├── programsy
+│   ├── ident(ArrayRecordValid)
+│   └── semicolon
+├── <declaration-part>
+│   ├── <type-declaration>
+│   │   ├── typesy
+│   │   ├── ident(ScoreIndex)
+│   │   ├── eql
+│   │   ├── <type>
+│   │   │   └── <range>
+│   │   │       ├── <constant>
+│   │   │       │   └── intcon(1)
+│   │   │       ├── period
+│   │   │       ├── period
+│   │   │       └── <constant>
+│   │   │           └── intcon(3)
+│   │   ├── semicolon
+│   │   ├── ident(ScoreArray)
+│   │   ├── eql
+│   │   ├── <type>
+│   │   │   └── <array-type>
+│   │   │       ├── arraysy
+│   │   │       ├── lbrack
+│   │   │       ├── ident(ScoreIndex)
+│   │   │       ├── rbrack
+│   │   │       ├── ofsy
+│   │   │       └── <type>
+│   │   │           └── ident(integer)
+│   │   ├── semicolon
+│   │   ├── ident(Student)
+│   │   ├── eql
+│   │   ├── <type>
+│   │   │   └── <record-type>
+│   │   │       ├── recordsy
+│   │   │       ├── <field-list>
+│   │   │       │   ├── <field-part>
+│   │   │       │   │   ├── <identifier-list>
+│   │   │       │   │   │   └── ident(id)
+│   │   │       │   │   ├── colon
+│   │   │       │   │   └── <type>
+│   │   │       │   │       └── ident(integer)
+│   │   │       │   ├── semicolon
+│   │   │       │   ├── <field-part>
+│   │   │       │   │   ├── <identifier-list>
+│   │   │       │   │   │   └── ident(scores)
+│   │   │       │   │   ├── colon
+│   │   │       │   │   └── <type>
+│   │   │       │   │       └── ident(ScoreArray)
+│   │   │       │   └── semicolon
+│   │   │       └── endsy
+│   │   ├── semicolon
+│   │   ├── ident(Classroom)
+│   │   ├── eql
+│   │   ├── <type>
+│   │   │   └── <array-type>
+│   │   │       ├── arraysy
+│   │   │       ├── lbrack
+│   │   │       ├── <range>
+│   │   │       │   ├── <constant>
+│   │   │       │   │   └── intcon(1)
+│   │   │       │   ├── period
+│   │   │       │   ├── period
+│   │   │       │   └── <constant>
+│   │   │       │       └── intcon(2)
+│   │   │       ├── rbrack
+│   │   │       ├── ofsy
+│   │   │       └── <type>
+│   │   │           └── ident(Student)
+│   │   └── semicolon
+│   └── <var-declaration>
+│       ├── varsy
+│       ├── <identifier-list>
+│       │   └── ident(classes)
+│       ├── colon
+│       ├── <type>
+│       │   └── ident(Classroom)
+│       ├── semicolon
+│       ├── <identifier-list>
+│       │   ├── ident(firstStudent)
+│       │   ├── comma
+│       │   └── ident(copiedStudent)
+│       ├── colon
+│       ├── <type>
+│       │   └── ident(Student)
+│       ├── semicolon
+│       ├── <identifier-list>
+│       │   ├── ident(i)
+│       │   ├── comma
+│       │   ├── ident(j)
+│       │   ├── comma
+│       │   └── ident(total)
+│       ├── colon
+│       ├── <type>
+│       │   └── ident(integer)
+│       └── semicolon
+├── <compound-statement>
+│   ├── beginsy
+│   ├── <statement-list>
+│   │   ├── <statement>
+│   │   │   └── <assignment-statement>
+│   │   │       ├── <variable>
+│   │   │       │   └── ident(total)
+│   │   │       ├── becomes
+│   │   │       └── <expression>
+│   │   │           └── <simple-expression>
+│   │   │               └── <term>
+│   │   │                   └── <factor>
+│   │   │                       └── intcon(0)
+│   │   ├── semicolon
+│   │   ├── <statement>
+│   │   │   └── <for-statement>
+│   │   │       ├── forsy
+│   │   │       ├── ident(i)
+│   │   │       ├── becomes
+│   │   │       ├── <expression>
+│   │   │       │   └── <simple-expression>
+│   │   │       │       └── <term>
+│   │   │       │           └── <factor>
+│   │   │       │               └── intcon(1)
+│   │   │       ├── tosy
+│   │   │       ├── <expression>
+│   │   │       │   └── <simple-expression>
+│   │   │       │       └── <term>
+│   │   │       │           └── <factor>
+│   │   │       │               └── intcon(2)
+│   │   │       ├── dosy
+│   │   │       └── <compound-statement>
+│   │   │           ├── beginsy
+│   │   │           ├── <statement-list>
+│   │   │           │   ├── <statement>
+│   │   │           │   │   └── <assignment-statement>
+│   │   │           │   │       ├── <variable>
+│   │   │           │   │       │   ├── ident(classes)
+│   │   │           │   │       │   ├── <component-variable>
+│   │   │           │   │       │   │   ├── lbrack
+│   │   │           │   │       │   │   ├── <index-list>
+│   │   │           │   │       │   │   │   └── <expression>
+│   │   │           │   │       │   │   │       └── <simple-expression>
+│   │   │           │   │       │   │   │           └── <term>
+│   │   │           │   │       │   │   │               └── <factor>
+│   │   │           │   │       │   │   │                   └── <variable>
+│   │   │           │   │       │   │   │                       └── ident(i)
+│   │   │           │   │       │   │   └── rbrack
+│   │   │           │   │       │   └── <component-variable>
+│   │   │           │   │       │       ├── period
+│   │   │           │   │       │       └── ident(id)
+│   │   │           │   │       ├── becomes
+│   │   │           │   │       └── <expression>
+│   │   │           │   │           └── <simple-expression>
+│   │   │           │   │               └── <term>
+│   │   │           │   │                   └── <factor>
+│   │   │           │   │                       └── <variable>
+│   │   │           │   │                           └── ident(i)
+│   │   │           │   ├── semicolon
+│   │   │           │   ├── <statement>
+│   │   │           │   │   └── <for-statement>
+│   │   │           │   │       ├── forsy
+│   │   │           │   │       ├── ident(j)
+│   │   │           │   │       ├── becomes
+│   │   │           │   │       ├── <expression>
+│   │   │           │   │       │   └── <simple-expression>
+│   │   │           │   │       │       └── <term>
+│   │   │           │   │       │           └── <factor>
+│   │   │           │   │       │               └── intcon(1)
+│   │   │           │   │       ├── tosy
+│   │   │           │   │       ├── <expression>
+│   │   │           │   │       │   └── <simple-expression>
+│   │   │           │   │       │       └── <term>
+│   │   │           │   │       │           └── <factor>
+│   │   │           │   │       │               └── intcon(3)
+│   │   │           │   │       ├── dosy
+│   │   │           │   │       └── <compound-statement>
+│   │   │           │   │           ├── beginsy
+│   │   │           │   │           ├── <statement-list>
+│   │   │           │   │           │   ├── <statement>
+│   │   │           │   │           │   │   └── <assignment-statement>
+│   │   │           │   │           │   │       ├── <variable>
+│   │   │           │   │           │   │       │   ├── ident(classes)
+│   │   │           │   │           │   │       │   ├── <component-variable>
+│   │   │           │   │           │   │       │   │   ├── lbrack
+│   │   │           │   │           │   │       │   │   ├── <index-list>
+│   │   │           │   │           │   │       │   │   │   └── <expression>
+│   │   │           │   │           │   │       │   │   │       └── <simple-expression>
+│   │   │           │   │           │   │       │   │   │           └── <term>
+│   │   │           │   │           │   │       │   │   │               └── <factor>
+│   │   │           │   │           │   │       │   │   │                   └── <variable>
+│   │   │           │   │           │   │       │   │   │                       └── ident(i)
+│   │   │           │   │           │   │       │   │   └── rbrack
+│   │   │           │   │           │   │       │   ├── <component-variable>
+│   │   │           │   │           │   │       │   │   ├── period
+│   │   │           │   │           │   │       │   │   └── ident(scores)
+│   │   │           │   │           │   │       │   └── <component-variable>
+│   │   │           │   │           │   │       │       ├── lbrack
+│   │   │           │   │           │   │       │       ├── <index-list>
+│   │   │           │   │           │   │       │       │   └── <expression>
+│   │   │           │   │           │   │       │       │       └── <simple-expression>
+│   │   │           │   │           │   │       │       │           └── <term>
+│   │   │           │   │           │   │       │       │               └── <factor>
+│   │   │           │   │           │   │       │       │                   └── <variable>
+│   │   │           │   │           │   │       │       │                       └── ident(j)
+│   │   │           │   │           │   │       │       └── rbrack
+│   │   │           │   │           │   │       ├── becomes
+│   │   │           │   │           │   │       └── <expression>
+│   │   │           │   │           │   │           └── <simple-expression>
+│   │   │           │   │           │   │               └── <term>
+│   │   │           │   │           │   │                   ├── <factor>
+│   │   │           │   │           │   │                   │   └── <variable>
+│   │   │           │   │           │   │                   │       └── ident(i)
+│   │   │           │   │           │   │                   ├── <multiplicative-operator>
+│   │   │           │   │           │   │                   │   └── times
+│   │   │           │   │           │   │                   └── <factor>
+│   │   │           │   │           │   │                       └── <variable>
+│   │   │           │   │           │   │                           └── ident(j)
+│   │   │           │   │           │   ├── semicolon
+│   │   │           │   │           │   ├── <statement>
+│   │   │           │   │           │   │   └── <assignment-statement>
+│   │   │           │   │           │   │       ├── <variable>
+│   │   │           │   │           │   │       │   └── ident(total)
+│   │   │           │   │           │   │       ├── becomes
+│   │   │           │   │           │   │       └── <expression>
+│   │   │           │   │           │   │           └── <simple-expression>
+│   │   │           │   │           │   │               ├── <term>
+│   │   │           │   │           │   │               │   └── <factor>
+│   │   │           │   │           │   │               │       └── <variable>
+│   │   │           │   │           │   │               │           └── ident(total)
+│   │   │           │   │           │   │               ├── <additive-operator>
+│   │   │           │   │           │   │               │   └── plus
+│   │   │           │   │           │   │               └── <term>
+│   │   │           │   │           │   │                   └── <factor>
+│   │   │           │   │           │   │                       └── <variable>
+│   │   │           │   │           │   │                           ├── ident(classes)
+│   │   │           │   │           │   │                           ├── <component-variable>
+│   │   │           │   │           │   │                           │   ├── lbrack
+│   │   │           │   │           │   │                           │   ├── <index-list>
+│   │   │           │   │           │   │                           │   │   └── <expression>
+│   │   │           │   │           │   │                           │   │       └── <simple-expression>
+│   │   │           │   │           │   │                           │   │           └── <term>
+│   │   │           │   │           │   │                           │   │               └── <factor>
+│   │   │           │   │           │   │                           │   │                   └── <variable>
+│   │   │           │   │           │   │                           │   │                       └── ident(i)
+│   │   │           │   │           │   │                           │   └── rbrack
+│   │   │           │   │           │   │                           ├── <component-variable>
+│   │   │           │   │           │   │                           │   ├── period
+│   │   │           │   │           │   │                           │   └── ident(scores)
+│   │   │           │   │           │   │                           └── <component-variable>
+│   │   │           │   │           │   │                               ├── lbrack
+│   │   │           │   │           │   │                               ├── <index-list>
+│   │   │           │   │           │   │                               │   └── <expression>
+│   │   │           │   │           │   │                               │       └── <simple-expression>
+│   │   │           │   │           │   │                               │           └── <term>
+│   │   │           │   │           │   │                               │               └── <factor>
+│   │   │           │   │           │   │                               │                   └── <variable>
+│   │   │           │   │           │   │                               │                       └── ident(j)
+│   │   │           │   │           │   │                               └── rbrack
+│   │   │           │   │           │   ├── semicolon
+│   │   │           │   │           │   └── <statement>
+│   │   │           │   │           └── endsy
+│   │   │           │   ├── semicolon
+│   │   │           │   └── <statement>
+│   │   │           └── endsy
+│   │   ├── semicolon
+│   │   ├── <statement>
+│   │   │   └── <assignment-statement>
+│   │   │       ├── <variable>
+│   │   │       │   └── ident(firstStudent)
+│   │   │       ├── becomes
+│   │   │       └── <expression>
+│   │   │           └── <simple-expression>
+│   │   │               └── <term>
+│   │   │                   └── <factor>
+│   │   │                       └── <variable>
+│   │   │                           ├── ident(classes)
+│   │   │                           └── <component-variable>
+│   │   │                               ├── lbrack
+│   │   │                               ├── <index-list>
+│   │   │                               │   └── <expression>
+│   │   │                               │       └── <simple-expression>
+│   │   │                               │           └── <term>
+│   │   │                               │               └── <factor>
+│   │   │                               │                   └── intcon(1)
+│   │   │                               └── rbrack
+│   │   ├── semicolon
+│   │   ├── <statement>
+│   │   │   └── <assignment-statement>
+│   │   │       ├── <variable>
+│   │   │       │   └── ident(copiedStudent)
+│   │   │       ├── becomes
+│   │   │       └── <expression>
+│   │   │           └── <simple-expression>
+│   │   │               └── <term>
+│   │   │                   └── <factor>
+│   │   │                       └── <variable>
+│   │   │                           └── ident(firstStudent)
+│   │   ├── semicolon
+│   │   ├── <statement>
+│   │   │   └── <assignment-statement>
+│   │   │       ├── <variable>
+│   │   │       │   ├── ident(classes)
+│   │   │       │   └── <component-variable>
+│   │   │       │       ├── lbrack
+│   │   │       │       ├── <index-list>
+│   │   │       │       │   └── <expression>
+│   │   │       │       │       └── <simple-expression>
+│   │   │       │       │           └── <term>
+│   │   │       │       │               └── <factor>
+│   │   │       │       │                   └── intcon(2)
+│   │   │       │       └── rbrack
+│   │   │       ├── becomes
+│   │   │       └── <expression>
+│   │   │           └── <simple-expression>
+│   │   │               └── <term>
+│   │   │                   └── <factor>
+│   │   │                       └── <variable>
+│   │   │                           └── ident(copiedStudent)
+│   │   ├── semicolon
+│   │   └── <statement>
+│   └── endsy
+└── period
+
+=== Decorated AST ===
+Program(ArrayRecordValid), tab_index=41
+|-- DeclarationPart
+|   |-- TypeDecl(ScoreIndex) : type=ScoreIndex, tab_index=42
+|   |   \-- RangeType : type=ScoreIndex
+|   |       |-- Literal(1) value=1 literal=Integer : type=Integer
+|   |       \-- Literal(3) value=3 literal=Integer : type=Integer
+|   |-- TypeDecl(ScoreArray) : type=ScoreArray, tab_index=43
+|   |   \-- ArrayType : type=ScoreArray
+|   |       |-- TypeRef(ScoreIndex) : type=ScoreIndex, tab_index=42
+|   |       \-- TypeRef(integer) : type=Integer, tab_index=32
+|   |-- TypeDecl(Student) : type=Student, tab_index=46
+|   |   \-- RecordType : type=Student
+|   |       |-- FieldDecl(id) : type=Integer, tab_index=44
+|   |       |   \-- TypeRef(integer) : type=Integer, tab_index=32
+|   |       \-- FieldDecl(scores) : type=ScoreArray, tab_index=45
+|   |           \-- TypeRef(ScoreArray) : type=ScoreArray, tab_index=43
+|   |-- TypeDecl(Classroom) : type=Classroom, tab_index=47
+|   |   \-- ArrayType : type=Classroom
+|   |       |-- RangeType : type=subrange(Integer)
+|   |       |   |-- Literal(1) value=1 literal=Integer : type=Integer
+|   |       |   \-- Literal(2) value=2 literal=Integer : type=Integer
+|   |       \-- TypeRef(Student) : type=Student, tab_index=46
+|   |-- VarDecl(classes) : type=Classroom, tab_index=48
+|   |   \-- TypeRef(Classroom) : type=Classroom, tab_index=47
+|   |-- VarDecl(firstStudent) : type=Student, tab_index=49
+|   |   \-- TypeRef(Student) : type=Student, tab_index=46
+|   |-- VarDecl(copiedStudent) : type=Student, tab_index=50
+|   |   \-- TypeRef(Student) : type=Student, tab_index=46
+|   |-- VarDecl(i) : type=Integer, tab_index=51
+|   |   \-- TypeRef(integer) : type=Integer, tab_index=32
+|   |-- VarDecl(j) : type=Integer, tab_index=52
+|   |   \-- TypeRef(integer) : type=Integer, tab_index=32
+|   \-- VarDecl(total) : type=Integer, tab_index=53
+|       \-- TypeRef(integer) : type=Integer, tab_index=32
+\-- CompoundStatement
+    |-- AssignStatement : type=Integer, tab_index=53
+    |   |-- Variable(total) : type=Integer, tab_index=53
+    |   \-- Literal(0) value=0 literal=Integer : type=Integer
+    |-- ForStatement(i) op=tosy, tab_index=51
+    |   |-- Literal(1) value=1 literal=Integer : type=Integer
+    |   |-- Literal(2) value=2 literal=Integer : type=Integer
+    |   \-- CompoundStatement
+    |       |-- AssignStatement : type=Integer, tab_index=44
+    |       |   |-- Variable(classes) : type=Integer, tab_index=44
+    |       |   |   |-- IndexComponent
+    |       |   |   |   \-- Variable(i) : type=Integer, tab_index=51
+    |       |   |   \-- FieldComponent(id)
+    |       |   \-- Variable(i) : type=Integer, tab_index=51
+    |       |-- ForStatement(j) op=tosy, tab_index=52
+    |       |   |-- Literal(1) value=1 literal=Integer : type=Integer
+    |       |   |-- Literal(3) value=3 literal=Integer : type=Integer
+    |       |   \-- CompoundStatement
+    |       |       |-- AssignStatement : type=Integer, tab_index=45
+    |       |       |   |-- Variable(classes) : type=Integer, tab_index=45
+    |       |       |   |   |-- IndexComponent
+    |       |       |   |   |   \-- Variable(i) : type=Integer, tab_index=51
+    |       |       |   |   |-- FieldComponent(scores)
+    |       |       |   |   \-- IndexComponent
+    |       |       |   |       \-- Variable(j) : type=Integer, tab_index=52
+    |       |       |   \-- BinaryOp op=times : type=Integer
+    |       |       |       |-- Variable(i) : type=Integer, tab_index=51
+    |       |       |       \-- Variable(j) : type=Integer, tab_index=52
+    |       |       |-- AssignStatement : type=Integer, tab_index=53
+    |       |       |   |-- Variable(total) : type=Integer, tab_index=53
+    |       |       |   \-- BinaryOp op=plus : type=Integer
+    |       |       |       |-- Variable(total) : type=Integer, tab_index=53
+    |       |       |       \-- Variable(classes) : type=Integer, tab_index=45
+    |       |       |           |-- IndexComponent
+    |       |       |           |   \-- Variable(i) : type=Integer, tab_index=51
+    |       |       |           |-- FieldComponent(scores)
+    |       |       |           \-- IndexComponent
+    |       |       |               \-- Variable(j) : type=Integer, tab_index=52
+    |       |       \-- EmptyStatement
+    |       \-- EmptyStatement
+    |-- AssignStatement : type=Student, tab_index=49
+    |   |-- Variable(firstStudent) : type=Student, tab_index=49
+    |   \-- Variable(classes) : type=Student, tab_index=48
+    |       \-- IndexComponent
+    |           \-- Literal(1) value=1 literal=Integer : type=Integer
+    |-- AssignStatement : type=Student, tab_index=50
+    |   |-- Variable(copiedStudent) : type=Student, tab_index=50
+    |   \-- Variable(firstStudent) : type=Student, tab_index=49
+    |-- AssignStatement : type=Student, tab_index=48
+    |   |-- Variable(classes) : type=Student, tab_index=48
+    |   |   \-- IndexComponent
+    |   |       \-- Literal(2) value=2 literal=Integer : type=Integer
+    |   \-- Variable(copiedStudent) : type=Student, tab_index=50
+    \-- EmptyStatement
+
+=== Symbol Table: tab ===
+idx	identifier	obj	type	ref	nrm	lev	adr	link	init	value
+0	and	reserved	unknown	0	1	0	0	0	yes	
+1	array	reserved	unknown	0	1	0	0	0	yes	
+2	begin	reserved	unknown	0	1	0	0	1	yes	
+3	case	reserved	unknown	0	1	0	0	2	yes	
+4	const	reserved	unknown	0	1	0	0	3	yes	
+5	div	reserved	unknown	0	1	0	0	4	yes	
+6	downto	reserved	unknown	0	1	0	0	5	yes	
+7	do	reserved	unknown	0	1	0	0	6	yes	
+8	else	reserved	unknown	0	1	0	0	7	yes	
+9	end	reserved	unknown	0	1	0	0	8	yes	
+10	for	reserved	unknown	0	1	0	0	9	yes	
+11	function	reserved	unknown	0	1	0	0	10	yes	
+12	if	reserved	unknown	0	1	0	0	11	yes	
+13	mod	reserved	unknown	0	1	0	0	12	yes	
+14	not	reserved	unknown	0	1	0	0	13	yes	
+15	of	reserved	unknown	0	1	0	0	14	yes	
+16	or	reserved	unknown	0	1	0	0	15	yes	
+17	procedure	reserved	unknown	0	1	0	0	16	yes	
+18	program	reserved	unknown	0	1	0	0	17	yes	
+19	record	reserved	unknown	0	1	0	0	18	yes	
+20	repeat	reserved	unknown	0	1	0	0	19	yes	
+21	integer	reserved	unknown	0	1	0	0	20	yes	
+22	real	reserved	unknown	0	1	0	0	21	yes	
+23	boolean	reserved	unknown	0	1	0	0	22	yes	
+24	char	reserved	unknown	0	1	0	0	23	yes	
+25	string	reserved	unknown	0	1	0	0	24	yes	
+26	then	reserved	unknown	0	1	0	0	25	yes	
+27	to	reserved	unknown	0	1	0	0	26	yes	
+28	type	reserved	unknown	0	1	0	0	27	yes	
+29	until	reserved	unknown	0	1	0	0	28	yes	
+30	var	reserved	unknown	0	1	0	0	29	yes	
+31	while	reserved	unknown	0	1	0	0	30	yes	
+32	Integer	type	Integer	0	1	0	0	31	yes	
+33	Real	type	Real	0	1	0	0	32	yes	
+34	Char	type	Char	0	1	0	0	33	yes	
+35	Boolean	type	Boolean	0	1	0	0	34	yes	
+36	String	type	String	0	1	0	0	35	yes	
+37	True	constant	Boolean	0	1	0	1	36	yes	true
+38	False	constant	Boolean	0	1	0	0	37	yes	false
+39	readln	procedure	unknown	0	1	0	0	38	yes	
+40	writeln	procedure	unknown	0	1	0	0	39	yes	
+41	ArrayRecordValid	program	unknown	0	1	0	0	40	yes	
+42	ScoreIndex	type	ScoreIndex	0	1	0	0	41	yes	
+43	ScoreArray	type	ScoreArray	0	1	0	0	42	yes	
+44	id	field	Integer	0	1	1	0	0	yes	
+45	scores	field	ScoreArray	0	1	1	1	44	yes	
+46	Student	type	Student	1	1	0	0	43	yes	
+47	Classroom	type	Classroom	1	1	0	0	46	yes	
+48	classes	variable	Classroom	1	1	0	0	47	yes	
+49	firstStudent	variable	Student	1	1	0	8	48	yes	
+50	copiedStudent	variable	Student	1	1	0	12	49	yes	
+51	i	variable	Integer	0	1	0	16	50	yes	
+52	j	variable	Integer	0	1	0	17	51	yes	
+53	total	variable	Integer	0	1	0	18	52	yes	
+
+=== Symbol Table: btab ===
+idx	last	lpar	psze	vsze
+0	53	0	0	19
+1	45	0	0	4
+
+=== Symbol Table: atab ===
+idx	xtyp	etyp	eref	low	high	elsz	size
+0	ScoreIndex	Integer	0	1	3	1	3
+1	subrange(Integer)	Student	1	1	2	4	8
+
+=== Semantic Errors ===
+No semantic errors.

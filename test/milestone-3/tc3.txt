@@ -1,0 +1,29 @@
+program ScopeFunctionValid;
+var
+  globalValue: integer;
+
+procedure AddToGlobal(delta: integer);
+var
+  localValue: integer;
+begin
+  localValue := delta;
+  globalValue := globalValue + localValue;
+end;
+
+function Factorial(n: integer): integer;
+begin
+  if n == 0 then
+  begin
+    Factorial := 1;
+  end
+  else
+  begin
+    Factorial := n * Factorial(n - 1);
+  end;
+end;
+
+begin
+  globalValue := 1;
+  AddToGlobal(2);
+  globalValue := Factorial(5);
+end.

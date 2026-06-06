@@ -1,0 +1,38 @@
+Program(M4Tc4IfElseBranches), tab_index=41
+|-- DeclarationPart
+|   |-- VarDecl(x) : type=Integer, tab_index=42
+|   |   \-- TypeRef(integer) : type=Integer, tab_index=32
+|   \-- VarDecl(y) : type=Integer, tab_index=43
+|       \-- TypeRef(integer) : type=Integer, tab_index=32
+\-- CompoundStatement
+    |-- AssignStatement : type=Integer, tab_index=42
+    |   |-- Variable(x) : type=Integer, tab_index=42
+    |   \-- Literal(8) value=8 literal=Integer : type=Integer
+    |-- IfStatement : type=Boolean
+    |   |-- BinaryOp op=gtr : type=Boolean
+    |   |   |-- Variable(x) : type=Integer, tab_index=42
+    |   |   \-- Literal(5) value=5 literal=Integer : type=Integer
+    |   |-- AssignStatement : type=Integer, tab_index=43
+    |   |   |-- Variable(y) : type=Integer, tab_index=43
+    |   |   \-- Literal(1) value=1 literal=Integer : type=Integer
+    |   \-- AssignStatement : type=Integer, tab_index=43
+    |       |-- Variable(y) : type=Integer, tab_index=43
+    |       \-- Literal(0) value=0 literal=Integer : type=Integer
+    |-- Call(writeln), tab_index=40
+    |   \-- Variable(y) : type=Integer, tab_index=43
+    |-- AssignStatement : type=Integer, tab_index=42
+    |   |-- Variable(x) : type=Integer, tab_index=42
+    |   \-- Literal(2) value=2 literal=Integer : type=Integer
+    |-- IfStatement : type=Boolean
+    |   |-- BinaryOp op=gtr : type=Boolean
+    |   |   |-- Variable(x) : type=Integer, tab_index=42
+    |   |   \-- Literal(5) value=5 literal=Integer : type=Integer
+    |   |-- AssignStatement : type=Integer, tab_index=43
+    |   |   |-- Variable(y) : type=Integer, tab_index=43
+    |   |   \-- Literal(9) value=9 literal=Integer : type=Integer
+    |   \-- AssignStatement : type=Integer, tab_index=43
+    |       |-- Variable(y) : type=Integer, tab_index=43
+    |       \-- Literal(4) value=4 literal=Integer : type=Integer
+    |-- Call(writeln), tab_index=40
+    |   \-- Variable(y) : type=Integer, tab_index=43
+    \-- EmptyStatement

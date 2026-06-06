@@ -54,7 +54,7 @@ Token Lexer::get_next_token() {
         }
     };
 
-    // Helper: cek apakah karakter adalah separator
+    // Check token separator
     auto is_separator = [](int c) -> bool {
         return c == ' ' || c == '\t' || c == '\n' || c == '\r' || c == EOF;
     };
@@ -94,7 +94,7 @@ Token Lexer::get_next_token() {
                     currentState = State::S20;
                     currentLexeme += (char)c;
                 } else if (LexerUtils::is_alpha(c)) {
-                    // '_'  invalid buat character input pertama
+                    // Identifier starts alpha
                     currentState = State::S30;
                     currentLexeme += (char)c;
                 } else if (c == '+') { currentState = State::S40; currentLexeme += (char)c; }
@@ -112,35 +112,33 @@ Token Lexer::get_next_token() {
                   else if (c == '<') { currentState = State::S65; currentLexeme += (char)c; }
                   else if (c == '>') { currentState = State::S69; currentLexeme += (char)c; }
                   else {
-                      // Karakter tidak dikenal -> masuk unknown accumulation
+                      // Accumulate unknown sequence
                       currentState = State::S_UNKNOWN;
                       currentLexeme += (char)c;
                   }
                 break;
 
-            // S_UNKNOWN: akumulasi semua karakter sampai separator
-            // Implementasi longest-match: jika tidak ada token valid, kumpulkan sampai separator
+            // Accumulate unknown token
             case State::S_UNKNOWN:
                 if (is_separator(c)) {
-                    // Separator ditemukan, kembalikan unknown token
+                    // Return unknown token
                     unread_char(c, prev_line, prev_col);
                     std::cerr << "Lexical Error: Unrecognized or invalid sequence '" << currentLexeme 
                               << "' at line " << start_line << ", col " << start_col << std::endl;
                     return Token(TokenType::TOKEN_ERROR, currentLexeme, start_line, start_col);
                 } else {
-                    // Belum separator, terus akumulasi
+                    // Continue accumulation
                     currentLexeme += (char)c;
                 }
                 break;
 
             case State::S1:
-                // Transisi ke S_UNKNOWN untuk akumulasi sampai separator
-                // Unread karakter saat ini dulu, lalu masuk S_UNKNOWN
+                // Restart unknown scanning
                 unread_char(c, prev_line, prev_col);
                 currentState = State::S_UNKNOWN;
                 break;
 
-            case State::S2: // State whitespace
+            case State::S2: // Whitespace state
                 if (c == ' ' || c == '\t' || c == '\n' || c == '\r') {
                     currentState = State::S2;
                 } else {
@@ -148,18 +146,18 @@ Token Lexer::get_next_token() {
                     currentState = State::S0; 
                 }
                 break;
-            case State::S3: // State isi  komentar  {}
+            case State::S3: // Brace comment stat
                 if (c == EOF) {
-                    currentState = State::S1; // EOF yang unclosed ke error
+                    currentState = State::S1; // Unclosed comment error
                 } else if (c == '}') {
-                    currentState = State::S7; // Selesai
+                    currentState = State::S7; // Comment complete
                 } else {
                     currentState = State::S3;
-                    currentLexeme += (char)c; // Masukkan teks isi komentar
+                    currentLexeme += (char)c; // Store comment text
                 }
                 break;
 
-            case State::S5: // State isi komentar (* 
+            case State::S5: // Paren comment state
                 if (c == EOF) {
                     currentState = State::S1;
                 } else if (c == '*') {
@@ -170,11 +168,11 @@ Token Lexer::get_next_token() {
                 }
                 break;
 
-            case State::S6: // State saat ketemu '*' di dalam (* ...
+            case State::S6: // Star in comment
                 if (c == EOF) {
                     currentState = State::S1;
                 } else if (c == ')') {
-                    currentState = State::S7; // Selesai jadi '*)'
+                    currentState = State::S7; // Comment complete
                 } else if (c == '*') {
                     currentState = State::S6;
                     currentLexeme += '*'; 
@@ -188,10 +186,10 @@ Token Lexer::get_next_token() {
             case State::S4:
                 if (c == '*') {
                     currentState = State::S5;
-                    // currentLexeme += (char)c;
+                    // Skip comment opener
                 } else {
                     unread_char(c, prev_line, prev_col);
-                    currentState = State::S44; // LPARENT_ACCEPT
+                    currentState = State::S44; // Accept left parenthesis
                     currentLexeme = "(";
                 }
                 break;
@@ -207,7 +205,7 @@ Token Lexer::get_next_token() {
                 } else if (c == '.') {
                     currentState = State::S12;
                     currentLexeme += (char)c;
-                } else { // bukan [0-9.]
+                } else { // Split non-number suffix
                     unread_char(c, prev_line, prev_col);
                     currentState = State::S11;
                 }
@@ -233,8 +231,8 @@ Token Lexer::get_next_token() {
                 if (LexerUtils::is_digit(c)) {
                     currentState = State::S13;
                     currentLexeme += (char)c;
-                } else { // bukan [0-9] (termasuk 'e' — bahasa ini tidak support notasi scientific)
-                    // Accept realcon dan unread karakter saat ini
+                } else { // Stop real literal
+                    // Accept real literal
                     unread_char(c, prev_line, prev_col);
                     currentState = State::S14;
                 }
@@ -248,7 +246,7 @@ Token Lexer::get_next_token() {
                 if (c == '\'') {
                     currentState = State::S22;
                     currentLexeme += (char)c;
-                } else if (c == '\n' || c == EOF) { // Error EOF
+                } else if (c == '\n' || c == EOF) { // Unclosed string error
                     currentState = State::S1;
                     if (c != EOF) currentLexeme += (char)c;
                 } else {
@@ -258,7 +256,7 @@ Token Lexer::get_next_token() {
                 break;
 
             case State::S21:
-                if (c == '\n' || c == EOF) { // \n or EOF
+                if (c == '\n' || c == EOF) { // Unclosed string error
                     currentState = State::S1;
                     if (c != EOF) currentLexeme += (char)c;
                 } else if (c == '\'') {
@@ -271,7 +269,7 @@ Token Lexer::get_next_token() {
                 break;
 
             case State::S22:
-                if (c == '\'') { // ' escape string
+                if (c == '\'') { // Escaped quote
                     currentState = State::S21;
                     currentLexeme += (char)c;
                 } else {
@@ -281,7 +279,7 @@ Token Lexer::get_next_token() {
                     for (size_t i = 1; i < currentLexeme.length() - 1; i++) {
                         if (currentLexeme[i] == '\'') {
                             if (i + 1 < currentLexeme.length() - 1 && currentLexeme[i+1] == '\'') {
-                                i++; // skip escaped ' string
+                                i++; // Skip escaped quote
                             }
                         }
                         actual_len++;
@@ -305,6 +303,7 @@ Token Lexer::get_next_token() {
 
             case State::S30:
                 if (LexerUtils::is_alphanumeric(c)) {
+                    // Keep x2 together
                     currentState = State::S31;
                     currentLexeme += (char)c;
                 } else {
@@ -359,7 +358,7 @@ Token Lexer::get_next_token() {
             case State::S40: unread_char(c, prev_line, prev_col); return Token(TokenType::TOKEN_PLUS, currentLexeme, start_line, start_col);
             case State::S41: 
                 unread_char(c, prev_line, prev_col); 
-                // save negative sign 
+                // Save negative sign
                 if (LexerUtils::is_digit(c)) {
                     this->next_number_negative = true;
                 }
@@ -373,7 +372,7 @@ Token Lexer::get_next_token() {
             case State::S48: unread_char(c, prev_line, prev_col); return Token(TokenType::TOKEN_COMMA, currentLexeme, start_line, start_col);
             case State::S49: unread_char(c, prev_line, prev_col); return Token(TokenType::TOKEN_SEMICOLON, currentLexeme, start_line, start_col);
 
-            case State::S50: // State setelah baca '.' dari S0
+            case State::S50: // Period state
                 if (LexerUtils::is_digit(c)) {
                     if (second_range_period_pending) {
                         unread_char(c, prev_line, prev_col);
@@ -381,12 +380,11 @@ Token Lexer::get_next_token() {
                         return Token(TokenType::TOKEN_PERIOD, currentLexeme, start_line, start_col);
                     }
 
-                    // '.' diikuti digit -> bukan token valid (bukan real number tanpa integer part)
-                    // Masuk unknown accumulation
+                    // Reject .digit form
                     currentLexeme += (char)c;
                     currentState = State::S_UNKNOWN;
                 } else {
-                    // '.' diikuti non-digit -> period token
+                    // Accept period token
                     second_range_period_pending = (c == '.');
                     unread_char(c, prev_line, prev_col);
                     return Token(TokenType::TOKEN_PERIOD, currentLexeme, start_line, start_col);
@@ -406,11 +404,11 @@ Token Lexer::get_next_token() {
             case State::S61: unread_char(c, prev_line, prev_col); return Token(TokenType::TOKEN_COLON, currentLexeme, start_line, start_col);
             case State::S62: unread_char(c, prev_line, prev_col); return Token(TokenType::TOKEN_BECOMES, currentLexeme, start_line, start_col);
 
-            case State::S63: // EQL_INTER
+            case State::S63: // Equal intermediate
                 if (c == '=') {
                     currentState = State::S64;
                     currentLexeme += (char)c;
-                } else { // bukan '=' -> unknown accumulation
+                } else { // Unknown equal sequence
                     unread_char(c, prev_line, prev_col);
                     currentState = State::S_UNKNOWN;
                 }

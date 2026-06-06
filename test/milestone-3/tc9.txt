@@ -1,0 +1,14 @@
+program AssignmentAndOperatorTypeError;
+var
+  i, j: integer;
+  b: boolean;
+  c: char;
+  s: string;
+begin
+  j := 1;
+  i := 'x';
+  b := 10;
+  c := true;
+  s := 'a' + j;
+  i := b * j;
+end.

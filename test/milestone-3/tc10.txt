@@ -1,0 +1,19 @@
+program ArrayAndRecordAccessError;
+type
+  IndexRange == 1..3;
+  Values == array[IndexRange] of integer;
+  Point == record
+    x, y: integer;
+  end;
+var
+  values: Values;
+  p: Point;
+  i: integer;
+  r: real;
+begin
+  r := 2.5;
+  values[r] := 10;
+  values[4] := 20;
+  p.z := 10;
+  i.x := 1;
+end.

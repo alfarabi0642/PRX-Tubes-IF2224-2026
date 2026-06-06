@@ -1,0 +1,39 @@
+program PredefinedAndDeclarationsValid;
+const
+  Low == 1;
+  High == 5;
+  Red == 1;
+  Green == 2;
+  Blue == 3;
+type
+  SmallRange == Low..High;
+  ColorCode == (Red, Green, Blue);
+  IntVector == array[SmallRange] of integer;
+  Student == record
+    id: integer;
+    grade: char;
+    scores: IntVector;
+  end;
+var
+  flag, other: Boolean;
+  index: SmallRange;
+  color: ColorCode;
+  student: Student;
+begin
+  flag := true;
+  other := FALSE;
+  index := 3;
+  color := Red;
+  student.id := index;
+  student.grade := 'A';
+  student.scores[index] := 100;
+
+  if flag and not other or false then
+  begin
+    other := true;
+  end
+  else
+  begin
+    other := false;
+  end;
+end.

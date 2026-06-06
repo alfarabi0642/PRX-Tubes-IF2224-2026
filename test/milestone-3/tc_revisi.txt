@@ -1,0 +1,24 @@
+program ParserRevisionEdges;
+{ comment must be filtered }
+var
+  x2, i, total: integer;
+begin
+  ;
+  x2 := 5;
+  total := x2;
+
+  while total < 8 do
+  begin
+    total := total + 1;
+  end;
+
+  for i := 1 to 3 do
+  begin
+    total := total + i;
+  end;
+
+  repeat
+    total := total - 1;
+    ;
+  until total == 10;
+end.

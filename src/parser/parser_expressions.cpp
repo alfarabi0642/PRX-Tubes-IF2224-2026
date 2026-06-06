@@ -133,10 +133,11 @@ std::shared_ptr<ParseTreeNode> Parser::parse_case_block() {
 std::shared_ptr<ParseTreeNode> Parser::parse_while_statement() {
     auto node = make_node("<while-statement>");
 
+    // Require compound body
     node->add_child(terminal(expect(TokenType::TOKEN_WHILESY)));
     node->add_child(parse_expression());
     node->add_child(terminal(expect(TokenType::TOKEN_DOSY)));
-    node->add_child(parse_statement());
+    node->add_child(parse_compound_statement());
 
     return node;
 }
@@ -155,6 +156,7 @@ std::shared_ptr<ParseTreeNode> Parser::parse_repeat_statement() {
 std::shared_ptr<ParseTreeNode> Parser::parse_for_statement() {
     auto node = make_node("<for-statement>");
 
+    // Require compound body
     node->add_child(terminal(expect(TokenType::TOKEN_FORSY)));
     node->add_child(terminal(expect(TokenType::TOKEN_IDENT)));
     node->add_child(terminal(expect(TokenType::TOKEN_BECOMES)));
@@ -169,7 +171,7 @@ std::shared_ptr<ParseTreeNode> Parser::parse_for_statement() {
 
     node->add_child(parse_expression());
     node->add_child(terminal(expect(TokenType::TOKEN_DOSY)));
-    node->add_child(parse_statement());
+    node->add_child(parse_compound_statement());
 
     return node;
 }
@@ -181,7 +183,6 @@ std::shared_ptr<ParseTreeNode> Parser::parse_procedure_function_call() {
     node->add_child(terminal(expect(TokenType::TOKEN_LPARENT)));
 
     if (check(TokenType::TOKEN_RPARENT)) {
-        error(expected_message(current_token(), "<parameter-list>"));
         node->add_child(make_node("<parameter-list>"));
     } else {
         node->add_child(parse_parameter_list());

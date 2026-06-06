@@ -1,0 +1,35 @@
+Program(M4Tc5WhileLoopEdges), tab_index=41
+|-- DeclarationPart
+|   \-- VarDecl(i) : type=Integer, tab_index=42
+|       \-- TypeRef(integer) : type=Integer, tab_index=32
+\-- CompoundStatement
+    |-- AssignStatement : type=Integer, tab_index=42
+    |   |-- Variable(i) : type=Integer, tab_index=42
+    |   \-- Literal(3) value=3 literal=Integer : type=Integer
+    |-- WhileStatement : type=Boolean
+    |   |-- BinaryOp op=lss : type=Boolean
+    |   |   |-- Variable(i) : type=Integer, tab_index=42
+    |   |   \-- Literal(3) value=3 literal=Integer : type=Integer
+    |   \-- CompoundStatement
+    |       |-- Call(writeln), tab_index=40
+    |       |   \-- Literal(99) value=99 literal=Integer : type=Integer
+    |       \-- EmptyStatement
+    |-- Call(writeln), tab_index=40
+    |   \-- Literal('after-zero-iteration') value='after-zero-iteration' literal=String : type=String
+    |-- AssignStatement : type=Integer, tab_index=42
+    |   |-- Variable(i) : type=Integer, tab_index=42
+    |   \-- Literal(0) value=0 literal=Integer : type=Integer
+    |-- WhileStatement : type=Boolean
+    |   |-- BinaryOp op=lss : type=Boolean
+    |   |   |-- Variable(i) : type=Integer, tab_index=42
+    |   |   \-- Literal(3) value=3 literal=Integer : type=Integer
+    |   \-- CompoundStatement
+    |       |-- Call(writeln), tab_index=40
+    |       |   \-- Variable(i) : type=Integer, tab_index=42
+    |       |-- AssignStatement : type=Integer, tab_index=42
+    |       |   |-- Variable(i) : type=Integer, tab_index=42
+    |       |   \-- BinaryOp op=plus : type=Integer
+    |       |       |-- Variable(i) : type=Integer, tab_index=42
+    |       |       \-- Literal(1) value=1 literal=Integer : type=Integer
+    |       \-- EmptyStatement
+    \-- EmptyStatement

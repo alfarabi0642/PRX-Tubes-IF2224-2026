@@ -1,6 +1,7 @@
 #include "parser.hpp"
 
 namespace {
+// Statement-list stop tokens
 bool is_statement_list_boundary(TokenType type) {
     return type == TokenType::TOKEN_SEMICOLON ||
            type == TokenType::TOKEN_ENDSY ||
@@ -120,6 +121,7 @@ std::shared_ptr<ParseTreeNode> Parser::parse_compound_statement() {
 std::shared_ptr<ParseTreeNode> Parser::parse_statement_list() {
     auto node = make_node("<statement-list>");
 
+    // Allow empty statement
     const size_t first_before = pos;
     node->add_child(parse_statement());
     if (pos == first_before &&
@@ -133,6 +135,7 @@ std::shared_ptr<ParseTreeNode> Parser::parse_statement_list() {
         advance();
     }
 
+    // Consume statement separators
     while (check(TokenType::TOKEN_SEMICOLON)) {
         node->add_child(terminal(advance()));
         const size_t before = pos;

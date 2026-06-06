@@ -1,0 +1,6 @@
+program ParserInvalid5eCleanError;
+
+begin
+  5e;
+  123abc456;
+end.

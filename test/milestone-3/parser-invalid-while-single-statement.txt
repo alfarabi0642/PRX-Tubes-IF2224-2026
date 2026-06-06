@@ -1,0 +1,12 @@
+program ParserInvalidWhileSingleStatement;
+
+var
+  i: integer;
+  keepGoing: boolean;
+
+begin
+  i := 0;
+  keepGoing := true;
+  while keepGoing do
+    i := i + 1;
+end.

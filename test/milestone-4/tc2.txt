@@ -1,0 +1,9 @@
+program M4Tc2ArithmeticPrecedence;
+var
+  x, y: integer;
+begin
+  x := 2 + 3 * 4 - 5 div 2 + 7 mod 3;
+  y := -x + 20;
+  writeln(x);
+  writeln(y);
+end.

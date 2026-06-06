@@ -1,0 +1,300 @@
+=== Parse Tree ===
+<program>
+├── <program-header>
+│   ├── programsy
+│   ├── ident(ExpressionValid)
+│   └── semicolon
+├── <declaration-part>
+│   └── <var-declaration>
+│       ├── varsy
+│       ├── <identifier-list>
+│       │   ├── ident(i)
+│       │   ├── comma
+│       │   ├── ident(j)
+│       │   ├── comma
+│       │   └── ident(k)
+│       ├── colon
+│       ├── <type>
+│       │   └── ident(integer)
+│       ├── semicolon
+│       ├── <identifier-list>
+│       │   └── ident(r)
+│       ├── colon
+│       ├── <type>
+│       │   └── ident(real)
+│       ├── semicolon
+│       ├── <identifier-list>
+│       │   └── ident(b)
+│       ├── colon
+│       ├── <type>
+│       │   └── ident(boolean)
+│       └── semicolon
+├── <compound-statement>
+│   ├── beginsy
+│   ├── <statement-list>
+│   │   ├── <statement>
+│   │   │   └── <assignment-statement>
+│   │   │       ├── <variable>
+│   │   │       │   └── ident(i)
+│   │   │       ├── becomes
+│   │   │       └── <expression>
+│   │   │           └── <simple-expression>
+│   │   │               └── <term>
+│   │   │                   └── <factor>
+│   │   │                       └── intcon(2)
+│   │   ├── semicolon
+│   │   ├── <statement>
+│   │   │   └── <assignment-statement>
+│   │   │       ├── <variable>
+│   │   │       │   └── ident(j)
+│   │   │       ├── becomes
+│   │   │       └── <expression>
+│   │   │           └── <simple-expression>
+│   │   │               └── <term>
+│   │   │                   └── <factor>
+│   │   │                       └── intcon(3)
+│   │   ├── semicolon
+│   │   ├── <statement>
+│   │   │   └── <assignment-statement>
+│   │   │       ├── <variable>
+│   │   │       │   └── ident(k)
+│   │   │       ├── becomes
+│   │   │       └── <expression>
+│   │   │           └── <simple-expression>
+│   │   │               ├── <term>
+│   │   │               │   └── <factor>
+│   │   │               │       └── <variable>
+│   │   │               │           └── ident(i)
+│   │   │               ├── <additive-operator>
+│   │   │               │   └── plus
+│   │   │               ├── <term>
+│   │   │               │   ├── <factor>
+│   │   │               │   │   └── <variable>
+│   │   │               │   │       └── ident(j)
+│   │   │               │   ├── <multiplicative-operator>
+│   │   │               │   │   └── times
+│   │   │               │   └── <factor>
+│   │   │               │       └── intcon(4)
+│   │   │               ├── <additive-operator>
+│   │   │               │   └── minus
+│   │   │               ├── <term>
+│   │   │               │   └── <factor>
+│   │   │               │       ├── lparent
+│   │   │               │       ├── <expression>
+│   │   │               │       │   └── <simple-expression>
+│   │   │               │       │       └── <term>
+│   │   │               │       │           ├── <factor>
+│   │   │               │       │           │   └── <variable>
+│   │   │               │       │           │       └── ident(i)
+│   │   │               │       │           ├── <multiplicative-operator>
+│   │   │               │       │           │   └── idiv
+│   │   │               │       │           └── <factor>
+│   │   │               │       │               └── intcon(2)
+│   │   │               │       └── rparent
+│   │   │               ├── <additive-operator>
+│   │   │               │   └── plus
+│   │   │               └── <term>
+│   │   │                   └── <factor>
+│   │   │                       ├── lparent
+│   │   │                       ├── <expression>
+│   │   │                       │   └── <simple-expression>
+│   │   │                       │       └── <term>
+│   │   │                       │           ├── <factor>
+│   │   │                       │           │   └── <variable>
+│   │   │                       │           │       └── ident(j)
+│   │   │                       │           ├── <multiplicative-operator>
+│   │   │                       │           │   └── imod
+│   │   │                       │           └── <factor>
+│   │   │                       │               └── intcon(2)
+│   │   │                       └── rparent
+│   │   ├── semicolon
+│   │   ├── <statement>
+│   │   │   └── <assignment-statement>
+│   │   │       ├── <variable>
+│   │   │       │   └── ident(r)
+│   │   │       ├── becomes
+│   │   │       └── <expression>
+│   │   │           └── <simple-expression>
+│   │   │               ├── <term>
+│   │   │               │   ├── <factor>
+│   │   │               │   │   └── <variable>
+│   │   │               │   │       └── ident(i)
+│   │   │               │   ├── <multiplicative-operator>
+│   │   │               │   │   └── rdiv
+│   │   │               │   └── <factor>
+│   │   │               │       └── <variable>
+│   │   │               │           └── ident(j)
+│   │   │               ├── <additive-operator>
+│   │   │               │   └── plus
+│   │   │               └── <term>
+│   │   │                   └── <factor>
+│   │   │                       └── realcon(3.5)
+│   │   ├── semicolon
+│   │   ├── <statement>
+│   │   │   └── <assignment-statement>
+│   │   │       ├── <variable>
+│   │   │       │   └── ident(b)
+│   │   │       ├── becomes
+│   │   │       └── <expression>
+│   │   │           └── <simple-expression>
+│   │   │               ├── <term>
+│   │   │               │   ├── <factor>
+│   │   │               │   │   ├── lparent
+│   │   │               │   │   ├── <expression>
+│   │   │               │   │   │   ├── <simple-expression>
+│   │   │               │   │   │   │   └── <term>
+│   │   │               │   │   │   │       └── <factor>
+│   │   │               │   │   │   │           └── <variable>
+│   │   │               │   │   │   │               └── ident(k)
+│   │   │               │   │   │   ├── <relational-operator>
+│   │   │               │   │   │   │   └── geq
+│   │   │               │   │   │   └── <simple-expression>
+│   │   │               │   │   │       └── <term>
+│   │   │               │   │   │           └── <factor>
+│   │   │               │   │   │               └── intcon(10)
+│   │   │               │   │   └── rparent
+│   │   │               │   ├── <multiplicative-operator>
+│   │   │               │   │   └── andsy
+│   │   │               │   └── <factor>
+│   │   │               │       ├── lparent
+│   │   │               │       ├── <expression>
+│   │   │               │       │   ├── <simple-expression>
+│   │   │               │       │   │   └── <term>
+│   │   │               │       │   │       └── <factor>
+│   │   │               │       │   │           └── <variable>
+│   │   │               │       │   │               └── ident(r)
+│   │   │               │       │   ├── <relational-operator>
+│   │   │               │       │   │   └── gtr
+│   │   │               │       │   └── <simple-expression>
+│   │   │               │       │       └── <term>
+│   │   │               │       │           └── <factor>
+│   │   │               │       │               └── realcon(0.0)
+│   │   │               │       └── rparent
+│   │   │               ├── <additive-operator>
+│   │   │               │   └── orsy
+│   │   │               └── <term>
+│   │   │                   └── <factor>
+│   │   │                       ├── notsy
+│   │   │                       └── <factor>
+│   │   │                           └── <variable>
+│   │   │                               └── ident(false)
+│   │   ├── semicolon
+│   │   └── <statement>
+│   └── endsy
+└── period
+
+=== Decorated AST ===
+Program(ExpressionValid), tab_index=41
+|-- DeclarationPart
+|   |-- VarDecl(i) : type=Integer, tab_index=42
+|   |   \-- TypeRef(integer) : type=Integer, tab_index=32
+|   |-- VarDecl(j) : type=Integer, tab_index=43
+|   |   \-- TypeRef(integer) : type=Integer, tab_index=32
+|   |-- VarDecl(k) : type=Integer, tab_index=44
+|   |   \-- TypeRef(integer) : type=Integer, tab_index=32
+|   |-- VarDecl(r) : type=Real, tab_index=45
+|   |   \-- TypeRef(real) : type=Real, tab_index=33
+|   \-- VarDecl(b) : type=Boolean, tab_index=46
+|       \-- TypeRef(boolean) : type=Boolean, tab_index=35
+\-- CompoundStatement
+    |-- AssignStatement : type=Integer, tab_index=42
+    |   |-- Variable(i) : type=Integer, tab_index=42
+    |   \-- Literal(2) value=2 literal=Integer : type=Integer
+    |-- AssignStatement : type=Integer, tab_index=43
+    |   |-- Variable(j) : type=Integer, tab_index=43
+    |   \-- Literal(3) value=3 literal=Integer : type=Integer
+    |-- AssignStatement : type=Integer, tab_index=44
+    |   |-- Variable(k) : type=Integer, tab_index=44
+    |   \-- BinaryOp op=plus : type=Integer
+    |       |-- BinaryOp op=minus : type=Integer
+    |       |   |-- BinaryOp op=plus : type=Integer
+    |       |   |   |-- Variable(i) : type=Integer, tab_index=42
+    |       |   |   \-- BinaryOp op=times : type=Integer
+    |       |   |       |-- Variable(j) : type=Integer, tab_index=43
+    |       |   |       \-- Literal(4) value=4 literal=Integer : type=Integer
+    |       |   \-- BinaryOp op=idiv : type=Integer
+    |       |       |-- Variable(i) : type=Integer, tab_index=42
+    |       |       \-- Literal(2) value=2 literal=Integer : type=Integer
+    |       \-- BinaryOp op=imod : type=Integer
+    |           |-- Variable(j) : type=Integer, tab_index=43
+    |           \-- Literal(2) value=2 literal=Integer : type=Integer
+    |-- AssignStatement : type=Real, tab_index=45
+    |   |-- Variable(r) : type=Real, tab_index=45
+    |   \-- BinaryOp op=plus : type=Real
+    |       |-- BinaryOp op=rdiv : type=Real
+    |       |   |-- Variable(i) : type=Integer, tab_index=42
+    |       |   \-- Variable(j) : type=Integer, tab_index=43
+    |       \-- Literal(3.5) value=3.5 literal=Real : type=Real
+    |-- AssignStatement : type=Boolean, tab_index=46
+    |   |-- Variable(b) : type=Boolean, tab_index=46
+    |   \-- BinaryOp op=orsy : type=Boolean
+    |       |-- BinaryOp op=andsy : type=Boolean
+    |       |   |-- BinaryOp op=geq : type=Boolean
+    |       |   |   |-- Variable(k) : type=Integer, tab_index=44
+    |       |   |   \-- Literal(10) value=10 literal=Integer : type=Integer
+    |       |   \-- BinaryOp op=gtr : type=Boolean
+    |       |       |-- Variable(r) : type=Real, tab_index=45
+    |       |       \-- Literal(0.0) value=0.0 literal=Real : type=Real
+    |       \-- UnaryOp op=notsy : type=Boolean, tab_index=38
+    |           \-- Variable(false) : type=Boolean, tab_index=38
+    \-- EmptyStatement
+
+=== Symbol Table: tab ===
+idx	identifier	obj	type	ref	nrm	lev	adr	link	init	value
+0	and	reserved	unknown	0	1	0	0	0	yes	
+1	array	reserved	unknown	0	1	0	0	0	yes	
+2	begin	reserved	unknown	0	1	0	0	1	yes	
+3	case	reserved	unknown	0	1	0	0	2	yes	
+4	const	reserved	unknown	0	1	0	0	3	yes	
+5	div	reserved	unknown	0	1	0	0	4	yes	
+6	downto	reserved	unknown	0	1	0	0	5	yes	
+7	do	reserved	unknown	0	1	0	0	6	yes	
+8	else	reserved	unknown	0	1	0	0	7	yes	
+9	end	reserved	unknown	0	1	0	0	8	yes	
+10	for	reserved	unknown	0	1	0	0	9	yes	
+11	function	reserved	unknown	0	1	0	0	10	yes	
+12	if	reserved	unknown	0	1	0	0	11	yes	
+13	mod	reserved	unknown	0	1	0	0	12	yes	
+14	not	reserved	unknown	0	1	0	0	13	yes	
+15	of	reserved	unknown	0	1	0	0	14	yes	
+16	or	reserved	unknown	0	1	0	0	15	yes	
+17	procedure	reserved	unknown	0	1	0	0	16	yes	
+18	program	reserved	unknown	0	1	0	0	17	yes	
+19	record	reserved	unknown	0	1	0	0	18	yes	
+20	repeat	reserved	unknown	0	1	0	0	19	yes	
+21	integer	reserved	unknown	0	1	0	0	20	yes	
+22	real	reserved	unknown	0	1	0	0	21	yes	
+23	boolean	reserved	unknown	0	1	0	0	22	yes	
+24	char	reserved	unknown	0	1	0	0	23	yes	
+25	string	reserved	unknown	0	1	0	0	24	yes	
+26	then	reserved	unknown	0	1	0	0	25	yes	
+27	to	reserved	unknown	0	1	0	0	26	yes	
+28	type	reserved	unknown	0	1	0	0	27	yes	
+29	until	reserved	unknown	0	1	0	0	28	yes	
+30	var	reserved	unknown	0	1	0	0	29	yes	
+31	while	reserved	unknown	0	1	0	0	30	yes	
+32	Integer	type	Integer	0	1	0	0	31	yes	
+33	Real	type	Real	0	1	0	0	32	yes	
+34	Char	type	Char	0	1	0	0	33	yes	
+35	Boolean	type	Boolean	0	1	0	0	34	yes	
+36	String	type	String	0	1	0	0	35	yes	
+37	True	constant	Boolean	0	1	0	1	36	yes	true
+38	False	constant	Boolean	0	1	0	0	37	yes	false
+39	readln	procedure	unknown	0	1	0	0	38	yes	
+40	writeln	procedure	unknown	0	1	0	0	39	yes	
+41	ExpressionValid	program	unknown	0	1	0	0	40	yes	
+42	i	variable	Integer	0	1	0	0	41	yes	
+43	j	variable	Integer	0	1	0	1	42	yes	
+44	k	variable	Integer	0	1	0	2	43	yes	
+45	r	variable	Real	0	1	0	3	44	yes	
+46	b	variable	Boolean	0	1	0	5	45	yes	
+
+=== Symbol Table: btab ===
+idx	last	lpar	psze	vsze
+0	46	0	0	6
+
+=== Symbol Table: atab ===
+idx	xtyp	etyp	eref	low	high	elsz	size
+
+=== Semantic Errors ===
+No semantic errors.

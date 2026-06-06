@@ -1,0 +1,23 @@
+program ArrayRecord;
+
+const
+  LOW == 1;
+  HIGH == 3;
+
+type
+  Index == LOW..HIGH;
+  Numbers == array[Index] of integer;
+  Box == record
+    value: integer;
+    mark: char
+  end;
+
+var
+  nums: Numbers;
+  item: Box;
+
+begin
+  nums[1] := 7;
+  item.value := nums[1];
+  item.mark := 'A';
+end.

@@ -1,0 +1,21 @@
+program PredefinedBoolean;
+
+const
+  isReady == TRUE;
+  isStopped == false;
+
+type
+  BoolAlias == BOOLEAN;
+
+var
+  flag: boolean;
+  otherFlag: BoolAlias;
+
+begin
+  flag := isReady;
+  otherFlag := False;
+  if flag then
+    writeln('ready');
+  if otherFlag == isStopped then
+    writeln('stopped');
+end.

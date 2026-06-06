@@ -3,10 +3,16 @@
 #include <string>
 
 namespace {
-bool is_index_token(TokenType type) {
-    return type == TokenType::TOKEN_INTCON ||
+bool is_expression_start(TokenType type) {
+    return type == TokenType::TOKEN_PLUS ||
+           type == TokenType::TOKEN_MINUS ||
+           type == TokenType::TOKEN_IDENT ||
+           type == TokenType::TOKEN_INTCON ||
+           type == TokenType::TOKEN_REALCON ||
            type == TokenType::TOKEN_CHARCON ||
-           type == TokenType::TOKEN_IDENT;
+           type == TokenType::TOKEN_STRING ||
+           type == TokenType::TOKEN_LPARENT ||
+           type == TokenType::TOKEN_NOTSY;
 }
 
 bool is_statement_boundary(TokenType type) {
@@ -18,6 +24,7 @@ bool is_statement_boundary(TokenType type) {
            type == TokenType::TOKEN_EOF;
 }
 
+// Add fallback child
 void add_child_or_placeholder(const std::shared_ptr<ParseTreeNode>& parent,
                               const std::shared_ptr<ParseTreeNode>& child,
                               const std::string& placeholder) {
@@ -86,14 +93,7 @@ std::shared_ptr<ParseTreeNode> Parser::parse_formal_parameter_list() {
 
     node->add_child(terminal(expect(TokenType::TOKEN_LPARENT)));
 
-    if (check(TokenType::TOKEN_RPARENT)) {
-        Token token = current_token();
-        error("Syntax error at line " + std::to_string(token.get_line()) +
-              ", col " + std::to_string(token.get_column()) +
-              ": unexpected token " + Token::get_type_name(token.get_type()) +
-              ", expected parameter group");
-        node->add_child(make_node("<error>"));
-    } else {
+    if (!check(TokenType::TOKEN_RPARENT)) {
         node->add_child(parse_parameter_group());
 
         while (check(TokenType::TOKEN_SEMICOLON)) {
@@ -149,6 +149,7 @@ std::shared_ptr<ParseTreeNode> Parser::parse_parameter_group() {
 std::shared_ptr<ParseTreeNode> Parser::parse_statement() {
     auto node = make_node("<statement>");
 
+    // Dispatch statement form
     if (check(TokenType::TOKEN_IFSY)) {
         node->add_child(parse_if_statement());
     } else if (check(TokenType::TOKEN_CASESY)) {
@@ -271,14 +272,17 @@ std::shared_ptr<ParseTreeNode> Parser::parse_component_variable() {
 std::shared_ptr<ParseTreeNode> Parser::parse_index_list() {
     auto node = make_node("<index-list>");
 
-    if (is_index_token(current_token().get_type())) {
-        node->add_child(terminal(advance()));
-    } else {
+    auto parse_index_expression = [&]() {
+        if (is_expression_start(current_token().get_type())) {
+            node->add_child(parse_expression());
+            return;
+        }
+
         Token token = current_token();
         error("Syntax error at line " + std::to_string(token.get_line()) +
               ", col " + std::to_string(token.get_column()) +
               ": unexpected token " + Token::get_type_name(token.get_type()) +
-              ", expected intcon, charcon, or ident");
+              ", expected expression");
         node->add_child(make_node("<error>"));
 
         if (!check(TokenType::TOKEN_COMMA) &&
@@ -286,11 +290,13 @@ std::shared_ptr<ParseTreeNode> Parser::parse_index_list() {
             !is_at_end()) {
             advance();
         }
-    }
+    };
 
-    if (check(TokenType::TOKEN_COMMA)) {
+    parse_index_expression();
+
+    while (check(TokenType::TOKEN_COMMA)) {
         node->add_child(terminal(advance()));
-        node->add_child(parse_index_list());
+        parse_index_expression();
     }
 
     return node;

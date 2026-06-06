@@ -1,0 +1,43 @@
+program ControlCallAndConstError;
+const
+  Limit == 10;
+var
+  i, x: integer;
+  r: real;
+
+procedure SetX(value: integer);
+begin
+  x := value;
+end;
+
+function Twice(value: integer): integer;
+begin
+  Twice := value * 2;
+end;
+
+begin
+  i := 0;
+  x := 0;
+  r := 1.5;
+
+  Limit := 11;
+
+  if i then
+  begin
+    i := i + 1;
+  end;
+
+  while r do
+  begin
+    r := r - 1.0;
+  end;
+
+  for r := 1.0 to 3.0 do
+  begin
+    i := i + 1;
+  end;
+
+  SetX(true);
+  x := Twice('a');
+  Twice(2);
+end.
