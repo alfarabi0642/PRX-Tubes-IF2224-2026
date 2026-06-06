@@ -1,0 +1,33 @@
+Program(M4Tc2ArithmeticPrecedence), tab_index=41
+|-- DeclarationPart
+|   |-- VarDecl(x) : type=Integer, tab_index=42
+|   |   \-- TypeRef(integer) : type=Integer, tab_index=32
+|   \-- VarDecl(y) : type=Integer, tab_index=43
+|       \-- TypeRef(integer) : type=Integer, tab_index=32
+\-- CompoundStatement
+    |-- AssignStatement : type=Integer, tab_index=42
+    |   |-- Variable(x) : type=Integer, tab_index=42
+    |   \-- BinaryOp op=plus : type=Integer
+    |       |-- BinaryOp op=minus : type=Integer
+    |       |   |-- BinaryOp op=plus : type=Integer
+    |       |   |   |-- Literal(2) value=2 literal=Integer : type=Integer
+    |       |   |   \-- BinaryOp op=times : type=Integer
+    |       |   |       |-- Literal(3) value=3 literal=Integer : type=Integer
+    |       |   |       \-- Literal(4) value=4 literal=Integer : type=Integer
+    |       |   \-- BinaryOp op=idiv : type=Integer
+    |       |       |-- Literal(5) value=5 literal=Integer : type=Integer
+    |       |       \-- Literal(2) value=2 literal=Integer : type=Integer
+    |       \-- BinaryOp op=imod : type=Integer
+    |           |-- Literal(7) value=7 literal=Integer : type=Integer
+    |           \-- Literal(3) value=3 literal=Integer : type=Integer
+    |-- AssignStatement : type=Integer, tab_index=43
+    |   |-- Variable(y) : type=Integer, tab_index=43
+    |   \-- BinaryOp op=plus : type=Integer
+    |       |-- UnaryOp op=minus : type=Integer, tab_index=42
+    |       |   \-- Variable(x) : type=Integer, tab_index=42
+    |       \-- Literal(20) value=20 literal=Integer : type=Integer
+    |-- Call(writeln), tab_index=40
+    |   \-- Variable(x) : type=Integer, tab_index=42
+    |-- Call(writeln), tab_index=40
+    |   \-- Variable(y) : type=Integer, tab_index=43
+    \-- EmptyStatement

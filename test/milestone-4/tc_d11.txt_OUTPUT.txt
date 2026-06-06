@@ -1,0 +1,3 @@
+=== BACKEND INPUT ERRORS ===
+4:1: Error: Semantic error: Identifier 'x' is not declared
+7:1: Error: Semantic error: Identifier 'x' is not declared

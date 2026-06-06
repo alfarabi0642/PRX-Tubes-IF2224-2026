@@ -1,0 +1,22 @@
+Program(M4Tc6RepeatUntil), tab_index=41
+|-- DeclarationPart
+|   \-- VarDecl(total) : type=Integer, tab_index=42
+|       \-- TypeRef(integer) : type=Integer, tab_index=32
+\-- CompoundStatement
+    |-- AssignStatement : type=Integer, tab_index=42
+    |   |-- Variable(total) : type=Integer, tab_index=42
+    |   \-- Literal(3) value=3 literal=Integer : type=Integer
+    |-- RepeatStatement : type=Boolean
+    |   |-- CompoundStatement
+    |   |   |-- Call(writeln), tab_index=40
+    |   |   |   \-- Variable(total) : type=Integer, tab_index=42
+    |   |   |-- AssignStatement : type=Integer, tab_index=42
+    |   |   |   |-- Variable(total) : type=Integer, tab_index=42
+    |   |   |   \-- BinaryOp op=minus : type=Integer
+    |   |   |       |-- Variable(total) : type=Integer, tab_index=42
+    |   |   |       \-- Literal(1) value=1 literal=Integer : type=Integer
+    |   |   \-- EmptyStatement
+    |   \-- BinaryOp op=eql : type=Boolean
+    |       |-- Variable(total) : type=Integer, tab_index=42
+    |       \-- Literal(0) value=0 literal=Integer : type=Integer
+    \-- EmptyStatement

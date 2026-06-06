@@ -1,0 +1,11 @@
+Program(M4Tc1BasicStoreLoad), tab_index=41
+|-- DeclarationPart
+|   \-- VarDecl(x) : type=Integer, tab_index=42
+|       \-- TypeRef(integer) : type=Integer, tab_index=32
+\-- CompoundStatement
+    |-- AssignStatement : type=Integer, tab_index=42
+    |   |-- Variable(x) : type=Integer, tab_index=42
+    |   \-- Literal(10) value=10 literal=Integer : type=Integer
+    |-- Call(writeln), tab_index=40
+    |   \-- Variable(x) : type=Integer, tab_index=42
+    \-- EmptyStatement
