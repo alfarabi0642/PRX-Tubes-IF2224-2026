@@ -1,4 +1,4 @@
-﻿Program(M4Tc9RealArithmetic), tab_index=41
+Program(M4Tc9RealArithmetic), tab_index=41
 |-- DeclarationPart
 |   \-- VarDecl(r) : type=Real, tab_index=42
 |       \-- TypeRef(real) : type=Real, tab_index=33

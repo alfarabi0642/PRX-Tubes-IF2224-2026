@@ -1,4 +1,4 @@
-﻿Program(M4Tc3TypedWrite), tab_index=41
+Program(M4Tc3TypedWrite), tab_index=41
 |-- DeclarationPart
 |   \-- VarDecl(flag) : type=Boolean, tab_index=42
 |       \-- TypeRef(boolean) : type=Boolean, tab_index=35

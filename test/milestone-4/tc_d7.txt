@@ -1,4 +1,4 @@
-﻿Program(M4Tc7ForToDownto), tab_index=41
+Program(M4Tc7ForToDownto), tab_index=41
 |-- DeclarationPart
 |   |-- VarDecl(i) : type=Integer, tab_index=42
 |   |   \-- TypeRef(integer) : type=Integer, tab_index=32

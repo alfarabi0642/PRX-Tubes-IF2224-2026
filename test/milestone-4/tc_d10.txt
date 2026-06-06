@@ -1,4 +1,4 @@
-﻿Program(M4Tc10CompositeCallCaseCoverage), tab_index=41
+Program(M4Tc10CompositeCallCaseCoverage), tab_index=41
 |-- DeclarationPart
 |   |-- TypeDecl(Index) : type=Index, tab_index=42
 |   |   \-- RangeType : type=Index
