@@ -1,0 +1,15 @@
+﻿Program(M4Tc3TypedWrite), tab_index=41
+|-- DeclarationPart
+|   \-- VarDecl(flag) : type=Boolean, tab_index=42
+|       \-- TypeRef(boolean) : type=Boolean, tab_index=35
+\-- CompoundStatement
+    |-- AssignStatement : type=Boolean, tab_index=42
+    |   |-- Variable(flag) : type=Boolean, tab_index=42
+    |   \-- Variable(true) : type=Boolean, tab_index=37
+    |-- Call(writeln), tab_index=40
+    |   |-- Literal('A') value='A' literal=Char : type=Char
+    |   |-- Literal(' ') value=' ' literal=Char : type=Char
+    |   \-- Literal('ok') value='ok' literal=String : type=String
+    |-- Call(writeln), tab_index=40
+    |   \-- Variable(flag) : type=Boolean, tab_index=42
+    \-- EmptyStatement

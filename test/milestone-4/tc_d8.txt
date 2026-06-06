@@ -1,0 +1,46 @@
+﻿Program(M4Tc8BooleanShortCircuit), tab_index=41
+|-- DeclarationPart
+|   |-- VarDecl(zero) : type=Integer, tab_index=42
+|   |   \-- TypeRef(integer) : type=Integer, tab_index=32
+|   \-- VarDecl(flag) : type=Boolean, tab_index=43
+|       \-- TypeRef(boolean) : type=Boolean, tab_index=35
+\-- CompoundStatement
+    |-- AssignStatement : type=Integer, tab_index=42
+    |   |-- Variable(zero) : type=Integer, tab_index=42
+    |   \-- Literal(0) value=0 literal=Integer : type=Integer
+    |-- AssignStatement : type=Boolean, tab_index=43
+    |   |-- Variable(flag) : type=Boolean, tab_index=43
+    |   \-- Variable(false) : type=Boolean, tab_index=38
+    |-- IfStatement : type=Boolean
+    |   |-- BinaryOp op=andsy : type=Boolean
+    |   |   |-- Variable(flag) : type=Boolean, tab_index=43
+    |   |   \-- BinaryOp op=eql : type=Boolean
+    |   |       |-- BinaryOp op=idiv : type=Integer
+    |   |       |   |-- Literal(10) value=10 literal=Integer : type=Integer
+    |   |       |   \-- Variable(zero) : type=Integer, tab_index=42
+    |   |       \-- Literal(0) value=0 literal=Integer : type=Integer
+    |   |-- Call(writeln), tab_index=40
+    |   |   \-- Literal('and-bad') value='and-bad' literal=String : type=String
+    |   \-- Call(writeln), tab_index=40
+    |       \-- Literal('and-ok') value='and-ok' literal=String : type=String
+    |-- AssignStatement : type=Boolean, tab_index=43
+    |   |-- Variable(flag) : type=Boolean, tab_index=43
+    |   \-- Variable(true) : type=Boolean, tab_index=37
+    |-- IfStatement : type=Boolean
+    |   |-- BinaryOp op=orsy : type=Boolean
+    |   |   |-- Variable(flag) : type=Boolean, tab_index=43
+    |   |   \-- BinaryOp op=eql : type=Boolean
+    |   |       |-- BinaryOp op=idiv : type=Integer
+    |   |       |   |-- Literal(10) value=10 literal=Integer : type=Integer
+    |   |       |   \-- Variable(zero) : type=Integer, tab_index=42
+    |   |       \-- Literal(0) value=0 literal=Integer : type=Integer
+    |   |-- Call(writeln), tab_index=40
+    |   |   \-- Literal('or-ok') value='or-ok' literal=String : type=String
+    |   \-- Call(writeln), tab_index=40
+    |       \-- Literal('or-bad') value='or-bad' literal=String : type=String
+    |-- IfStatement : type=Boolean
+    |   |-- UnaryOp op=notsy : type=Boolean, tab_index=38
+    |   |   \-- Variable(false) : type=Boolean, tab_index=38
+    |   \-- Call(writeln), tab_index=40
+    |       \-- Literal('not-ok') value='not-ok' literal=String : type=String
+    \-- EmptyStatement

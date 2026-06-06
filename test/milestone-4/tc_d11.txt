@@ -1,0 +1,8 @@
+Program(M4MalformedMissingSymbolInfo)
+\-- CompoundStatement
+    |-- AssignStatement
+    |   |-- Variable(x)
+    |   \-- Literal(10) value=10 literal=Integer
+    |-- Call(writeln)
+    |   \-- Variable(x)
+    \-- EmptyStatement

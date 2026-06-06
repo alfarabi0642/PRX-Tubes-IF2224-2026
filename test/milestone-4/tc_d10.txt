@@ -1,0 +1,73 @@
+﻿Program(M4Tc10CompositeCallCaseCoverage), tab_index=41
+|-- DeclarationPart
+|   |-- TypeDecl(Index) : type=Index, tab_index=42
+|   |   \-- RangeType : type=Index
+|   |       |-- Literal(1) value=1 literal=Integer : type=Integer
+|   |       \-- Literal(2) value=2 literal=Integer : type=Integer
+|   |-- TypeDecl(Values) : type=Values, tab_index=43
+|   |   \-- ArrayType : type=Values
+|   |       |-- TypeRef(Index) : type=Index, tab_index=42
+|   |       \-- TypeRef(integer) : type=Integer, tab_index=32
+|   |-- TypeDecl(Box) : type=Box, tab_index=45
+|   |   \-- RecordType : type=Box
+|   |       \-- FieldDecl(value) : type=Integer, tab_index=44
+|   |           \-- TypeRef(integer) : type=Integer, tab_index=32
+|   |-- VarDecl(values) : type=Values, tab_index=46
+|   |   \-- TypeRef(Values) : type=Values, tab_index=43
+|   |-- VarDecl(box) : type=Box, tab_index=47
+|   |   \-- TypeRef(Box) : type=Box, tab_index=45
+|   |-- VarDecl(x) : type=Integer, tab_index=48
+|   |   \-- TypeRef(integer) : type=Integer, tab_index=32
+|   |-- ProcedureDecl(SetX), tab_index=49, block=2
+|   |   |-- ParameterGroup
+|   |   |   \-- VarDecl(value) : type=Integer, tab_index=50, lev=1
+|   |   |       \-- TypeRef(integer) : type=Integer, tab_index=32
+|   |   |-- DeclarationPart
+|   |   \-- CompoundStatement, lev=1, block=2
+|   |       |-- AssignStatement : type=Integer, tab_index=48
+|   |       |   |-- Variable(x) : type=Integer, tab_index=48, lev=1
+|   |       |   \-- Variable(value) : type=Integer, tab_index=50, lev=1
+|   |       \-- EmptyStatement
+|   \-- FunctionDecl(Twice) : type=Integer, tab_index=51, block=3
+|       |-- TypeRef(integer) : type=Integer, tab_index=32
+|       |-- ParameterGroup
+|       |   \-- VarDecl(value) : type=Integer, tab_index=52, lev=1
+|       |       \-- TypeRef(integer) : type=Integer, tab_index=32
+|       |-- DeclarationPart
+|       \-- CompoundStatement, lev=1, block=3
+|           |-- AssignStatement : type=Integer, tab_index=51
+|           |   |-- Variable(Twice) : type=Integer, tab_index=51, lev=1
+|           |   \-- BinaryOp op=times : type=Integer
+|           |       |-- Variable(value) : type=Integer, tab_index=52, lev=1
+|           |       \-- Literal(2) value=2 literal=Integer : type=Integer
+|           \-- EmptyStatement
+\-- CompoundStatement
+    |-- AssignStatement : type=Integer, tab_index=46
+    |   |-- Variable(values) : type=Integer, tab_index=46
+    |   |   \-- IndexComponent
+    |   |       \-- Literal(1) value=1 literal=Integer : type=Integer
+    |   \-- Literal(7) value=7 literal=Integer : type=Integer
+    |-- AssignStatement : type=Integer, tab_index=44
+    |   |-- Variable(box) : type=Integer, tab_index=44
+    |   |   \-- FieldComponent(value)
+    |   \-- Variable(values) : type=Integer, tab_index=46
+    |       \-- IndexComponent
+    |           \-- Literal(1) value=1 literal=Integer : type=Integer
+    |-- Call(SetX), tab_index=49
+    |   \-- Variable(box) : type=Integer, tab_index=44
+    |       \-- FieldComponent(value)
+    |-- AssignStatement : type=Integer, tab_index=48
+    |   |-- Variable(x) : type=Integer, tab_index=48
+    |   \-- Call(Twice) : type=Integer, tab_index=51
+    |       \-- Variable(x) : type=Integer, tab_index=48
+    |-- CaseStatement : type=Integer
+    |   |-- Variable(x) : type=Integer, tab_index=48
+    |   |-- CaseBranch
+    |   |   |-- Literal(14) value=14 literal=Integer : type=Integer
+    |   |   \-- Call(writeln), tab_index=40
+    |   |       \-- Literal('fourteen') value='fourteen' literal=String : type=String
+    |   \-- CaseBranch
+    |       |-- Literal(0) value=0 literal=Integer : type=Integer
+    |       \-- Call(writeln), tab_index=40
+    |           \-- Literal('zero') value='zero' literal=String : type=String
+    \-- EmptyStatement

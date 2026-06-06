@@ -1,0 +1,24 @@
+﻿Program(M4Tc9RealArithmetic), tab_index=41
+|-- DeclarationPart
+|   \-- VarDecl(r) : type=Real, tab_index=42
+|       \-- TypeRef(real) : type=Real, tab_index=33
+\-- CompoundStatement
+    |-- AssignStatement : type=Real, tab_index=42
+    |   |-- Variable(r) : type=Real, tab_index=42
+    |   \-- BinaryOp op=plus : type=Real
+    |       |-- UnaryOp op=minus : type=Real
+    |       |   \-- Literal(-2.5) value=-2.5 literal=Real : type=Real
+    |       \-- BinaryOp op=rdiv : type=Real
+    |           |-- Literal(6.0) value=6.0 literal=Real : type=Real
+    |           \-- Literal(2.0) value=2.0 literal=Real : type=Real
+    |-- Call(writeln), tab_index=40
+    |   \-- Variable(r) : type=Real, tab_index=42
+    |-- IfStatement : type=Boolean
+    |   |-- BinaryOp op=geq : type=Boolean
+    |   |   |-- Variable(r) : type=Real, tab_index=42
+    |   |   \-- Literal(0.5) value=0.5 literal=Real : type=Real
+    |   |-- Call(writeln), tab_index=40
+    |   |   \-- Literal('real-ok') value='real-ok' literal=String : type=String
+    |   \-- Call(writeln), tab_index=40
+    |       \-- Literal('real-bad') value='real-bad' literal=String : type=String
+    \-- EmptyStatement

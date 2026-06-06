@@ -1,0 +1,35 @@
+﻿Program(M4Tc7ForToDownto), tab_index=41
+|-- DeclarationPart
+|   |-- VarDecl(i) : type=Integer, tab_index=42
+|   |   \-- TypeRef(integer) : type=Integer, tab_index=32
+|   \-- VarDecl(total) : type=Integer, tab_index=43
+|       \-- TypeRef(integer) : type=Integer, tab_index=32
+\-- CompoundStatement
+    |-- AssignStatement : type=Integer, tab_index=43
+    |   |-- Variable(total) : type=Integer, tab_index=43
+    |   \-- Literal(0) value=0 literal=Integer : type=Integer
+    |-- ForStatement(i) op=tosy, tab_index=42
+    |   |-- Literal(1) value=1 literal=Integer : type=Integer
+    |   |-- Literal(3) value=3 literal=Integer : type=Integer
+    |   \-- CompoundStatement
+    |       |-- AssignStatement : type=Integer, tab_index=43
+    |       |   |-- Variable(total) : type=Integer, tab_index=43
+    |       |   \-- BinaryOp op=plus : type=Integer
+    |       |       |-- Variable(total) : type=Integer, tab_index=43
+    |       |       \-- Variable(i) : type=Integer, tab_index=42
+    |       \-- EmptyStatement
+    |-- Call(writeln), tab_index=40
+    |   \-- Variable(total) : type=Integer, tab_index=43
+    |-- ForStatement(i) op=downtosy, tab_index=42
+    |   |-- Literal(3) value=3 literal=Integer : type=Integer
+    |   |-- Literal(1) value=1 literal=Integer : type=Integer
+    |   \-- CompoundStatement
+    |       |-- AssignStatement : type=Integer, tab_index=43
+    |       |   |-- Variable(total) : type=Integer, tab_index=43
+    |       |   \-- BinaryOp op=plus : type=Integer
+    |       |       |-- Variable(total) : type=Integer, tab_index=43
+    |       |       \-- Variable(i) : type=Integer, tab_index=42
+    |       \-- EmptyStatement
+    |-- Call(writeln), tab_index=40
+    |   \-- Variable(total) : type=Integer, tab_index=43
+    \-- EmptyStatement
