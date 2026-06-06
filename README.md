@@ -9,7 +9,7 @@ Program ini adalah compiler sederhana untuk bahasa Arion.
 - **Milestone 1:** lexical analyzer berbasis DFA.
 - **Milestone 2:** syntax analyzer berbasis recursive descent parser.
 - **Milestone 3:** semantic analyzer berbasis AST, symbol table, dan type checking.
-- **Milestone 4:** backend MVP yang mengubah Decorated AST menjadi instruksi stack machine dan mengeksekusinya dengan interpreter.
+- **Milestone 4:** backend yang mengubah Decorated AST menjadi instruksi stack machine dan mengeksekusinya dengan interpreter.
 
 Alur program untuk Milestone 1 sampai Milestone 3:
 
@@ -249,13 +249,4 @@ Contoh menjalankan test milestone 4:
 .\bin\arion.exe test\milestone-4\dast-valid-basic.txt
 ```
 
-Smoke test final yang digunakan untuk release candidate:
 
-```powershell
-mingw32-make -B
-.\bin\arion.exe test\milestone-4\dast-valid-basic.txt
-.\bin\arion.exe test\milestone-4\dast-invalid-unknown-node.txt; if ($LASTEXITCODE -eq 0) { throw "invalid DAST should fail" }
-.\bin\arion.exe test\milestone-3\tc1.txt
-.\bin\arion.exe test\milestone-3\tc10.txt; if ($LASTEXITCODE -eq 0) { throw "semantic-error fixture should fail" }
-git diff --check
-```
