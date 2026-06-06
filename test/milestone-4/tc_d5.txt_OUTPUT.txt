@@ -1,0 +1,4 @@
+after-zero-iteration
+0
+1
+2
