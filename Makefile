@@ -26,6 +26,7 @@ SRCS := \
 	src/semantic/semantic_analyzer_statements.cpp \
 	src/semantic/semantic_analyzer_expressions.cpp \
 	src/semantic/printer.cpp \
+	src/semantic/decorated_ast_loader.cpp \
 	src/backend/tac.cpp \
 	src/backend/code_generator.cpp \
 	src/backend/runtime_stack.cpp \

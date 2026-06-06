@@ -11,7 +11,7 @@ Program ini adalah compiler sederhana untuk bahasa Arion.
 - **Milestone 3:** semantic analyzer berbasis AST, symbol table, dan type checking.
 - **Milestone 4:** backend MVP yang mengubah Decorated AST menjadi instruksi stack machine dan mengeksekusinya dengan interpreter.
 
-Alur program saat ini:
+Alur program untuk Milestone 1 sampai Milestone 3:
 
 ```text
 Source File
@@ -22,15 +22,24 @@ Source File
   -> AST Builder
   -> Semantic Analyzer
   -> Decorated AST + Symbol Table + Semantic Diagnostics
+```
+
+Alur program untuk Milestone 4:
+
+```text
+Decorated AST File
+  -> Decorated AST Loader
+  -> Semantic Metadata Rehydration
   -> Intermediate Code Generator
   -> Stack Machine Instructions
   -> Interpreter
   -> Program Output
 ```
 
-Program akan menampilkan parse tree, decorated AST, tabel simbol, dan hasil pengecekan
-semantik ke terminal. Jika analisis semantik sukses, program juga menampilkan
-intermediate code dan output akhir program Arion.
+Untuk Milestone 1 sampai 3, program menampilkan parse tree, decorated AST, tabel
+simbol, dan hasil pengecekan semantik. Untuk Milestone 4, sesuai Q&A resmi,
+input `.txt` adalah Decorated AST, bukan source code Arion, sehingga lexer dan
+parser tidak dijalankan.
 
 Untuk input milestone 3, laporan semantik disimpan ke:
 
@@ -43,6 +52,8 @@ Untuk input milestone 4, laporan backend disimpan ke:
 ```text
 test/milestone-4/<nama_file>_BACKEND.txt
 ```
+
+File output Milestone 4 hanya berisi intermediate code dan output aktual program.
 
 ## Identitas Kelompok
 
@@ -156,36 +167,56 @@ File `.o` dan executable hasil build tidak dibuat di root directory.
 
 ## Output Program
 
-Untuk input yang valid secara lexical dan syntax, program menghasilkan:
+Untuk Milestone 1 sampai 3, input yang valid secara lexical dan syntax menghasilkan:
 
 - Parse tree hasil parser.
 - Decorated AST hasil konversi parse tree dan anotasi semantic analyzer.
-- Tabel simbol `tab` untuk identifier, konstanta, variabel, tipe, prosedur, dan fungsi.
-- Tabel blok `btab` untuk informasi blok prosedur, fungsi, dan record.
-- Tabel array `atab` untuk metadata tipe array.
+- Tabel simbol `tab`, `btab`, dan `atab`.
 - Daftar semantic error jika ditemukan pelanggaran semantik.
-- Intermediate code dalam format instruksi stack machine, misalnya `INT`, `LIT`,
-  `LOD`, `STO`, `JMP`, `JPC`, `OPR`, dan `RET`.
-- Output final program Arion dari interpreter.
 
-Jika ditemukan lexical error, proses parser dan semantic analyzer tidak dijalankan.
-Jika ditemukan parser error, proses semantic analyzer tidak dijalankan. Jika semantic
-error ditemukan, program tetap mencetak laporan semantik lalu keluar dengan kode error.
-Backend hanya dijalankan setelah lexical, parser, AST builder, dan semantic analyzer
-sukses. Jika code generation gagal, program mencetak `=== Backend Errors ===` dan
-interpreter tidak dijalankan. Jika runtime gagal, intermediate code tetap dicetak,
-lalu program mencetak `=== Runtime Errors ===`.
-
-Output backend menggunakan section stabil:
+Untuk Milestone 4, input adalah Decorated AST dalam format tree yang sama dengan
+printer semantic:
 
 ```text
-=== Intermediate Code ===
-0 INT 0 ...
-1 LIT 0 ...
-
-=== Program Output ===
-...
+=== Decorated AST ===
+Program(M4DastBasic)
+|-- DeclarationPart
+|   \-- VarDecl(x) : type=Integer
+|       \-- TypeRef(integer) : type=Integer
+\-- CompoundStatement
+    |-- AssignStatement : type=Integer
+    |   |-- Variable(x) : type=Integer
+    |   \-- Literal(10) value=10 literal=Integer : type=Integer
+    |-- Call(writeln)
+    |   \-- Variable(x) : type=Integer
+    \-- EmptyStatement
 ```
+
+Loader Decorated AST akan membangun ulang metadata semantic yang dibutuhkan
+backend, termasuk symbol table dan type registry. Karena metadata direkonstruksi
+dari deklarasi AST, input DAST harus tetap memuat node deklarasi seperti `VarDecl`
+dan `TypeDecl`.
+
+Output backend Milestone 4 menggunakan section stabil berikut:
+
+```text
+=== INTERMEDIATE CODE ===
+0 INT 0 4
+1 LIT 0 10
+2 STO 0 3
+3 LOD 0 3
+4 OPR 0 14
+5 RET 0 0
+
+=== OUTPUT ===
+10
+```
+
+Jika input M4 bukan Decorated AST, berisi node tidak dikenal, atau metadata tidak
+dapat direkonstruksi dari deklarasi AST, program menulis `=== BACKEND INPUT ERRORS ===`
+dan keluar dengan kode error. Jika code generation gagal, program menulis
+`=== BACKEND ERRORS ===`. Jika runtime gagal, program menulis
+`=== RUNTIME ERRORS ===`.
 
 
 ## Revisi Milestone 3
@@ -215,26 +246,16 @@ Contoh menjalankan salah satu test milestone 3:
 Contoh menjalankan test milestone 4:
 
 ```powershell
-.\bin\arion.exe test\milestone-4\tc1.txt
+.\bin\arion.exe test\milestone-4\dast-valid-basic.txt
 ```
 
 Smoke test final yang digunakan untuk release candidate:
 
 ```powershell
 mingw32-make -B
-.\bin\arion.exe test\milestone-4\tc1.txt
-.\bin\arion.exe test\milestone-4\tc2.txt
-.\bin\arion.exe test\milestone-4\tc3.txt
-.\bin\arion.exe test\milestone-4\tc4.txt
-.\bin\arion.exe test\milestone-4\tc5.txt
-.\bin\arion.exe test\milestone-4\tc6.txt
-.\bin\arion.exe test\milestone-4\tc7.txt
-.\bin\arion.exe test\milestone-4\tc8.txt
-.\bin\arion.exe test\milestone-4\tc9.txt
-.\bin\arion.exe test\milestone-4\tc10.txt
+.\bin\arion.exe test\milestone-4\dast-valid-basic.txt
+.\bin\arion.exe test\milestone-4\dast-invalid-unknown-node.txt; if ($LASTEXITCODE -eq 0) { throw "invalid DAST should fail" }
 .\bin\arion.exe test\milestone-3\tc1.txt
-.\bin\arion.exe test\milestone-3\tc10.txt
+.\bin\arion.exe test\milestone-3\tc10.txt; if ($LASTEXITCODE -eq 0) { throw "semantic-error fixture should fail" }
 git diff --check
 ```
-
-`

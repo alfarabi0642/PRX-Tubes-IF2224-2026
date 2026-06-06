@@ -537,7 +537,11 @@ private:
             }
         }
 
-        const std::size_t main_jump = emit_simple(OpCode::Jmp, 0, "main");
+        std::size_t main_jump = 0;
+        const bool has_subprograms = !subprogram_order.empty();
+        if (has_subprograms) {
+            main_jump = emit_simple(OpCode::Jmp, 0, "main");
+        }
         for (int tab_index : subprogram_order) {
             auto found = subprograms.find(tab_index);
             if (found != subprograms.end()) {
@@ -545,7 +549,9 @@ private:
             }
         }
 
-        patch(main_jump, current_line());
+        if (has_subprograms) {
+            patch(main_jump, current_line());
+        }
 
         bool emitted_body = false;
         for (const auto& child : node->children) {
